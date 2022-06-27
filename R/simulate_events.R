@@ -21,7 +21,8 @@
 #' make_events(model = model, include_strategy = TRUE)
 #' }
 #'
-make_events <- function(model, n = 1, w = NULL, P = NULL, A = NULL, parameters = NULL, param_type = NULL,
+make_events <- function(model, n = 1, w = NULL, P = NULL, A = NULL,
+                        parameters = NULL, param_type = NULL,
                         include_strategy = FALSE, ...) {
     # Check whether w is a matrix with named rows
     if (!is.null(w)) {
@@ -49,7 +50,7 @@ make_events <- function(model, n = 1, w = NULL, P = NULL, A = NULL, parameters =
             P <- get_parameter_matrix(model)
         if (is.null(A))
             A <- get_ambiguities_matrix(model)
-        w <- get_event_prob(model, P, A, parameters = parameters)
+        w <- get_event_prob(model = model, P = P, A = A, parameters = parameters)
     }
 
     # Draw events (Compact dataframe)

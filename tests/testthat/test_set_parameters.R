@@ -1,12 +1,15 @@
 
-.runThisTest <- Sys.getenv("RunAllRcppTests") == "yes"
 
-if (.runThisTest) {
+
+
 
 context("Testing set_parameters")
 
+testthat::skip_on_cran()
 testthat::test_that(
+
 	desc = "Main arguments",
+
 	code = {
 		model <- make_model('X -> Y')
 
@@ -35,7 +38,7 @@ testthat::test_that(
 		a <- make_parameters(model, param_type = 'posterior_mean')
 		expect_true(length(a)==6)
 
-		a <- make_parameters(model,  statement = "Y[X=1] > Y[X=0]", parameters = .5)
+		a <- make_parameters(model, statement = "Y[X=1] > Y[X=0]", parameters = .5)
 		expect_true(a[5]==.5)
 
 		a <- make_parameters(model, statement = "Y[X=1] > Y[X=0]", parameters = .5, normalize = FALSE)
@@ -47,18 +50,30 @@ testthat::test_that(
 		a <- get_parameters(model)
 		expect_true(length(a)==6)
 
+		model <- make_model("X -> Y")
+
+		a <- make_parameters(model = model, parameters = c(0.5,0.25), alter_at = "node == 'X' & nodal_type %in% c('0','1')", normalize = TRUE)
+		expect_equal(unname(round(a,2)), c(0.67,0.33,0.25,0.25,0.25,0.25))
+
+		a <- make_parameters(model = model, parameters = c(0.5,0.25), node = "X", nodal_type = c("0","1"))
+		expect_equal(unname(round(a,2)), c(0.67,0.33,0.25,0.25,0.25,0.25))
+
+		a <- make_parameters(model = model, parameters = 0.9, param_names = "X.0")
+		expect_equal(unname(a), c(0.9,0.1,0.25,0.25,0.25,0.25))
+
 		expect_error(make_parameters(model, param_type = 'flatbread'))
 
 		expect_true(class(set_parameters(model)) == "causal_model")
 
-		out <- make_model('X -> Y') %>%
-  		set_confound(list(X = 'Y[X=1]>Y[X=0]'))  %>%
-  		set_parameters(confound = list(X='Y[X=1]>Y[X=0]', X='Y[X=1]<=Y[X=0]'),
-                 parameters = list(c(.2, .8), c(.8, .2))) %>%
-  		get_parameters
-		expect_equal(sum(0.2 == out), 2)
+		a <- make_model('X -> Y') %>%
+  		set_confound("X <-> Y")  %>%
+  		set_parameters(statement = 'Y[X=1]>Y[X=0]',
+  		               parameters = c(.2, .8))%>%
+  		get_parameters()
+		expect_equal(sum(0.2 == a), 1)
+
 		}
 )
 
 
-}
+

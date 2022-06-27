@@ -8,11 +8,12 @@ query_distribution(
   model,
   query,
   given = TRUE,
-  using = "priors",
+  using = "parameters",
   parameters = NULL,
   type_distribution = NULL,
   verbose = FALSE,
-  join_by = "|"
+  join_by = "|",
+  case_level = FALSE
 )
 }
 \arguments{
@@ -20,37 +21,52 @@ query_distribution(
 
 \item{query}{A character. A query on potential outcomes such as "Y[X=1] - Y[X=0]"}
 
-\item{given}{A character. A quoted expression evaluates to logical statement. given allows estimand to be conditioned on *observational* distribution.}
+\item{given}{A character. A quoted expression evaluates to logical statement. \code{given} allows the query to be conditioned on *observational* distribution. A value of TRUE is interpreted as no conditioning.}
 
-\item{using}{A character. Whether to use `priors`, `posteriors` or `parameters`}
+\item{using}{A character. Whether to use priors, posteriors or parameters}
 
-\item{parameters}{A vector of real numbers in [0,1].  A true parameter vector to be used instead of parameters attached to the model in case  `using` specifies `parameters`}
+\item{parameters}{A vector of real numbers in [0,1].  A true parameter vector to be used instead of parameters attached to the model in case  \code{using} specifies \code{parameters}}
 
 \item{type_distribution}{A numeric vector. If provided saves calculation, otherwise calculated from model; may be based on prior or posterior}
 
 \item{verbose}{Logical. Whether to print mean and standard deviation of the estimand on the console.}
 
 \item{join_by}{A character. The logical operator joining expanded types when \code{query} contains wildcard (\code{.}). Can take values \code{"&"} (logical AND) or \code{"|"} (logical OR). When restriction contains wildcard (\code{.}) and \code{join_by} is not specified, it defaults to \code{"|"}, otherwise it defaults to \code{NULL}.}
+
+\item{case_level}{Logical. If TRUE estimates the probability of the query for a case.}
 }
 \value{
-A vector of draws from the distribution of the potential outcomes specified in `query`
+A vector of draws from the distribution of the potential outcomes specified in \code{query}
 }
 \description{
 Calculated distribution of a query from a prior or posterior distribution of parameters
 }
 \examples{
 model <- make_model("X -> Y") \%>\%
-         set_prior_distribution()
+         set_prior_distribution() \%>\%
+         set_parameter_matrix()
  \donttest{
  distribution <- query_distribution(model, query = "(Y[X=1] - Y[X=0])")
 
  distribution <- query_distribution(model, query = "(Y[X=1] - Y[X=0])", given = "X==1")
+ distribution <- query_distribution(model, query = "(Y[X=1] - Y[X=0])", given = "Y[X=1]==0")
  distribution <- query_distribution(model, query = "(Y[X=1] - Y[X=0])", given = "Y[X=1]==1")
  distribution <- query_distribution(model, query = "(Y[X=1] > Y[X=0])")
+ distribution <- query_distribution(model,
+                                    query = "(Y[X=1] > Y[X=0])",
+                                    given = "X==1 & Y==1",
+                                    verbose = TRUE)
+ distribution <- query_distribution(model,
+                                    query = "(Y[X=1] > Y[X=0])",
+                                    given = "X==1 & Y==1",
+                                    case_level = TRUE,
+                                    verbose = TRUE)
  distribution <- query_distribution(model, query = "(Y[X=.] == 1)", join_by = "&")
  distribution <- query_distribution(model, query = "(Y[X=1] - Y[X=0])", using = "parameters")
  df    <- simulate_data(model, n = 3)
  updated_model <- update_model(model, df)
+ query_distribution( updated_model , query = "(Y[X=1] - Y[X=0])", using = "posteriors")
+ updated_model <- update_model(model, df, keep_transformed = TRUE)
  query_distribution( updated_model , query = "(Y[X=1] - Y[X=0])", using = "posteriors")
 }
 }

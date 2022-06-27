@@ -40,8 +40,13 @@ get_type_prob <- function(model, P = NULL, parameters = NULL) {
 #' get_type_prob_multiple(model, using = 'priors', n_draws = 3)
 #' get_type_prob_multiple(model, using = 'parameters', n_draws = 3)
 
-get_type_prob_multiple <- function(model, using = "priors", parameters = NULL, n_draws = 4000, param_dist = NULL) {
-    P <- get_parameter_matrix(model)
+get_type_prob_multiple <- function(model, using = "priors", parameters = NULL, n_draws = 4000, param_dist = NULL, P = NULL) {
+
+    # Pull from stan object
+    if(!is.null(model$stan_objects$type_distribution) & using == "posteriors")
+        return(t(model$stan_objects$type_distribution))
+
+    if(is.null(P)) P <- get_parameter_matrix(model)
 
     if (using == "parameters") {
         if (is.null(parameters))
@@ -49,9 +54,12 @@ get_type_prob_multiple <- function(model, using = "priors", parameters = NULL, n
         return(get_type_prob(model, parameters = parameters, P = P))
     }
 
+
+    # Do one at a time
     if (is.null(param_dist))
         param_dist <- get_param_dist(model, using, n_draws = n_draws)
 
+    # Seem to be no speed gains via matrix multiplication instead of apply
     apply(param_dist, 1, function(j) get_type_prob(model, parameters = j, P = P))
 
 }

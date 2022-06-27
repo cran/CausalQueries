@@ -37,8 +37,6 @@
 #' model <- make_model("X->Y; X <-> Y")
 #' model$P
 #' model <- make_model("Y2 <- X -> Y1; X <-> Y1; X <-> Y2")
-#' model$P
-#' model$confounds_df
 #' dim(model$P)
 #' model$P
 #' model <- make_model("X1 -> Y <- X2; X1 <-> Y; X2 <-> Y")
@@ -47,12 +45,10 @@
 #'
 #' # A single node graph is also possible
 #' model <- make_model("X")
-#' plot(model)
 #'
 #' # Unconnected nodes cannot
 #' \dontrun{
 #'  model <- make_model("X <-> Y")
-#'  plot(model)
 #' }
 
 make_model <- function(statement, add_causal_types = TRUE){
@@ -78,7 +74,6 @@ make_model <- function(statement, add_causal_types = TRUE){
 
 	# allowable names
 	node_names <- unique(c(as.character(dag$parent), as.character(dag$children)))
-#	if(any(grepl("[.]", node_names))) stop("No dots in varnames please; try underscore?")
 	if(any(grepl("-", 	node_names))) stop("No hyphens in varnames please; try dots?")
 	if(any(grepl("_", node_names))) stop("No underscores in varnames please; try dots?")
 
@@ -118,23 +113,27 @@ make_model <- function(statement, add_causal_types = TRUE){
 
  model$parameters_df <- data.frame(
  	param_names  = unlist(sapply(1:m, function(i) paste0(names(nodal_types[i]), ".", nodal_types[i][[1]]))),
+ 	gen = rep(1:m, lgths),
  	param_value   = unlist(sapply(1:m, function(j) rep(1/length(nodal_types[[j]]), length(nodal_types[[j]])))),
  	param_set    = unlist(sapply(1:m, function(j) rep(names(nodal_types)[j], length(nodal_types[[j]])))),
+ 	given = "",
  	node = unlist(sapply(1:m, function(j) rep(names(nodal_types)[j], length(nodal_types[[j]])))),
-  # param        = unlist(sapply(1:m, function(i) nodal_types[i][[1]])),
   nodal_type = unlist(sapply(1:m, function(i) nodal_types[i][[1]])),
-  gen = rep(1:m, lgths),
   priors       = 1,
   stringsAsFactors = FALSE
 
   )
 
+ class(model) <- "causal_model"
+
  # Add causal types
  if(add_causal_types){
  model$causal_types <- update_causal_types(model)}
 
+
+
  # Add confounds if any provided
- # extract confounds df
+
  if(any(x$e=="<->")) {
 
 	 	confounds <- NULL
@@ -153,21 +152,17 @@ make_model <- function(statement, add_causal_types = TRUE){
 
 	 	# Check on ineligible confound statements
 	 	if(any(!(c(z$v, z$w) %in% nodes)))
-	 	stop("Confound relations (<->) must be between nodes contained in the dag
-	 				(i.e. that also have a direct relation (->).")
+	 	stop("Confound relations (<->) must be between nodes contained in the dag")
 
 	 	model <- set_confound(model, confounds)
 
 	  }
 
-
-
  # Prep for export
  attr(model, "endogenous_nodes") <- endog_node
  attr(model, "exogenous_nodes")  <- exog_node
- class(model) <- "causal_model"
 
- model
+  model
 
 }
 

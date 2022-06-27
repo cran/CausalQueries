@@ -1,29 +1,36 @@
 
-.runThisTest <- Sys.getenv("RunAllRcppTests") == "yes"
 
-if (.runThisTest) {
+
+
 
 
 context(desc = "Testing that canonical models work as they should")
 
+testthat::skip_on_cran()
 dags <- c("X -> Y", "X -> M -> Y", "X -> Y; Z -> Y")
 
 for(dag in dags){
 
 	testthat::test_that(
+
 		desc = "Model returns a non-null object.",
+
 		code = expect_true(length(make_model(dag)) > 1)
 	)
 
 	testthat::test_that(
+
 		desc = "Model returns the correct object class.",
+
 		code = expect_identical(class(make_model(dag)), "causal_model")
 	)
 
 }
 
 testthat::test_that(
+
 	desc = "Test functions on model X -> Y without confounding",
+
 	code = {
 
 		XY_noconf <- make_model("X -> Y")
@@ -31,7 +38,7 @@ testthat::test_that(
 		data <- simulate_data(XY_noconf, n = 1, parameters = c(.5, .5, .2, .4, .2, .2))
 		expect_equal(dim(data), c(1,2))
 
-		updated <- posterior <- update_model(XY_noconf, data, refresh = 0)
+		updated <- posterior <- suppressWarnings(update_model(XY_noconf, data, refresh = 0))
 		expect_true(!is.null(posterior))
 
 		ATE <- "Y[X=1] - Y[X=0]"
@@ -46,13 +53,12 @@ testthat::test_that(
 
 
 testthat::test_that(
+
 	desc = "Test functions on model X -> Y with confounding",
+
 	code = {
-		XY_conf <- make_model("X -> Y")
-		XY_conf <- set_confound(XY_conf,
-														list(X = "(Y[X=1]>Y[X=0])",
-																 X = "(Y[X=1]<Y[X=0])",
-																 X = "(Y[X=1]==1) & (Y[X=0]==1)"))
+		XY_conf <- make_model("X -> Y")%>%
+		  set_confound(., list(X = "Y"))
 
 		expect_equal(dim(get_parameter_matrix(XY_conf)), c(12,8))
 
@@ -61,7 +67,10 @@ testthat::test_that(
 		expect_equal(c(1, 2), dim(data))
 
 
-		posterior <- update_model(XY_conf, data, refresh = 0)
+		posterior <- suppressWarnings(update_model(XY_conf, data, refresh = 0, keep_transformed = TRUE))
+		expect_true(!is.null(posterior))
+
+		posterior <- suppressWarnings(update_model(XY_conf, data, refresh = 0))
 		expect_true(!is.null(posterior))
 
 		prior_ate <- query_distribution(model = posterior,
@@ -77,13 +86,15 @@ testthat::test_that(
 
 		expect_true(is.data.frame(results))
 
-		expect_message(set_confound(XY_conf))
+		expect_error(set_confound(XY_conf))
 	}
 )
 
 
 testthat::test_that(
+
 	desc = "Test functions on mediator model (X -> M -> Y)",
+
 	code = {
 		XY_mediator <- make_model("X -> M -> Y")
 
@@ -92,7 +103,7 @@ testthat::test_that(
 			parameters = c(.5, .5, .2, .8, 0, 0, 0, .8, 0, .2))
 		expect_equal(c(1, 3), dim(data))
 
-		posterior <- update_model(XY_mediator, data, refresh = 0)
+		posterior <- suppressWarnings(update_model(XY_mediator, data, refresh = 0))
 		expect_true(!is.null(posterior))
 
 		expect_equal(nrow(simulate_data(posterior , n = 5, using = "posteriors")), 5)
@@ -108,7 +119,9 @@ testthat::test_that(
 )
 
 testthat::test_that(
+
 	desc = "Test functions on moderator model (X -> Y; Z -> Y)",
+
 	code = {
 		XY_moderator <- make_model("X -> Y; Z -> Y")
 
@@ -119,7 +132,7 @@ testthat::test_that(
 										 .02, .70, .02, .02, .02, .02, .02, .02))
 		expect_equal(c(1, 3), dim(data))
 
-		posterior <- update_model(XY_moderator, data, refresh = 0)
+		posterior <- suppressWarnings(update_model(XY_moderator, data, refresh = 0))
 		expect_true(!is.null(posterior))
 
 		results <- query_model(
@@ -134,7 +147,9 @@ testthat::test_that(
 
 
 testthat::test_that(
+
 	desc = "Test complex model",
+
 	code = {
 		model <- make_model("Y2 <- X -> Y1; X <-> Y1; X <-> Y2") %>%
 			       set_restrictions("Y2[X=1] > Y2[X=0]") %>%
@@ -142,7 +157,7 @@ testthat::test_that(
 
 		data <- simulate_data(model, n = 5)
 
-		posterior <- update_model(model, data, refresh = 0)
+		posterior <- suppressWarnings(update_model(model, data, refresh = 0))
 
     posterior_parameter_draw <- make_parameters(posterior, param_type = "posterior_draw")
     expect_true(length(posterior_parameter_draw) == 16)
@@ -161,39 +176,47 @@ testthat::test_that(
 
 
 testthat::test_that(
+
 	desc = "update_model using keep_fit",
+
 	code = {
-		updated <- update_model(make_model("X->Y"), keep_fit = TRUE, refresh = 0)
+		updated <- suppressWarnings(update_model(make_model("X->Y"), keep_fit = TRUE, refresh = 0))
 		expect_true(class(updated) == "causal_model")
 	}
 )
 
 
 testthat::test_that(
+
 	desc = "Check long and short data",
+
 	code = {
 		model <- make_model('X->Y')
 		data_long   <- make_data(model, n = 4)
 		data_short  <- collapse_data(data_long, model)
 		expect_error(update_model(model, data_short, refresh = 0))
-		updated <- update_model(model, data_short, data_type = 'compact', refresh = 0)
+		updated <- suppressWarnings(update_model(model, data_short, data_type = 'compact', refresh = 0))
 		expect_true(class(updated) == "causal_model")
 	}
 )
 
 
 testthat::test_that(
+
 	desc = "Test stan arguments",
+
 	code = {
-		updated <- update_model(make_model("X->Y"), keep_fit = TRUE, refresh = 0, control = list(adapt_delta = 0.5))
+		updated <- suppressWarnings(update_model(make_model("X->Y"), keep_fit = TRUE, refresh = 0, control = list(adapt_delta = 0.5)))
 		expect_true(class(updated) == "causal_model")
-		updated <- update_model(make_model("X->Y"), keep_fit = TRUE, refresh = 0, control = list(max_treedepth = 20))
+		updated <- suppressWarnings(update_model(make_model("X->Y"), keep_fit = TRUE, refresh = 0, control = list(max_treedepth = 20)))
 		expect_true(class(updated) == "causal_model")
 	}
 )
 
 testthat::test_that(
+
 	desc = "Test when all NA",
+
 	code = {
 		model <- make_model("X -> Y")
 		X <- c(NA, NA, NA)
@@ -203,4 +226,4 @@ testthat::test_that(
 		expect_error(update_model(model, data, data_type = "compact"))
 	}
 )
-}
+
