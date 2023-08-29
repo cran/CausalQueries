@@ -21,9 +21,13 @@
 #'
 get_nodal_types <- function(model, collapse = TRUE) {
 
-    # .1 Extract nodal types if these exist (and collapsed format sought)
+    # 1 Extract nodal types if these exist (and collapsed format sought)
     if (collapse & !is.null(model$nodal_types))
         return(model$nodal_types)
+
+    # 1b Extract nodal types if these exist (and uncollapse if uncollapse sought)
+    if (!collapse & !is.null(model$nodal_types))
+        return(uncollapse_nodal_types(model$nodal_types))
 
     # 2. Create and interpret list of nodal types
     nodal_types <- make_nodal_types(model)
@@ -47,6 +51,33 @@ get_nodal_types <- function(model, collapse = TRUE) {
     nodal_types
 
 }
+
+
+uncollapse_nodal_types <- function(nodal_types) {
+
+  x <- nodal_types |>
+    lapply(stringr::str_split, "")  |>
+    lapply(data.frame) |>
+    lapply(t)  |>
+    lapply(function(df) apply(df, 2, as.numeric)) |>
+    lapply(data.frame)
+
+  # This is not elegant; to handle cases where a single nodal type exists
+  # otherwise it gets wrongly tranposed
+  for(j in 1:length(x)) if(length(nodal_types[[j]])==1)  x[[j]] <- t(x[[j]])
+
+  for(j in 1:length(x)){
+    # Add row names
+    rownames(x[[j]]) <- apply(x[[j]], 1, paste, collapse ="")
+    # Add col names
+    colnames(x[[j]]) <- perm(rep(1, log(ncol(x[[j]]),2))) %>%
+      apply(1, paste, collapse = "")
+    }
+
+  x
+  }
+
+
 
 #' Make nodal types
 #'

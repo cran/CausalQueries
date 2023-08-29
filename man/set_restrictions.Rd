@@ -9,9 +9,9 @@ set_restrictions(
   statement = NULL,
   join_by = "|",
   labels = NULL,
+  param_names = NULL,
   given = NULL,
   keep = FALSE,
-  update_types = TRUE,
   wildcard = FALSE
 )
 }
@@ -24,11 +24,11 @@ set_restrictions(
 
 \item{labels}{A list of character vectors specifying nodal types to be kept or removed from the model. Use \code{get_nodal_types} to see syntax. Note that \code{labels} gets overwritten by \code{statement} if \code{statement} is not NULL.}
 
+\item{param_names}{A character vector of names of parameters to restrict on.}
+
 \item{given}{A character vector or list of character vectors specifying nodes on which the parameter set to be restricted depends. When restricting by \code{statement}, \code{given} must either be \code{NULL} or of the same length as \code{statement}. When mixing statements that are further restricted by \code{given} and ones that are not, statements without \code{given} restrictions should have \code{given} specified as one of \code{NULL}, \code{NA}, \code{""} or \code{" "}.}
 
 \item{keep}{Logical. If `FALSE`, removes and if `TRUE` keeps only causal types specified by \code{statement} or \code{labels}.}
-
-\item{update_types}{Logical. If `TRUE` the `causal_types` matrix gets updated after application of restrictions.}
 
 \item{wildcard}{Logical. If `TRUE` allows for use of wildcards in restriction string. Default `FALSE`.}
 }

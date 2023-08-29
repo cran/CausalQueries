@@ -1,8 +1,6 @@
 
 
 
-
-
 context("Testing set_restrictions")
 
 testthat::skip_on_cran()
@@ -31,7 +29,6 @@ testthat::test_that(
 		model <- make_model("X -> Y <- Z")
 		model$P <- NULL
 		model <- set_parameter_matrix(model)
-		model$P[, ] <- matrix(0, ncol = ncol(model$P), nrow = nrow(model$P))
 		model <- set_restrictions(model, statement =  c("(X[] == 1)", "(Z[] == 1)" ))
 		attri <- attributes(model)
 		expect_true(attri$restrictions$X == "1")
@@ -57,9 +54,13 @@ testthat::test_that(
 		expect_equal(attr(model_1, "restrictions")$X,attr(model_2, "restrictions")$Z)
 
 		model <- make_model("X -> Y -> Z; X <-> Z")
-		model <- set_restrictions(model, decreasing('Y','Z'), given = "X.0")
-		model <- dplyr::filter(model$parameters_df, given == "X.0")
-		expect_true(nrow(model) == 3)
+		model <- set_restrictions(model,
+		                           statement = decreasing('Y','Z'),
+		                           given = "X.0")
+		df <- dplyr::filter(model$parameters_df, given == "X.0")
+		expect_true(nrow(df) == 3)
+		df <- dplyr::filter(model$parameters_df, given == "X.1")
+		expect_true(nrow(df) == 4)
 
 	}
 )
@@ -84,8 +85,6 @@ testthat::test_that(
 		expect_error(CausalQueries:::restrict_by_query(model = model, statement = statement, keep = NULL))
 
 		model <- set_restrictions(model, statement =  c("(X[] == 1)", "(Z[] == 1)" ))
-		## nodal_types can't be entirely reduced. Revise conditions for node X
-		expect_error(set_restrictions(model, statement = c("(X[] == 0)")))
 
 		## defined givens not in given set
 		model <- make_model("X -> Y -> Z; X <-> Z")
@@ -121,10 +120,10 @@ testthat::test_that(
 	code = {
 		model <- make_model("X -> Y")
 		model <- CausalQueries:::restrict_by_labels(model, labels = list(X = "0"))
-		expect_equal(model$nodal_types$X, "1")
+		expect_equal(model,"X.0")
 		model <- make_model("X -> Y")
 		model <- CausalQueries:::restrict_by_labels(model, labels = list(Y = "00", Y = "01"))
-		expect_equal(model$nodal_types$Y, c("10", "11"))
+		expect_equal(model, c("Y.00", "Y.01"))
 	}
 )
 

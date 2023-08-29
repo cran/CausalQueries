@@ -33,7 +33,7 @@ static int current_statement_begin__;
 stan::io::program_reader prog_reader__() {
     stan::io::program_reader reader;
     reader.add_event(0, 0, "start", "model_simplexes");
-    reader.add_event(119, 117, "end", "model_simplexes");
+    reader.add_event(130, 128, "end", "model_simplexes");
     return reader;
 }
 template <typename T0__>
@@ -486,42 +486,56 @@ public:
             stan::math::initialize(w_full, DUMMY_VAR__);
             stan::math::fill(w_full, DUMMY_VAR__);
             // transformed parameters block statements
-            current_statement_begin__ = 55;
+            current_statement_begin__ = 57;
             for (int i = 1; i <= n_param_sets; ++i) {
-                current_statement_begin__ = 57;
-                stan::model::assign(sum_gammas, 
-                            stan::model::cons_list(stan::model::index_uni(i), stan::model::nil_index_list()), 
-                            (1 + sum(stan::model::rvalue(gamma, stan::model::cons_list(stan::model::index_min_max((get_base1(l_starts, i, "l_starts", 1) - (i - 1)), (get_base1(l_ends, i, "l_ends", 1) - i)), stan::model::nil_index_list()), "gamma"))), 
-                            "assigning variable sum_gammas");
-                current_statement_begin__ = 60;
-                stan::model::assign(lambdas, 
-                            stan::model::cons_list(stan::model::index_min_max(get_base1(l_starts, i, "l_starts", 1), get_base1(l_ends, i, "l_ends", 1)), stan::model::nil_index_list()), 
-                            divide(append_row(1, stan::model::rvalue(gamma, stan::model::cons_list(stan::model::index_min_max((get_base1(l_starts, i, "l_starts", 1) - (i - 1)), (get_base1(l_ends, i, "l_ends", 1) - i)), stan::model::nil_index_list()), "gamma")), get_base1(sum_gammas, i, "sum_gammas", 1)), 
-                            "assigning variable lambdas");
+                current_statement_begin__ = 59;
+                if (as_bool(logical_gte(get_base1(l_starts, i, "l_starts", 1), get_base1(l_ends, i, "l_ends", 1)))) {
+                    current_statement_begin__ = 60;
+                    stan::model::assign(sum_gammas, 
+                                stan::model::cons_list(stan::model::index_uni(i), stan::model::nil_index_list()), 
+                                1, 
+                                "assigning variable sum_gammas");
+                    current_statement_begin__ = 62;
+                    stan::model::assign(lambdas, 
+                                stan::model::cons_list(stan::model::index_uni(get_base1(l_starts, i, "l_starts", 1)), stan::model::nil_index_list()), 
+                                (get_base1(lambdas_prior, 1, "lambdas_prior", 1) / get_base1(lambdas_prior, 1, "lambdas_prior", 1)), 
+                                "assigning variable lambdas");
+                } else if (as_bool(logical_lt(get_base1(l_starts, i, "l_starts", 1), get_base1(l_ends, i, "l_ends", 1)))) {
+                    current_statement_begin__ = 66;
+                    stan::model::assign(sum_gammas, 
+                                stan::model::cons_list(stan::model::index_uni(i), stan::model::nil_index_list()), 
+                                (1 + sum(stan::model::rvalue(gamma, stan::model::cons_list(stan::model::index_min_max((get_base1(l_starts, i, "l_starts", 1) - (i - 1)), (get_base1(l_ends, i, "l_ends", 1) - i)), stan::model::nil_index_list()), "gamma"))), 
+                                "assigning variable sum_gammas");
+                    current_statement_begin__ = 69;
+                    stan::model::assign(lambdas, 
+                                stan::model::cons_list(stan::model::index_min_max(get_base1(l_starts, i, "l_starts", 1), get_base1(l_ends, i, "l_ends", 1)), stan::model::nil_index_list()), 
+                                divide(append_row(1, stan::model::rvalue(gamma, stan::model::cons_list(stan::model::index_min_max((get_base1(l_starts, i, "l_starts", 1) - (i - 1)), (get_base1(l_ends, i, "l_ends", 1) - i)), stan::model::nil_index_list()), "gamma")), get_base1(sum_gammas, i, "sum_gammas", 1)), 
+                                "assigning variable lambdas");
+                }
             }
-            current_statement_begin__ = 67;
+            current_statement_begin__ = 78;
             stan::math::assign(parlam, elt_multiply(rep_matrix(lambdas, n_paths), parmap));
-            current_statement_begin__ = 70;
+            current_statement_begin__ = 81;
             for (int i = 1; i <= n_nodes; ++i) {
-                current_statement_begin__ = 71;
+                current_statement_begin__ = 82;
                 stan::model::assign(parlam2, 
                             stan::model::cons_list(stan::model::index_uni(i), stan::model::cons_list(stan::model::index_omni(), stan::model::nil_index_list())), 
                             col_sums(stan::model::rvalue(parlam, stan::model::cons_list(stan::model::index_min_max(get_base1(node_starts, i, "node_starts", 1), get_base1(node_ends, i, "node_ends", 1)), stan::model::cons_list(stan::model::index_omni(), stan::model::nil_index_list())), "parlam"), pstream__), 
                             "assigning variable parlam2");
             }
-            current_statement_begin__ = 75;
+            current_statement_begin__ = 86;
             for (int i = 1; i <= n_paths; ++i) {
-                current_statement_begin__ = 76;
+                current_statement_begin__ = 87;
                 stan::model::assign(w_0, 
                             stan::model::cons_list(stan::model::index_uni(i), stan::model::nil_index_list()), 
                             prod(stan::model::rvalue(parlam2, stan::model::cons_list(stan::model::index_omni(), stan::model::cons_list(stan::model::index_uni(i), stan::model::nil_index_list())), "parlam2")), 
                             "assigning variable w_0");
             }
-            current_statement_begin__ = 81;
+            current_statement_begin__ = 92;
             stan::math::assign(w, multiply(transpose(map), w_0));
-            current_statement_begin__ = 82;
+            current_statement_begin__ = 93;
             stan::math::assign(w, divide(w, sum(w)));
-            current_statement_begin__ = 84;
+            current_statement_begin__ = 95;
             stan::math::assign(w_full, multiply(E, w));
             // validate transformed parameters
             const char* function__ = "validate transformed params";
@@ -602,16 +616,16 @@ public:
                 }
             }
             // model body
-            current_statement_begin__ = 91;
+            current_statement_begin__ = 102;
             for (int i = 1; i <= n_param_sets; ++i) {
-                current_statement_begin__ = 92;
+                current_statement_begin__ = 103;
                 lp_accum__.add(dirichlet_log(stan::model::rvalue(lambdas, stan::model::cons_list(stan::model::index_min_max(get_base1(l_starts, i, "l_starts", 1), get_base1(l_ends, i, "l_ends", 1)), stan::model::nil_index_list()), "lambdas"), stan::model::rvalue(lambdas_prior, stan::model::cons_list(stan::model::index_min_max(get_base1(l_starts, i, "l_starts", 1), get_base1(l_ends, i, "l_ends", 1)), stan::model::nil_index_list()), "lambdas_prior")));
-                current_statement_begin__ = 93;
+                current_statement_begin__ = 104;
                 lp_accum__.add((-(get_base1(n_param_each, i, "n_param_each", 1)) * stan::math::log(get_base1(sum_gammas, i, "sum_gammas", 1))));
             }
-            current_statement_begin__ = 97;
+            current_statement_begin__ = 108;
             for (int i = 1; i <= n_strategies; ++i) {
-                current_statement_begin__ = 98;
+                current_statement_begin__ = 109;
                 lp_accum__.add(multinomial_log(stan::model::rvalue(Y, stan::model::cons_list(stan::model::index_min_max(get_base1(strategy_starts, i, "strategy_starts", 1), get_base1(strategy_ends, i, "strategy_ends", 1)), stan::model::nil_index_list()), "Y"), stan::model::rvalue(w_full, stan::model::cons_list(stan::model::index_min_max(get_base1(strategy_starts, i, "strategy_starts", 1), get_base1(strategy_ends, i, "strategy_ends", 1)), stan::model::nil_index_list()), "w_full")));
             }
         } catch (const std::exception& e) {
@@ -742,42 +756,56 @@ public:
             stan::math::initialize(w_full, DUMMY_VAR__);
             stan::math::fill(w_full, DUMMY_VAR__);
             // do transformed parameters statements
-            current_statement_begin__ = 55;
+            current_statement_begin__ = 57;
             for (int i = 1; i <= n_param_sets; ++i) {
-                current_statement_begin__ = 57;
-                stan::model::assign(sum_gammas, 
-                            stan::model::cons_list(stan::model::index_uni(i), stan::model::nil_index_list()), 
-                            (1 + sum(stan::model::rvalue(gamma, stan::model::cons_list(stan::model::index_min_max((get_base1(l_starts, i, "l_starts", 1) - (i - 1)), (get_base1(l_ends, i, "l_ends", 1) - i)), stan::model::nil_index_list()), "gamma"))), 
-                            "assigning variable sum_gammas");
-                current_statement_begin__ = 60;
-                stan::model::assign(lambdas, 
-                            stan::model::cons_list(stan::model::index_min_max(get_base1(l_starts, i, "l_starts", 1), get_base1(l_ends, i, "l_ends", 1)), stan::model::nil_index_list()), 
-                            divide(append_row(1, stan::model::rvalue(gamma, stan::model::cons_list(stan::model::index_min_max((get_base1(l_starts, i, "l_starts", 1) - (i - 1)), (get_base1(l_ends, i, "l_ends", 1) - i)), stan::model::nil_index_list()), "gamma")), get_base1(sum_gammas, i, "sum_gammas", 1)), 
-                            "assigning variable lambdas");
+                current_statement_begin__ = 59;
+                if (as_bool(logical_gte(get_base1(l_starts, i, "l_starts", 1), get_base1(l_ends, i, "l_ends", 1)))) {
+                    current_statement_begin__ = 60;
+                    stan::model::assign(sum_gammas, 
+                                stan::model::cons_list(stan::model::index_uni(i), stan::model::nil_index_list()), 
+                                1, 
+                                "assigning variable sum_gammas");
+                    current_statement_begin__ = 62;
+                    stan::model::assign(lambdas, 
+                                stan::model::cons_list(stan::model::index_uni(get_base1(l_starts, i, "l_starts", 1)), stan::model::nil_index_list()), 
+                                (get_base1(lambdas_prior, 1, "lambdas_prior", 1) / get_base1(lambdas_prior, 1, "lambdas_prior", 1)), 
+                                "assigning variable lambdas");
+                } else if (as_bool(logical_lt(get_base1(l_starts, i, "l_starts", 1), get_base1(l_ends, i, "l_ends", 1)))) {
+                    current_statement_begin__ = 66;
+                    stan::model::assign(sum_gammas, 
+                                stan::model::cons_list(stan::model::index_uni(i), stan::model::nil_index_list()), 
+                                (1 + sum(stan::model::rvalue(gamma, stan::model::cons_list(stan::model::index_min_max((get_base1(l_starts, i, "l_starts", 1) - (i - 1)), (get_base1(l_ends, i, "l_ends", 1) - i)), stan::model::nil_index_list()), "gamma"))), 
+                                "assigning variable sum_gammas");
+                    current_statement_begin__ = 69;
+                    stan::model::assign(lambdas, 
+                                stan::model::cons_list(stan::model::index_min_max(get_base1(l_starts, i, "l_starts", 1), get_base1(l_ends, i, "l_ends", 1)), stan::model::nil_index_list()), 
+                                divide(append_row(1, stan::model::rvalue(gamma, stan::model::cons_list(stan::model::index_min_max((get_base1(l_starts, i, "l_starts", 1) - (i - 1)), (get_base1(l_ends, i, "l_ends", 1) - i)), stan::model::nil_index_list()), "gamma")), get_base1(sum_gammas, i, "sum_gammas", 1)), 
+                                "assigning variable lambdas");
+                }
             }
-            current_statement_begin__ = 67;
+            current_statement_begin__ = 78;
             stan::math::assign(parlam, elt_multiply(rep_matrix(lambdas, n_paths), parmap));
-            current_statement_begin__ = 70;
+            current_statement_begin__ = 81;
             for (int i = 1; i <= n_nodes; ++i) {
-                current_statement_begin__ = 71;
+                current_statement_begin__ = 82;
                 stan::model::assign(parlam2, 
                             stan::model::cons_list(stan::model::index_uni(i), stan::model::cons_list(stan::model::index_omni(), stan::model::nil_index_list())), 
                             col_sums(stan::model::rvalue(parlam, stan::model::cons_list(stan::model::index_min_max(get_base1(node_starts, i, "node_starts", 1), get_base1(node_ends, i, "node_ends", 1)), stan::model::cons_list(stan::model::index_omni(), stan::model::nil_index_list())), "parlam"), pstream__), 
                             "assigning variable parlam2");
             }
-            current_statement_begin__ = 75;
+            current_statement_begin__ = 86;
             for (int i = 1; i <= n_paths; ++i) {
-                current_statement_begin__ = 76;
+                current_statement_begin__ = 87;
                 stan::model::assign(w_0, 
                             stan::model::cons_list(stan::model::index_uni(i), stan::model::nil_index_list()), 
                             prod(stan::model::rvalue(parlam2, stan::model::cons_list(stan::model::index_omni(), stan::model::cons_list(stan::model::index_uni(i), stan::model::nil_index_list())), "parlam2")), 
                             "assigning variable w_0");
             }
-            current_statement_begin__ = 81;
+            current_statement_begin__ = 92;
             stan::math::assign(w, multiply(transpose(map), w_0));
-            current_statement_begin__ = 82;
+            current_statement_begin__ = 93;
             stan::math::assign(w, divide(w, sum(w)));
-            current_statement_begin__ = 84;
+            current_statement_begin__ = 95;
             stan::math::assign(w_full, multiply(E, w));
             if (!include_gqs__ && !include_tparams__) return;
             // validate transformed parameters
@@ -832,30 +860,30 @@ public:
             }
             if (!include_gqs__) return;
             // declare and define generated quantities
-            current_statement_begin__ = 108;
+            current_statement_begin__ = 119;
             validate_non_negative_index("prob_of_types", "n_types", n_types);
             Eigen::Matrix<double, Eigen::Dynamic, 1> prob_of_types(n_types);
             stan::math::initialize(prob_of_types, DUMMY_VAR__);
             stan::math::fill(prob_of_types, DUMMY_VAR__);
             // generated quantities statements
-            current_statement_begin__ = 110;
+            current_statement_begin__ = 121;
             if (as_bool(logical_eq(keep_transformed, 1))) {
-                current_statement_begin__ = 111;
+                current_statement_begin__ = 122;
                 for (int i = 1; i <= n_types; ++i) {
-                    current_statement_begin__ = 112;
+                    current_statement_begin__ = 123;
                     stan::model::assign(prob_of_types, 
                                 stan::model::cons_list(stan::model::index_uni(i), stan::model::nil_index_list()), 
                                 prod(subtract(add(elt_multiply(stan::model::rvalue(P, stan::model::cons_list(stan::model::index_omni(), stan::model::cons_list(stan::model::index_uni(i), stan::model::nil_index_list())), "P"), lambdas), 1), stan::model::rvalue(P, stan::model::cons_list(stan::model::index_omni(), stan::model::cons_list(stan::model::index_uni(i), stan::model::nil_index_list())), "P"))), 
                                 "assigning variable prob_of_types");
                 }
             }
-            current_statement_begin__ = 114;
+            current_statement_begin__ = 125;
             if (as_bool(logical_eq(keep_transformed, 0))) {
-                current_statement_begin__ = 115;
+                current_statement_begin__ = 126;
                 stan::math::assign(prob_of_types, rep_vector(1, n_types));
             }
             // validate, write generated quantities
-            current_statement_begin__ = 108;
+            current_statement_begin__ = 119;
             size_t prob_of_types_j_1_max__ = n_types;
             for (size_t j_1__ = 0; j_1__ < prob_of_types_j_1_max__; ++j_1__) {
                 vars__.push_back(prob_of_types(j_1__));

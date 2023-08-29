@@ -4,7 +4,7 @@
 \alias{make_model}
 \title{Make a model}
 \usage{
-make_model(statement, add_causal_types = TRUE)
+make_model(statement, add_causal_types = TRUE, nodal_types = NULL)
 }
 \arguments{
 \item{statement}{A character. Statement describing causal
@@ -12,6 +12,8 @@ relations using \link{dagitty} syntax. Only directed relations are permitted.
 For instance "X -> Y" or  "X1 -> Y <- X2; X1 -> X2".}
 
 \item{add_causal_types}{Logical. Whether to create and attach causal types to \code{model}. Defaults to `TRUE`.}
+
+\item{nodal_types}{List of nodal types associated with model nodes}
 }
 \value{
 An object of class \code{causal_model}.
@@ -21,7 +23,7 @@ following components:
 \item{dag}{A \code{data.frame} with columns `parent`and `children` indicating how nodes relate to each other.}
 \item{node}{A named \code{list} with the nodes in the model}
 \item{statement}{A character vector of the statement that defines the model}
-\item{nodal_types}{A named \code{list} with the nodal types in the model}
+\item{nodal_types}{Optional: A named \code{list} with the nodal types in the model. List should be ordered according to the causal ordering of nodes. If NULL nodal types are generated. If FALSE, a parameters data frame is not generated.}
 \item{parameters_df}{A \code{data.frame} with descriptive information of the parameters in the model}
 }
 \description{
@@ -56,8 +58,31 @@ model$parameters_df
 # A single node graph is also possible
 model <- make_model("X")
 
-# Unconnected nodes cannot
+# Unconnected nodes not allowed
 \dontrun{
  model <- make_model("X <-> Y")
 }
+
+nodal_types <-
+  list(
+    A = c("0","1"),
+    B = c("0","1"),
+    C = c("0","1"),
+    D = c("0","1"),
+    E = c("0","1"),
+    Y = c(
+      "00000000000000000000000000000000",
+      "01010101010101010101010101010101",
+      "00110011001100110011001100110011",
+      "00001111000011110000111100001111",
+      "00000000111111110000000011111111",
+      "00000000000000001111111111111111",
+      "11111111111111111111111111111111" ))
+
+make_model("A -> Y; B ->Y; C->Y; D->Y; E->Y",
+          nodal_types = nodal_types)$parameters_df
+
+nodal_types = list(Y = c("01", "10"), Z = c("0", "1"))
+make_model("Z -> Y", nodal_types = nodal_types)$parameters_df
+make_model("Z -> Y", nodal_types = FALSE)$parents_df
 }

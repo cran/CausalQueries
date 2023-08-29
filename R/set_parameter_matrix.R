@@ -11,25 +11,15 @@
 
 make_parameter_matrix <- function(model) {
 
-    nodal_types <- get_nodal_types(model)
     types <- causal_type_names(get_causal_types(model))
-    # pars <- unlist(nodal_types)
-    pars <- sapply(1:length(nodal_types), function(i) paste0(names(nodal_types)[i], nodal_types[i][[1]])) %>%
-        unlist
+    pars <- paste0(model$parameters_df$node, model$parameters_df$nodal_type)
 
     # Which nodal_types correspond to a type
-    P <- sapply(1:nrow(types), function(i) {
-        type <- types[i, ]
-        sapply(pars, function(nodal_type) all(nodal_type %in% type))
-    }) * 1
-
-    P <- sapply(1:nrow(types), function(i) {
-        type <- types[i, ]
-        sapply(pars, function(nodal_type) all(nodal_type %in% type))
-    }) * 1
+     P <- 1* apply(types, 1, function(j) pars %in% j) |>
+       data.frame()
 
     # Tidy up
-    colnames(P) <- do.call(paste, c(types, sep = "."))
+    colnames(P) <- rownames(types)
     rownames(P) <- model$parameters_df$param_names
     P <- as.data.frame(P)
     class(P) <- c("parameter_matrix", "data.frame")
@@ -70,16 +60,15 @@ get_parameter_matrix <- function(model) {
 #' model <- set_parameter_matrix(model, P = P)
 set_parameter_matrix <- function(model, P = NULL) {
 
-    if (!is.null(model$P)) {
-        message("Parameter matrix already contained in model; no action taken")
-        return(model)
-    }
+  if(is.null(P) & is.null(model$P)) {
+    model$P <- make_parameter_matrix(model)
+  }
 
-    if (is.null(P))
-        P <- make_parameter_matrix(model)
+  if(!is.null(P)) {
     model$P <- P
+  }
 
-    model
+  return(model)
 }
 
 

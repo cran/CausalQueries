@@ -144,7 +144,6 @@ set_confound <- function(model, confound = NULL) {
     ##################################################################################
 
     for(i in 1:length(confound)){
-    # for(i in 1:2){
 
     from_nodal_types <-
             model$parameters_df %>% filter(node == confound[i]) %>% pull(param_names)
@@ -164,7 +163,9 @@ set_confound <- function(model, confound = NULL) {
                               function(nd) sapply(nd, function(ndd) grepl(ndd, names_P))) %>% apply(1, prod)
           newP[k, to_zero==0] <- 0}
 
-    newP}) %>% bind_rows
+    newP}) %>%
+      bind_rows
+
     to_add <- filter(to_add, apply(to_add, 1, sum) != 0)  # Remove impossible rows with all zeros
 
     # Add in
@@ -177,7 +178,10 @@ set_confound <- function(model, confound = NULL) {
     # Clean up
     ##################################################################################
     # P reorder
-    model$parameters_df <- model$parameters_df %>% filter(param_names %in% row.names(model$P))
+    model$parameters_df <-
+      model$parameters_df %>%
+      filter(param_names %in% row.names(model$P))
+
     model$P <-
         model$P[match(model$parameters_df$param_names, rownames(model$P)),]
 
