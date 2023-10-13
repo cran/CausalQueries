@@ -10,11 +10,6 @@
 #' @name parameter_setting
 NULL
 #> NULL
-
-
-
-
-
 #' Make a 'true' parameter vector
 #'
 #' A vector of 'true' parameters; possibly drawn from prior or posterior.
@@ -33,7 +28,7 @@ NULL
 #'
 #' # Simple examples
 #' model <- make_model('X -> Y')
-#' data  <- simulate_data(model, n = 2)
+#' data  <- make_data(model, n = 2)
 #' model <- update_model(model, data)
 #' make_parameters(model, parameters = c(.25, .75, 1.25,.25, .25, .25))
 #' make_parameters(model, param_type = 'flat')
@@ -120,7 +115,7 @@ make_parameters <- function(model, parameters = NULL, param_type = NULL, warning
 
     # Prior draw
     if (param_type == "prior_draw"){
-      param_value <- make_prior_distribution(model, 1)
+      param_value <- make_prior_distribution(model, 1) |> unlist()
     }
 
     # Posterior mean
@@ -141,7 +136,7 @@ make_parameters <- function(model, parameters = NULL, param_type = NULL, warning
       }
 
       df <- model$posterior_distribution
-      param_value <- df[sample(nrow(df), 1), ]
+      param_value <- df[sample(nrow(df), 1), ] |> unlist()
     }
 
     out <- clean_param_vector(model, param_value)
@@ -172,7 +167,7 @@ make_parameters <- function(model, parameters = NULL, param_type = NULL, warning
 #'
 #' # Simple examples
 #' model <- make_model('X -> Y')
-#' data  <- simulate_data(model, n = 2)
+#' data  <- make_data(model, n = 2)
 #' model <- update_model(model, data)
 #' set_parameters(model, parameters = c(.25, .75, 1.25,.25, .25, .25))
 #' set_parameters(model, param_type = 'flat')
@@ -238,7 +233,7 @@ set_parameters <- function(model, parameters = NULL, param_type = NULL, warning 
 #'
 #' # get_parameters examples:
 #'
-#' get_parameters(make_model('X -> Y'))
+#' make_model('X -> Y') |> get_parameters()
 
 get_parameters <- function(model, param_type = NULL) {
 

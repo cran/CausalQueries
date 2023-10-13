@@ -350,3 +350,62 @@ strategy_statements <- function(data, strategies){
 }
 
 
+#' Warn about improper query specification and apply fixes
+#'
+#' @param query a string specifying a query
+#' @return fixed query as string
+#' @keywords internal
+
+check_query <- function(query) {
+
+  query <- gsub(" ", "", query)
+  query <- unlist(strsplit(query, ""))
+
+  q <-c()
+  do_warn <- 0
+  non_do_warn <- 0
+  nest_level <- 0
+
+  for(i in 1:length(query)) {
+    write <- TRUE
+
+    if(query[i] == "[") {
+      nest_level <- nest_level + 1
+    }
+
+    if(query[i] == "]") {
+      nest_level <- nest_level - 1
+    }
+
+    if(i > 1) {
+      if((nest_level != 0) && (query[i-1] == "=") && (query[i] == "=")) {
+        write <- FALSE
+        do_warn <- do_warn + 1
+      }
+
+      if((nest_level == 0) && (query[i-1] == "=") && !(query[i-2] %in% c(">","<","!","=")) && (query[i] != "=")) {
+        q <- c(q,"=")
+        non_do_warn <- non_do_warn + 1
+      }
+    }
+
+    if(write) {
+      q <- c(q, query[i])
+    }
+  }
+
+  query <- paste(q, collapse = "")
+
+  if(do_warn != 0) {
+    warning(paste("do operations should be specified with `=` not `==`. The query has been changed accordingly:", query, sep = " "))
+  }
+
+  if(non_do_warn != 0) {
+    warning(paste("statements to the effect that the realization of a node should equal some value should be specified with `==` not `=`. The query has been changed accordingly:", query, sep = " "))
+  }
+
+  return(query)
+}
+
+
+

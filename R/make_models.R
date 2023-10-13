@@ -20,11 +20,13 @@
 #'
 #' An object of class \code{"causal_model"} is a list containing at least the
 #' following components:
-#' \item{dag}{A \code{data.frame} with columns `parent`and `children` indicating how nodes relate to each other.}
-#' \item{node}{A named \code{list} with the nodes in the model}
 #' \item{statement}{A character vector of the statement that defines the model}
+#' \item{dag}{A \code{data.frame} with columns `parent`and `children` indicating how nodes relate to each other.}
+#' \item{nodes}{A named \code{list} with the nodes in the model}
+#' \item{parents_df}{A \code{data.frame} listing nodes, whether they are root nodes or not, and the number of parents they have}
 #' \item{nodal_types}{Optional: A named \code{list} with the nodal types in the model. List should be ordered according to the causal ordering of nodes. If NULL nodal types are generated. If FALSE, a parameters data frame is not generated.}
 #' \item{parameters_df}{A \code{data.frame} with descriptive information of the parameters in the model}
+#' \item{causal_types}{A \code{data.frame} listing causal types and the  nodal types that produce them}
 #' @examples
 #' make_model(statement = "X -> Y")
 #' modelXKY <- make_model("X -> K -> Y; X -> Y")
@@ -288,13 +290,6 @@ print.summary.causal_model <- function(x,  ...){
 		cat("\nNumber of types by node\n")
 
 		print(sapply(nodal_types , length, USE.NAMES = TRUE))
-
-  if(!is.null(x$P)){
-  	cat("\n ------------------------------------------------------------------------------------------\n")
-  	cat("\nParameter matrix: \n")
-  	print(x$P)
-  	}
-
 
 
   if(!is.null(x$causal_types)){

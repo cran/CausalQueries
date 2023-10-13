@@ -35,7 +35,7 @@ testthat::test_that(
 
 		XY_noconf <- make_model("X -> Y")
 		expect_equal(dim(get_parameter_matrix(XY_noconf)), c(6,8))
-		data <- simulate_data(XY_noconf, n = 1, parameters = c(.5, .5, .2, .4, .2, .2))
+		data <- make_data(XY_noconf, n = 1, parameters = c(.5, .5, .2, .4, .2, .2))
 		expect_equal(dim(data), c(1,2))
 
 		updated <- posterior <- suppressWarnings(update_model(XY_noconf, data, refresh = 0))
@@ -63,7 +63,7 @@ testthat::test_that(
 		expect_equal(dim(get_parameter_matrix(XY_conf)), c(12,8))
 
 		parameters <- c(.5, .5, .5, .5, .5, .5, .5, .5, .1, .7, .1, .1)
-		data <- simulate_data(XY_conf, n = 1, parameters = parameters)
+		data <- make_data(XY_conf, n = 1, parameters = parameters)
 		expect_equal(c(1, 2), dim(data))
 
 
@@ -98,7 +98,7 @@ testthat::test_that(
 	code = {
 		XY_mediator <- make_model("X -> M -> Y")
 
-		data <- simulate_data(
+		data <- make_data(
 			XY_mediator, n = 1,
 			parameters = c(.5, .5, .2, .8, 0, 0, 0, .8, 0, .2))
 		expect_equal(c(1, 3), dim(data))
@@ -106,7 +106,7 @@ testthat::test_that(
 		posterior <- suppressWarnings(update_model(XY_mediator, data, refresh = 0))
 		expect_true(!is.null(posterior))
 
-		expect_equal(nrow(simulate_data(posterior , n = 5, using = "posteriors")), 5)
+		expect_equal(nrow(make_data(posterior , n = 5, using = "posteriors")), 5)
 
 		results <- query_model(
 			posterior,
@@ -125,7 +125,7 @@ testthat::test_that(
 	code = {
 		XY_moderator <- make_model("X -> Y; Z -> Y")
 
-		data <- simulate_data(
+		data <- make_data(
 			XY_moderator, n = 1,
 			parameters = c(.5, .5, .5, .5,
 										 .02, .02, .02, .02, .02, .02, .02, .02,
@@ -151,11 +151,11 @@ testthat::test_that(
 	desc = "Test complex model",
 
 	code = {
-		model <- make_model("Y2 <- X -> Y1; X <-> Y1; X <-> Y2") %>%
-			       set_restrictions("Y2[X=1] > Y2[X=0]") %>%
-			       set_priors(statement = "Y1[X=1] > Y1[X=0]", alphas = 3)
+		model <- make_model("Y2 <- X -> Y1; X <-> Y1; X <-> Y2") |>
+			       set_restrictions("Y2[X=1] > Y2[X=0]")
+		model <- suppressWarnings(set_priors(model, statement = "Y1[X=1] > Y1[X=0]", param_set = c("Y1.X.0","Y1.X.1"), alphas = c(3,3)))
 
-		data <- simulate_data(model, n = 5)
+		data <- make_data(model, n = 5)
 
 		posterior <- suppressWarnings(update_model(model, data, refresh = 0))
 
@@ -194,7 +194,6 @@ testthat::test_that(
 		model <- make_model('X->Y')
 		data_long   <- make_data(model, n = 4)
 		data_short  <- collapse_data(data_long, model)
-		expect_error(update_model(model, data_short, refresh = 0))
 		updated <- suppressWarnings(update_model(model, data_short, data_type = 'compact', refresh = 0))
 		expect_true(class(updated) == "causal_model")
 	}

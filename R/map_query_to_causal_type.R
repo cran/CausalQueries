@@ -1,7 +1,8 @@
 
 #' Get values of types according to a query
 #'
-#'@inheritParams CausalQueries_internal_inherit_params
+#' @inheritParams CausalQueries_internal_inherit_params
+#' @param eval_var \code{data.frame} returned by a call to \code{\link{realise_outcome}}) for the supplied model. This is used for optimization when evaluating multiple queries on the same modle.
 #' @noRd
 #' @keywords internal
 #' @return A \code{list} containing the types and the evaluated expression.
@@ -28,13 +29,16 @@
 #' query <- '(Y[X = .]==1)'
 #' CausalQueries:::map_query_to_causal_type(model, query)
 #'}
-map_query_to_causal_type <- function(model, query, join_by = "|") {
+map_query_to_causal_type <- function(model, query, join_by = "|", eval_var = NULL) {
 
     if (length(query) > 1L)
         stop("Please specify a query of length 1L.")
 
     if (grepl(".", query, fixed = TRUE))
         query <- expand_wildcard(query, join_by = join_by)
+
+    # check if query has been properly specified
+    query <- check_query(query)
 
     # Global Variables
     i <- 0
@@ -54,7 +58,9 @@ map_query_to_causal_type <- function(model, query, join_by = "|") {
         continue = FALSE
     }
 
-    eval_var <- realise_outcomes(model)
+    if(is.null(eval_var)) {
+      eval_var <- realise_outcomes(model)
+    }
 
     list_names <- colnames(eval_var)
     k <- ncol(eval_var) + 1
@@ -140,7 +146,7 @@ map_query_to_causal_type <- function(model, query, join_by = "|") {
 
     class(return_list) <- "causal_types"
 
-    return_list
+    return(return_list)
 
 }
 
@@ -162,19 +168,21 @@ print.summary.causal_types <- function(x, ...) {
     output_type <- class(x$types)
     if (output_type == "logical") {
         types1 <- x$types[x$types]
+        n_cond_types <- length(types1)
         cat(paste("\nCausal types satisfying query's condition(s)  \n\n query = ", x$query, "\n\n"))
 
         if (length(types1)%%2 != 0) {
             types1[length(types1) + 1] <- ""
         }
         counter <- 2
+
         while (counter <= length(types1)) {
             cat(paste0(names(types1[(counter - 1):counter]), collapse = "  "))
             cat("\n")
             counter <- counter + 2
         }
 
-        cat(paste("\n\n Number of causal types that meet condition(s) = ", length(types1)))
+        cat(paste("\n\n Number of causal types that meet condition(s) = ", n_cond_types))
         cat(paste("\n Total number of causal types in model = ", length(x$types)))
     } else if (output_type == "numeric") {
         print(x$types)
