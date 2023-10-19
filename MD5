@@ -1,4 +1,4 @@
-077fbc824d5a35ebd23c876d4fc18894 *DESCRIPTION
+df1347f98fab0e42acff058fce3cf774 *DESCRIPTION
 3836375ac8aeb83d6fb43f68a3efb854 *LICENSE
 edb047e00d8c5b07a4fa10946a55f10b *NAMESPACE
 4101a7ce67f9177eaab40fa53c34f30a *NEWS.md
@@ -28,7 +28,7 @@ ac06c158108bb0480c7777eabd5e55f0 *R/misc.R
 6acfcc3d81c62cdf4a9f3d3b39155519 *R/plot_dag.R
 3d798db6ed2df11a8fb74a07663c017a *R/prep_stan_data.R
 8783b4cc161eb10ce69b31c944307a81 *R/query_helpers.R
-e8e8a87e6c43aab9880759e28da23f75 *R/query_model.R
+7e48a4cc61f311126576372a5d545db2 *R/query_model.R
 c1edf5debaa7db52dfc070f36db2988c *R/realise_outcomes.R
 0440d7be9d43aa701aed878e00bd2364 *R/set_confounds.R
 3567bd684ea8e30f40893adbf168d09e *R/set_parameter_matrix.R
