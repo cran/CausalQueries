@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>Getting Started</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Getting Started</h1>
+
+
+
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(<span class="sc">!</span><span class="fu">requireNamespace</span>(<span class="st">&quot;fabricatr&quot;</span>, <span class="at">quietly =</span> <span class="cn">TRUE</span>)) {</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">install.packages</span>(<span class="st">&quot;fabricatr&quot;</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(CausalQueries)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(fabricatr)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(knitr)</span></code></pre></div>
+<div id="make-a-model" class="section level1">
+<h1>Make a model</h1>
+<p><strong>Generating</strong>: To make a model you need to provide a
+DAG statement to <code>make_model</code>.<br />
+For instance</p>
+<ul>
+<li><code>&quot;X-&gt;Y&quot;</code></li>
+<li><code>&quot;X -&gt; M -&gt; Y &lt;- X&quot;</code> or<br />
+</li>
+<li><code>&quot;Z -&gt; X -&gt; Y &lt;-&gt; X&quot;</code>.</li>
+</ul>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># examples of models</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>xy_model <span class="ot">&lt;-</span> <span class="fu">make_model</span>(<span class="st">&quot;X -&gt; Y&quot;</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>iv_model <span class="ot">&lt;-</span> <span class="fu">make_model</span>(<span class="st">&quot;Z -&gt; X -&gt; Y &lt;-&gt; X&quot;</span>)</span></code></pre></div>
+<p><strong>Graphing</strong>: Once you have made a model you can inspect
+the DAG:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(iv_model)</span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p><strong>Inspecting</strong>: The model has a set of parameters and a
+default distribution over these.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>xy_model<span class="sc">$</span>parameters_df <span class="sc">|&gt;</span> <span class="fu">kable</span>()</span></code></pre></div>
+<table style="width:100%;">
+<colgroup>
+<col width="17%" />
+<col width="7%" />
+<col width="5%" />
+<col width="14%" />
+<col width="16%" />
+<col width="8%" />
+<col width="17%" />
+<col width="10%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">param_names</th>
+<th align="left">node</th>
+<th align="right">gen</th>
+<th align="left">param_set</th>
+<th align="left">nodal_type</th>
+<th align="left">given</th>
+<th align="right">param_value</th>
+<th align="right">priors</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">X.0</td>
+<td align="left">X</td>
+<td align="right">1</td>
+<td align="left">X</td>
+<td align="left">0</td>
+<td align="left"></td>
+<td align="right">0.50</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="left">X.1</td>
+<td align="left">X</td>
+<td align="right">1</td>
+<td align="left">X</td>
+<td align="left">1</td>
+<td align="left"></td>
+<td align="right">0.50</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="left">Y.00</td>
+<td align="left">Y</td>
+<td align="right">2</td>
+<td align="left">Y</td>
+<td align="left">00</td>
+<td align="left"></td>
+<td align="right">0.25</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="left">Y.10</td>
+<td align="left">Y</td>
+<td align="right">2</td>
+<td align="left">Y</td>
+<td align="left">10</td>
+<td align="left"></td>
+<td align="right">0.25</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="left">Y.01</td>
+<td align="left">Y</td>
+<td align="right">2</td>
+<td align="left">Y</td>
+<td align="left">01</td>
+<td align="left"></td>
+<td align="right">0.25</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="left">Y.11</td>
+<td align="left">Y</td>
+<td align="right">2</td>
+<td align="left">Y</td>
+<td align="left">11</td>
+<td align="left"></td>
+<td align="right">0.25</td>
+<td align="right">1</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Tailoring</strong>: These features can be edited using
+<code>set_restrictions</code>, <code>set_priors</code> and
+<code>set_parameters</code>. Here is an example of setting a
+monotonicity restriction (see <code>?set_restrictions</code> for
+more):</p>
+<p>Here is an example of setting a monotonicity restriction (see
+<code>?set_restrictions</code> for more):</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>iv_model <span class="ot">&lt;-</span> </span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  iv_model <span class="sc">|&gt;</span> <span class="fu">set_restrictions</span>(<span class="fu">decreasing</span>(<span class="st">&#39;Z&#39;</span>, <span class="st">&#39;X&#39;</span>))</span></code></pre></div>
+<p>Here is an example of setting priors (see <code>?set_priors</code>
+for more):</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>iv_model <span class="ot">&lt;-</span> </span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  iv_model <span class="sc">|&gt;</span> <span class="fu">set_priors</span>(<span class="at">distribution =</span> <span class="st">&quot;jeffreys&quot;</span>)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; No specific parameters to alter values for specified. Altering all parameters.</span></span></code></pre></div>
+<p><strong>Simulation</strong>: Data can be drawn from a model like
+this:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">make_data</span>(iv_model, <span class="at">n =</span> <span class="dv">4</span>) </span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>data <span class="sc">|&gt;</span> <span class="fu">kable</span>()</span></code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th align="right">Z</th>
+<th align="right">X</th>
+<th align="right">Y</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">1</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="model-updating" class="section level1">
+<h1>Model updating</h1>
+<p><strong>Updating</strong>: Update using <code>update_model</code>.
+You can pass all <code>rstan</code> arguments to
+<code>update_model</code>.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> fabricatr<span class="sc">::</span><span class="fu">fabricate</span>(<span class="at">N =</span> <span class="dv">100</span>, <span class="at">X =</span> <span class="fu">rbinom</span>(N, <span class="dv">1</span>, .<span class="dv">5</span>), <span class="at">Y =</span> <span class="fu">rbinom</span>(N, <span class="dv">1</span>, .<span class="dv">25</span> <span class="sc">+</span> X<span class="sc">*</span>.<span class="dv">5</span>))</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>xy_model <span class="ot">&lt;-</span> </span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  xy_model <span class="sc">|&gt;</span> </span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">update_model</span>(df, <span class="at">refresh =</span> <span class="dv">0</span>)</span></code></pre></div>
+<p><strong>Inspecting</strong>: You can access the posterior
+distribution on model parameters directly thus:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>xy_model<span class="sc">$</span>posterior_distribution <span class="sc">|&gt;</span> </span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>() <span class="sc">|&gt;</span> <span class="fu">kable</span>()</span></code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th align="right">X.0</th>
+<th align="right">X.1</th>
+<th align="right">Y.00</th>
+<th align="right">Y.10</th>
+<th align="right">Y.01</th>
+<th align="right">Y.11</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">0.4554032</td>
+<td align="right">0.5445968</td>
+<td align="right">0.2133428</td>
+<td align="right">0.0533077</td>
+<td align="right">0.6377230</td>
+<td align="right">0.0956265</td>
+</tr>
+<tr class="even">
+<td align="right">0.5088665</td>
+<td align="right">0.4911335</td>
+<td align="right">0.1799062</td>
+<td align="right">0.1110084</td>
+<td align="right">0.6423045</td>
+<td align="right">0.0667809</td>
+</tr>
+<tr class="odd">
+<td align="right">0.5843434</td>
+<td align="right">0.4156566</td>
+<td align="right">0.1351546</td>
+<td align="right">0.0203205</td>
+<td align="right">0.6599764</td>
+<td align="right">0.1845485</td>
+</tr>
+<tr class="even">
+<td align="right">0.5781881</td>
+<td align="right">0.4218119</td>
+<td align="right">0.2660972</td>
+<td align="right">0.1237393</td>
+<td align="right">0.5374835</td>
+<td align="right">0.0726800</td>
+</tr>
+<tr class="odd">
+<td align="right">0.5771600</td>
+<td align="right">0.4228400</td>
+<td align="right">0.1700487</td>
+<td align="right">0.0794219</td>
+<td align="right">0.6463647</td>
+<td align="right">0.1041647</td>
+</tr>
+<tr class="even">
+<td align="right">0.4761543</td>
+<td align="right">0.5238457</td>
+<td align="right">0.2182718</td>
+<td align="right">0.0959705</td>
+<td align="right">0.6140564</td>
+<td align="right">0.0717014</td>
+</tr>
+</tbody>
+</table>
+<p>where each row is a draw of parameters.</p>
+</div>
+<div id="query-model" class="section level1">
+<h1>Query model</h1>
+<p><strong>Querying</strong>: You ask arbitrary causal queries of the
+model.</p>
+<p>Examples of <em>unconditional</em> queries:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>xy_model <span class="sc">|&gt;</span> </span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">query_model</span>(<span class="st">&quot;Y[X=1] &gt; Y[X=0]&quot;</span>, <span class="at">using =</span> <span class="fu">c</span>(<span class="st">&quot;priors&quot;</span>, <span class="st">&quot;posteriors&quot;</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>()</span></code></pre></div>
+<table>
+<colgroup>
+<col width="19%" />
+<col width="7%" />
+<col width="13%" />
+<col width="13%" />
+<col width="11%" />
+<col width="11%" />
+<col width="11%" />
+<col width="11%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">query</th>
+<th align="left">given</th>
+<th align="left">using</th>
+<th align="left">case_level</th>
+<th align="right">mean</th>
+<th align="right">sd</th>
+<th align="right">cred.low</th>
+<th align="right">cred.high</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Y[X=1] &gt; Y[X=0]</td>
+<td align="left">-</td>
+<td align="left">priors</td>
+<td align="left">FALSE</td>
+<td align="right">0.2538130</td>
+<td align="right">0.1957065</td>
+<td align="right">0.0090679</td>
+<td align="right">0.7107930</td>
+</tr>
+<tr class="even">
+<td align="left">Y[X=1] &gt; Y[X=0]</td>
+<td align="left">-</td>
+<td align="left">posteriors</td>
+<td align="left">FALSE</td>
+<td align="right">0.6226124</td>
+<td align="right">0.0857011</td>
+<td align="right">0.4449809</td>
+<td align="right">0.7725678</td>
+</tr>
+</tbody>
+</table>
+<p>Examples of <em>conditional</em> queries:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>xy_model <span class="sc">|&gt;</span> </span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">query_model</span>(<span class="st">&quot;Y[X=1] &gt; Y[X=0]&quot;</span>, <span class="at">using =</span> <span class="fu">c</span>(<span class="st">&quot;priors&quot;</span>, <span class="st">&quot;posteriors&quot;</span>),</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>              <span class="at">given =</span> <span class="st">&quot;X==1 &amp; Y == 1&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>()</span></code></pre></div>
+<table>
+<colgroup>
+<col width="17%" />
+<col width="15%" />
+<col width="11%" />
+<col width="11%" />
+<col width="10%" />
+<col width="10%" />
+<col width="10%" />
+<col width="10%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">query</th>
+<th align="left">given</th>
+<th align="left">using</th>
+<th align="left">case_level</th>
+<th align="right">mean</th>
+<th align="right">sd</th>
+<th align="right">cred.low</th>
+<th align="right">cred.high</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Y[X=1] &gt; Y[X=0]</td>
+<td align="left">X==1 &amp; Y == 1</td>
+<td align="left">priors</td>
+<td align="left">FALSE</td>
+<td align="right">0.4959161</td>
+<td align="right">0.2907514</td>
+<td align="right">0.0218644</td>
+<td align="right">0.9752001</td>
+</tr>
+<tr class="even">
+<td align="left">Y[X=1] &gt; Y[X=0]</td>
+<td align="left">X==1 &amp; Y == 1</td>
+<td align="left">posteriors</td>
+<td align="left">FALSE</td>
+<td align="right">0.8710234</td>
+<td align="right">0.0837827</td>
+<td align="right">0.6865481</td>
+<td align="right">0.9921468</td>
+</tr>
+</tbody>
+</table>
+<p>Queries can even be conditional on counterfactual quantities. Here
+the probability of a positive effect given <em>some</em> effect:</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>xy_model <span class="sc">|&gt;</span> </span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">query_model</span>(<span class="st">&quot;Y[X=1] &gt; Y[X=0]&quot;</span>, <span class="at">using =</span> <span class="fu">c</span>(<span class="st">&quot;priors&quot;</span>, <span class="st">&quot;posteriors&quot;</span>),</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>              <span class="at">given =</span> <span class="st">&quot;Y[X=1] != Y[X=0]&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>()</span></code></pre></div>
+<table>
+<colgroup>
+<col width="16%" />
+<col width="17%" />
+<col width="11%" />
+<col width="11%" />
+<col width="10%" />
+<col width="10%" />
+<col width="10%" />
+<col width="10%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">query</th>
+<th align="left">given</th>
+<th align="left">using</th>
+<th align="left">case_level</th>
+<th align="right">mean</th>
+<th align="right">sd</th>
+<th align="right">cred.low</th>
+<th align="right">cred.high</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Y[X=1] &gt; Y[X=0]</td>
+<td align="left">Y[X=1] != Y[X=0]</td>
+<td align="left">priors</td>
+<td align="left">FALSE</td>
+<td align="right">0.4970856</td>
+<td align="right">0.2895303</td>
+<td align="right">0.0271811</td>
+<td align="right">0.9728868</td>
+</tr>
+<tr class="even">
+<td align="left">Y[X=1] &gt; Y[X=0]</td>
+<td align="left">Y[X=1] != Y[X=0]</td>
+<td align="left">posteriors</td>
+<td align="left">FALSE</td>
+<td align="right">0.8852670</td>
+<td align="right">0.0646467</td>
+<td align="right">0.7582853</td>
+<td align="right">0.9931525</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

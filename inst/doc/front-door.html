@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>Through the front door</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Through the front door</h1>
+
+
+
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(<span class="sc">!</span><span class="fu">requireNamespace</span>(<span class="st">&quot;fabricatr&quot;</span>, <span class="at">quietly =</span> <span class="cn">TRUE</span>)) {</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">install.packages</span>(<span class="st">&quot;fabricatr&quot;</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(CausalQueries)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(fabricatr)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(knitr)</span></code></pre></div>
+<p>Here is an example of a model in which <code>X</code> causes
+<code>M</code> and <code>M</code> causes <code>Y</code>. There is, in
+addition, unobservable confounding between <code>X</code> and
+<code>Y</code>. This is an example of a model in which you might use
+information on <code>M</code> to figure out whether <code>X</code>
+caused <code>Y</code> making use of the “front door criterion.”</p>
+<p>The DAG is defined using <code>dagitty</code> syntax like this:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">make_model</span>(<span class="st">&quot;X -&gt; M -&gt; Y &lt;-&gt; X&quot;</span>)</span></code></pre></div>
+<p>We might set priors thus:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">set_priors</span>(model, <span class="at">distribution =</span> <span class="st">&quot;jeffreys&quot;</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; No specific parameters to alter values for specified. Altering all parameters.</span></span></code></pre></div>
+<p>You can plot the dag thus.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(model)</span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p>Updating is done like this:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Lets imagine highly correlated data; here an effect of .9 at each step</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">fabricate</span>(<span class="at">N =</span> <span class="dv">5000</span>, </span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>                  <span class="at">X =</span> <span class="fu">rep</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">1</span>, N<span class="sc">/</span><span class="dv">2</span>), </span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>                  <span class="at">M =</span> <span class="fu">rbinom</span>(N, <span class="dv">1</span>, .<span class="dv">05</span> <span class="sc">+</span> .<span class="dv">9</span><span class="sc">*</span>X), </span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>                  <span class="at">Y =</span> <span class="fu">rbinom</span>(N, <span class="dv">1</span>, .<span class="dv">05</span> <span class="sc">+</span> .<span class="dv">9</span><span class="sc">*</span>M))</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Updating</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> model <span class="sc">|&gt;</span> <span class="fu">update_model</span>(data, <span class="at">refresh =</span> <span class="dv">0</span>)</span></code></pre></div>
+<p>Finally you can calculate an estimand of interest like this:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">query_model</span>(</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">model =</span> model, </span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">using =</span> <span class="fu">c</span>(<span class="st">&quot;priors&quot;</span>, <span class="st">&quot;posteriors&quot;</span>),</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">query =</span> <span class="st">&quot;Y[X=1] - Y[X=0]&quot;</span>,</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">|&gt;</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">2</span>)</span></code></pre></div>
+<table>
+<colgroup>
+<col width="21%" />
+<col width="8%" />
+<col width="14%" />
+<col width="14%" />
+<col width="8%" />
+<col width="6%" />
+<col width="12%" />
+<col width="13%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">query</th>
+<th align="left">given</th>
+<th align="left">using</th>
+<th align="left">case_level</th>
+<th align="right">mean</th>
+<th align="right">sd</th>
+<th align="right">cred.low</th>
+<th align="right">cred.high</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Y[X=1] - Y[X=0]</td>
+<td align="left">-</td>
+<td align="left">priors</td>
+<td align="left">FALSE</td>
+<td align="right">-0.01</td>
+<td align="right">0.14</td>
+<td align="right">-0.35</td>
+<td align="right">0.32</td>
+</tr>
+<tr class="even">
+<td align="left">Y[X=1] - Y[X=0]</td>
+<td align="left">-</td>
+<td align="left">posteriors</td>
+<td align="left">FALSE</td>
+<td align="right">0.80</td>
+<td align="right">0.01</td>
+<td align="right">0.77</td>
+<td align="right">0.82</td>
+</tr>
+</tbody>
+</table>
+<p>This uses the posterior distribution and the model to assess the
+average treatment effect estimand.</p>
+<p>Let’s compare now with the case where you do not have data on
+<code>M</code>:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>model <span class="sc">|&gt;</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">update_model</span>(data <span class="sc">|&gt;</span> dplyr<span class="sc">::</span><span class="fu">select</span>(X, Y), <span class="at">refresh =</span> <span class="dv">0</span>) <span class="sc">|&gt;</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">query_model</span>(</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">using =</span> <span class="fu">c</span>(<span class="st">&quot;priors&quot;</span>, <span class="st">&quot;posteriors&quot;</span>),</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">query =</span> <span class="st">&quot;Y[X=1] - Y[X=0]&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">2</span>)</span></code></pre></div>
+<table>
+<colgroup>
+<col width="21%" />
+<col width="8%" />
+<col width="15%" />
+<col width="15%" />
+<col width="6%" />
+<col width="6%" />
+<col width="12%" />
+<col width="13%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">query</th>
+<th align="left">given</th>
+<th align="left">using</th>
+<th align="left">case_level</th>
+<th align="right">mean</th>
+<th align="right">sd</th>
+<th align="right">cred.low</th>
+<th align="right">cred.high</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Y[X=1] - Y[X=0]</td>
+<td align="left">-</td>
+<td align="left">priors</td>
+<td align="left">FALSE</td>
+<td align="right">0.0</td>
+<td align="right">0.15</td>
+<td align="right">-0.33</td>
+<td align="right">0.32</td>
+</tr>
+<tr class="even">
+<td align="left">Y[X=1] - Y[X=0]</td>
+<td align="left">-</td>
+<td align="left">posteriors</td>
+<td align="left">FALSE</td>
+<td align="right">0.1</td>
+<td align="right">0.16</td>
+<td align="right">-0.03</td>
+<td align="right">0.57</td>
+</tr>
+</tbody>
+</table>
+<p>Here we update much less and are (relatively) much less certain in
+our beliefs precisely because we are aware of the confounded related
+between <code>X</code> and <code>Y</code>, without having the data on
+<code>M</code> we could use to address it.</p>
+<div id="try-it" class="section level1">
+<h1>Try it</h1>
+<p>Say <code>X</code>, <code>M</code>, and <code>Y</code> were perfectly
+correlated. Would the average treatment effect be identified?</p>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
