@@ -102,14 +102,14 @@ static const std::vector<string> locations_array__ = {" (found before start of p
                                                       " (in 'simplexes', line 67, column 0 to line 69, column 2)",
                                                       " (in 'simplexes', line 71, column 1 to column 14)",
                                                       " (in 'simplexes', line 73, column 1 to column 16)",
-                                                      " (in 'simplexes', line 93, column 0 to column 30)",
-                                                      " (in 'simplexes', line 96, column 3 to column 56)",
+                                                      " (in 'simplexes', line 93, column 0 to column 22)",
+                                                      " (in 'simplexes', line 96, column 3 to column 48)",
                                                       " (in 'simplexes', line 95, column 21 to line 97, column 1)",
                                                       " (in 'simplexes', line 95, column 0 to line 97, column 1)",
-                                                      " (in 'simplexes', line 94, column 26 to line 97, column 2)",
+                                                      " (in 'simplexes', line 94, column 32 to line 97, column 2)",
                                                       " (in 'simplexes', line 94, column 0 to line 97, column 2)",
-                                                      " (in 'simplexes', line 99, column 4 to column 43)",
-                                                      " (in 'simplexes', line 98, column 27 to line 100, column 2)",
+                                                      " (in 'simplexes', line 99, column 4 to column 35)",
+                                                      " (in 'simplexes', line 98, column 33 to line 100, column 2)",
                                                       " (in 'simplexes', line 98, column 1 to line 100, column 2)",
                                                       " (in 'simplexes', line 78, column 2 to line 79, column 43)",
                                                       " (in 'simplexes', line 80, column 2 to column 50)",
@@ -128,7 +128,7 @@ static const std::vector<string> locations_array__ = {" (found before start of p
                                                       " (in 'simplexes', line 15, column 0 to column 20)",
                                                       " (in 'simplexes', line 16, column 0 to column 22)",
                                                       " (in 'simplexes', line 17, column 0 to column 26)",
-                                                      " (in 'simplexes', line 18, column 0 to column 39)",
+                                                      " (in 'simplexes', line 18, column 0 to column 45)",
                                                       " (in 'simplexes', line 19, column 16 to column 24)",
                                                       " (in 'simplexes', line 19, column 0 to column 40)",
                                                       " (in 'simplexes', line 20, column 6 to column 18)",
@@ -222,7 +222,7 @@ private:
   int n_data;
   int n_events;
   int n_strategies;
-  int keep_transformed;
+  int keep_type_distribution;
   Eigen::Matrix<double, -1, 1> lambdas_prior;
   std::vector<int> l_starts;
   std::vector<int> l_ends;
@@ -361,19 +361,21 @@ public:
       current_statement__ = 53;
       check_greater_or_equal(function__, "n_strategies", n_strategies, 1);
       current_statement__ = 54;
-      context__.validate_dims("data initialization","keep_transformed","int",
-          context__.to_vec());
-      keep_transformed = std::numeric_limits<int>::min();
+      context__.validate_dims("data initialization","keep_type_distribution",
+          "int",context__.to_vec());
+      keep_type_distribution = std::numeric_limits<int>::min();
       
       current_statement__ = 54;
-      keep_transformed = context__.vals_i("keep_transformed")[(1 - 1)];
+      keep_type_distribution = context__.vals_i("keep_type_distribution")[
+          (1 - 1)];
       current_statement__ = 54;
       current_statement__ = 54;
-      check_greater_or_equal(function__, "keep_transformed",
-                             keep_transformed, 0);
+      check_greater_or_equal(function__, "keep_type_distribution",
+                             keep_type_distribution, 0);
       current_statement__ = 54;
       current_statement__ = 54;
-      check_less_or_equal(function__, "keep_transformed", keep_transformed, 1);
+      check_less_or_equal(function__, "keep_type_distribution",
+                          keep_type_distribution, 1);
       current_statement__ = 55;
       validate_non_negative_index("lambdas_prior", "n_params", n_params);
       current_statement__ = 56;
@@ -685,7 +687,7 @@ public:
       current_statement__ = 92;
       validate_non_negative_index("w_full", "n_events", n_events);
       current_statement__ = 93;
-      validate_non_negative_index("prob_of_types", "n_types", n_types);
+      validate_non_negative_index("types", "n_types", n_types);
     } catch (const std::exception& e) {
       stan::lang::rethrow_located(e, locations_array__[current_statement__]);
       // Next line prevents compiler griping about no return
@@ -1149,16 +1151,16 @@ public:
       if (logical_negation(emit_generated_quantities__)) {
         return ;
       } 
-      Eigen::Matrix<double, -1, 1> prob_of_types;
-      prob_of_types = Eigen::Matrix<double, -1, 1>(n_types);
-      stan::math::fill(prob_of_types, std::numeric_limits<double>::quiet_NaN());
+      Eigen::Matrix<double, -1, 1> types;
+      types = Eigen::Matrix<double, -1, 1>(n_types);
+      stan::math::fill(types, std::numeric_limits<double>::quiet_NaN());
       
       current_statement__ = 33;
-      if (logical_eq(keep_transformed, 1)) {
+      if (logical_eq(keep_type_distribution, 1)) {
         current_statement__ = 31;
         for (int i = 1; i <= n_types; ++i) {
           current_statement__ = 29;
-          assign(prob_of_types, cons_list(index_uni(i), nil_index_list()),
+          assign(types, cons_list(index_uni(i), nil_index_list()),
             prod(
               subtract(
                 add(
@@ -1170,16 +1172,16 @@ public:
                 rvalue(P,
                   cons_list(index_omni(),
                     cons_list(index_uni(i), nil_index_list())), "P"))),
-            "assigning variable prob_of_types");}
+            "assigning variable types");}
       } 
       current_statement__ = 36;
-      if (logical_eq(keep_transformed, 0)) {
+      if (logical_eq(keep_type_distribution, 0)) {
         current_statement__ = 34;
-        assign(prob_of_types, nil_index_list(), rep_vector(1, n_types),
-          "assigning variable prob_of_types");
+        assign(types, nil_index_list(), rep_vector(1, n_types),
+          "assigning variable types");
       } 
       for (int sym1__ = 1; sym1__ <= n_types; ++sym1__) {
-        vars__.emplace_back(prob_of_types[(sym1__ - 1)]);}
+        vars__.emplace_back(types[(sym1__ - 1)]);}
     } catch (const std::exception& e) {
       stan::lang::rethrow_located(e, locations_array__[current_statement__]);
       // Next line prevents compiler griping about no return
@@ -1249,7 +1251,7 @@ public:
     names__.emplace_back("w_0");
     names__.emplace_back("w");
     names__.emplace_back("w_full");
-    names__.emplace_back("prob_of_types");
+    names__.emplace_back("types");
     } // get_param_names() 
     
   inline void get_dims(std::vector<std::vector<size_t>>& dimss__) const {
@@ -1328,7 +1330,7 @@ public:
     if (emit_generated_quantities__) {
       for (int sym1__ = 1; sym1__ <= n_types; ++sym1__) {
         {
-          param_names__.emplace_back(std::string() + "prob_of_types" + '.' + std::to_string(sym1__));
+          param_names__.emplace_back(std::string() + "types" + '.' + std::to_string(sym1__));
         }}
     }
     
@@ -1384,7 +1386,7 @@ public:
     if (emit_generated_quantities__) {
       for (int sym1__ = 1; sym1__ <= n_types; ++sym1__) {
         {
-          param_names__.emplace_back(std::string() + "prob_of_types" + '.' + std::to_string(sym1__));
+          param_names__.emplace_back(std::string() + "types" + '.' + std::to_string(sym1__));
         }}
     }
     
@@ -1392,13 +1394,13 @@ public:
     
   inline std::string get_constrained_sizedtypes() const {
     stringstream s__;
-    s__ << "[{\"name\":\"gamma\",\"type\":{\"name\":\"vector\",\"length\":" << gamma_1dim__ << "},\"block\":\"parameters\"},{\"name\":\"lambdas\",\"type\":{\"name\":\"vector\",\"length\":" << n_params << "},\"block\":\"transformed_parameters\"},{\"name\":\"sum_gammas\",\"type\":{\"name\":\"vector\",\"length\":" << n_param_sets << "},\"block\":\"transformed_parameters\"},{\"name\":\"parlam\",\"type\":{\"name\":\"matrix\",\"rows\":" << n_params << ",\"cols\":" << n_paths << "},\"block\":\"transformed_parameters\"},{\"name\":\"parlam2\",\"type\":{\"name\":\"matrix\",\"rows\":" << n_nodes << ",\"cols\":" << n_paths << "},\"block\":\"transformed_parameters\"},{\"name\":\"w_0\",\"type\":{\"name\":\"vector\",\"length\":" << n_paths << "},\"block\":\"transformed_parameters\"},{\"name\":\"w\",\"type\":{\"name\":\"vector\",\"length\":" << n_data << "},\"block\":\"transformed_parameters\"},{\"name\":\"w_full\",\"type\":{\"name\":\"vector\",\"length\":" << n_events << "},\"block\":\"transformed_parameters\"},{\"name\":\"prob_of_types\",\"type\":{\"name\":\"vector\",\"length\":" << n_types << "},\"block\":\"generated_quantities\"}]";
+    s__ << "[{\"name\":\"gamma\",\"type\":{\"name\":\"vector\",\"length\":" << gamma_1dim__ << "},\"block\":\"parameters\"},{\"name\":\"lambdas\",\"type\":{\"name\":\"vector\",\"length\":" << n_params << "},\"block\":\"transformed_parameters\"},{\"name\":\"sum_gammas\",\"type\":{\"name\":\"vector\",\"length\":" << n_param_sets << "},\"block\":\"transformed_parameters\"},{\"name\":\"parlam\",\"type\":{\"name\":\"matrix\",\"rows\":" << n_params << ",\"cols\":" << n_paths << "},\"block\":\"transformed_parameters\"},{\"name\":\"parlam2\",\"type\":{\"name\":\"matrix\",\"rows\":" << n_nodes << ",\"cols\":" << n_paths << "},\"block\":\"transformed_parameters\"},{\"name\":\"w_0\",\"type\":{\"name\":\"vector\",\"length\":" << n_paths << "},\"block\":\"transformed_parameters\"},{\"name\":\"w\",\"type\":{\"name\":\"vector\",\"length\":" << n_data << "},\"block\":\"transformed_parameters\"},{\"name\":\"w_full\",\"type\":{\"name\":\"vector\",\"length\":" << n_events << "},\"block\":\"transformed_parameters\"},{\"name\":\"types\",\"type\":{\"name\":\"vector\",\"length\":" << n_types << "},\"block\":\"generated_quantities\"}]";
     return s__.str();
     } // get_constrained_sizedtypes() 
     
   inline std::string get_unconstrained_sizedtypes() const {
     stringstream s__;
-    s__ << "[{\"name\":\"gamma\",\"type\":{\"name\":\"vector\",\"length\":" << gamma_1dim__ << "},\"block\":\"parameters\"},{\"name\":\"lambdas\",\"type\":{\"name\":\"vector\",\"length\":" << n_params << "},\"block\":\"transformed_parameters\"},{\"name\":\"sum_gammas\",\"type\":{\"name\":\"vector\",\"length\":" << n_param_sets << "},\"block\":\"transformed_parameters\"},{\"name\":\"parlam\",\"type\":{\"name\":\"matrix\",\"rows\":" << n_params << ",\"cols\":" << n_paths << "},\"block\":\"transformed_parameters\"},{\"name\":\"parlam2\",\"type\":{\"name\":\"matrix\",\"rows\":" << n_nodes << ",\"cols\":" << n_paths << "},\"block\":\"transformed_parameters\"},{\"name\":\"w_0\",\"type\":{\"name\":\"vector\",\"length\":" << n_paths << "},\"block\":\"transformed_parameters\"},{\"name\":\"w\",\"type\":{\"name\":\"vector\",\"length\":" << n_data << "},\"block\":\"transformed_parameters\"},{\"name\":\"w_full\",\"type\":{\"name\":\"vector\",\"length\":" << n_events << "},\"block\":\"transformed_parameters\"},{\"name\":\"prob_of_types\",\"type\":{\"name\":\"vector\",\"length\":" << n_types << "},\"block\":\"generated_quantities\"}]";
+    s__ << "[{\"name\":\"gamma\",\"type\":{\"name\":\"vector\",\"length\":" << gamma_1dim__ << "},\"block\":\"parameters\"},{\"name\":\"lambdas\",\"type\":{\"name\":\"vector\",\"length\":" << n_params << "},\"block\":\"transformed_parameters\"},{\"name\":\"sum_gammas\",\"type\":{\"name\":\"vector\",\"length\":" << n_param_sets << "},\"block\":\"transformed_parameters\"},{\"name\":\"parlam\",\"type\":{\"name\":\"matrix\",\"rows\":" << n_params << ",\"cols\":" << n_paths << "},\"block\":\"transformed_parameters\"},{\"name\":\"parlam2\",\"type\":{\"name\":\"matrix\",\"rows\":" << n_nodes << ",\"cols\":" << n_paths << "},\"block\":\"transformed_parameters\"},{\"name\":\"w_0\",\"type\":{\"name\":\"vector\",\"length\":" << n_paths << "},\"block\":\"transformed_parameters\"},{\"name\":\"w\",\"type\":{\"name\":\"vector\",\"length\":" << n_data << "},\"block\":\"transformed_parameters\"},{\"name\":\"w_full\",\"type\":{\"name\":\"vector\",\"length\":" << n_events << "},\"block\":\"transformed_parameters\"},{\"name\":\"types\",\"type\":{\"name\":\"vector\",\"length\":" << n_types << "},\"block\":\"generated_quantities\"}]";
     return s__.str();
     } // get_unconstrained_sizedtypes() 
     

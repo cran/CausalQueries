@@ -8,21 +8,10 @@
 #' @param collapse Logical. If `TRUE`, shows unique nodal types for each node.
 #'   If `FALSE`, shows for each node a matrix with nodal types as rows and
 #'   parent types as columns, if applicable. Defaults to `TRUE`.
+#' @keywords internal
 #' @importFrom rlang is_empty
-#' @export
 #' @return A named \code{list} of nodal types for each parent in a DAG
-#'
-#' @examples
-#' \donttest{
-#' model <- make_model('X -> K -> Y')
-#' get_nodal_types(model)
-#'
-#' model <- make_model('X -> K -> Y') %>%
-#'    set_restrictions(statement = 'K[X=1]>K[X=0]') %>%
-#'    set_confound(list(K = 'Y[K=1]>Y[K=0]'))
-#' get_nodal_types(model)
-#' }
-#'
+
 get_nodal_types <- function(model, collapse = TRUE) {
   # 1 Extract nodal types if these exist (and collapsed format sought)
   if (collapse & !is.null(model$nodal_types)) {
@@ -53,9 +42,9 @@ get_nodal_types <- function(model, collapse = TRUE) {
   }
 
   attr(nodal_types, "interpret") <- interpret_type(model)
+  class(nodal_types) <- c("nodal_types", "list")
 
   return(nodal_types)
-
 }
 
 #' uncollapse nodal types
@@ -63,12 +52,6 @@ get_nodal_types <- function(model, collapse = TRUE) {
 #' @param nodal_types A list of nodal types in collapsed form ('01', '11') etc..
 #' @return A \code{list} containing nodes with nodal types in data.frame form
 #' @keywords internal
-#' @examples
-#'
-#' model <- make_model('X -> K -> Y')
-#' (nodal_types <- get_nodal_types(model , collapse = TRUE))
-#' CausalQueries:::uncollapse_nodal_types(nodal_types)
-
 
 uncollapse_nodal_types <- function(nodal_types) {
   x <- nodal_types |>
@@ -94,6 +77,8 @@ uncollapse_nodal_types <- function(nodal_types) {
     colnames(x[[j]]) <- perm(rep(1, log(ncol(x[[j]]), 2))) %>%
       apply(1, paste, collapse = "")
   }
+
+  class(x) <- c("nodal_types", "list")
 
   return(x)
 }
@@ -137,6 +122,7 @@ make_nodal_types <- function(model,
   })
 
   names(nodal_types) <- nodes
+  class(nodal_types) <- c("nodal_types", "list")
 
  return(nodal_types)
 }
@@ -150,7 +136,7 @@ make_nodal_types <- function(model,
 #' @examples
 #'
 #' model <- make_model('X -> K -> Y')
-#' (nodal_types <- get_nodal_types(model , collapse = FALSE))
+#' (nodal_types <- grab(model, "nodal_types", collapse = FALSE))
 #' CausalQueries:::collapse_nodal_types(nodal_types )
 collapse_nodal_types <- function(nodal_types,
                                  include_node_names = FALSE) {
@@ -170,6 +156,8 @@ collapse_nodal_types <- function(nodal_types,
       paste0(labels)
     })
     names(types) <- names(nodal_types)
+    class(types) <- c("nodal_types", "list")
+
     return(types)
   }
 

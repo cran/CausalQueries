@@ -281,15 +281,18 @@ query_distribution <- function(model,
 #'   as specified in \code{stats}.
 #' @export
 #' @examples
-#' model <- make_model("X -> Y") %>% set_prior_distribution(n_draws = 10000)
-#'
+#' model <- make_model("X -> Y")
+#' query_model(model, "Y[X=1] - Y[X = 0]", using = "priors")
+#' query_model(model, "Y[X=1] > Y[X = 0]", using = "parameters")
+#' query_model(model, "Y[X=1] > Y[X = 0]", using = c("priors", "parameters"))
 #' \donttest{
 #'
 #' # `expand_grid= TRUE` requests the Cartesian product of arguments
 #'
 #' models <- list(
 #'  M1 = make_model("X -> Y"),
-#'  M2 = make_model("X -> Y") |> set_restrictions("Y[X=1] < Y[X=0]")
+#'  M2 = make_model("X -> Y") |>
+#'    set_restrictions("Y[X=1] < Y[X=0]")
 #'  )
 #'
 #'
@@ -514,6 +517,8 @@ query_model <- function(model,
   if (length(model) == 1) {
     estimands <- estimands[, colnames(estimands) != "model"]
   }
+
+  class(estimands) <- c("model_query", "data.frame")
 
   return(estimands)
 }
@@ -754,6 +759,7 @@ get_type_distributions <- function(jobs,
       }
       estimands[[i]] <- as.vector(unlist(estimand))
     }
+
     return(estimands)
   }
 

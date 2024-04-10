@@ -20,7 +20,7 @@
 
 prep_stan_data <- function(model,
                            data,
-                           keep_transformed = TRUE,
+                           keep_type_distribution = TRUE,
                            censored_types = NULL) {
     i <- NULL
     # check data is in correct compact form
@@ -103,12 +103,12 @@ prep_stan_data <- function(model,
         node_ends = as.array(n_ends),
         n_nodes = length(n_sets),
         lambdas_prior = get_priors(model),
-        n_data = all_data_types(model, possible_data = TRUE) |> nrow(),
+        n_data = get_all_data_types(model, possible_data = TRUE) |> nrow(),
         n_events = nrow(E),
         n_strategies = n_strategies,
         strategy_starts = as.array(w_starts),
         strategy_ends = as.array(w_ends),
-        keep_transformed = as.numeric(keep_transformed),
+        keep_type_distribution = as.numeric(keep_type_distribution),
         E = E,
         Y = as.array(data$count),
         P = P,

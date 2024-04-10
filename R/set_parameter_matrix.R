@@ -7,10 +7,6 @@
 #' @inheritParams CausalQueries_internal_inherit_params
 #' @return A \code{data.frame}, the parameter matrix, mapping from parameters
 #'   to causal types
-#' @export
-#' @examples
-#' model <- make_model('X -> Y')
-#' make_parameter_matrix(model)
 
 make_parameter_matrix <- function(model) {
 
@@ -36,12 +32,9 @@ make_parameter_matrix <- function(model) {
 #' In models without confounding parameters correspond to nodal types.
 #'
 #' @param model A model created by \code{make_model()}
+#' @keywords internal
 #' @return A \code{data.frame}, the parameter matrix, mapping from
 #'   parameters to causal types
-#' @export
-#' @examples
-#' model <- make_model('X -> Y')
-#' get_parameter_matrix(model)
 
 get_parameter_matrix <- function(model) {
   if (!is.null(model$P)) {
@@ -61,6 +54,7 @@ get_parameter_matrix <- function(model) {
 #'   list containing the elements comprising a model
 #'   (e.g. 'statement', 'nodal_types' and 'DAG') with the parameter matrix
 #'   attached to it.
+#'
 #' @export
 #'
 #' @examples
@@ -77,6 +71,7 @@ set_parameter_matrix <- function(model, P = NULL) {
 
   if(!is.null(P)) {
     model$P <- P
+    class(model$P) <- c("parameter_matrix", "data.frame")
   }
 
   return(model)
@@ -85,31 +80,18 @@ set_parameter_matrix <- function(model, P = NULL) {
 
 #' @export
 print.parameter_matrix <- function(x, ...) {
-    print(summary(x))
-    invisible(x)
+  cat(paste0("\nRows are parameters, grouped in parameter sets"))
+  cat(paste0("\n\nColumns are causal types"))
+  cat(paste0("\n\nCell entries indicate whether a parameter probability is",
+             "used\nin the calculation of causal type probability\n\n"))
+
+  param_set <- attr(x, "param_set")
+  class(x) <- "data.frame"
+  print(x)
+  cat("\n \n param_set  (P)\n ")
+  cat(paste0(param_set, collapse = "  "))
+  return(invisible(x))
 }
-
-
-#' @export
-summary.parameter_matrix <- function(object, ...) {
-    structure(object, class = c("summary.parameter_matrix", "data.frame"))
-
-}
-
-#' @export
-print.summary.parameter_matrix <- function(x, ...) {
-    cat(paste0("\nRows are parameters, grouped in parameter sets"))
-    cat(paste0("\n\nColumns are causal types"))
-    cat(paste0("\n\nCell entries indicate whether a parameter probability is",
-               "used\nin the calculation of causal type probability\n\n"))
-
-    param_set <- attr(x, "param_set")
-    class(x) <- "data.frame"
-    print(x)
-    cat("\n \n param_set  (P)\n ")
-    cat(paste0(param_set, collapse = "  "))
-}
-
 
 
 #' Names for causal types
@@ -121,7 +103,7 @@ print.summary.parameter_matrix <- function(x, ...) {
 #' @examples
 #' \donttest{
 #' model <- make_model('X -> Y')
-#' possible_types <- get_nodal_types(model)
+#' possible_types <- grab(model, "nodal_types")
 #' df <- data.frame(expand.grid(possible_types, stringsAsFactors = FALSE))
 #' CausalQueries:::causal_type_names(df)
 #' }

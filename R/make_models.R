@@ -36,6 +36,12 @@
 #'   of the parameters in the model}
 #' \item{causal_types}{A \code{data.frame} listing causal types and the
 #'   nodal types that produce them}
+#'
+#'
+#' @seealso \code{\link{summary.causal_model}} provides summary method for
+#'   output objects of class \code{causal_model}
+#'
+#'
 #' @examples
 #' make_model(statement = "X -> Y")
 #' modelXKY <- make_model("X -> K -> Y; X -> Y")
@@ -89,6 +95,8 @@
 make_model <- function(statement,
                        add_causal_types = TRUE,
                        nodal_types = NULL) {
+
+  parent <- NULL
 
   if (length(statement) != 1) {
     stop(
@@ -177,7 +185,13 @@ make_model <- function(statement,
       dag |>
         dplyr::filter(children == n) |>
         nrow()
-    }, numeric(1)))
+    }, numeric(1))) |>
+    dplyr::mutate(parent_nodes = sapply(node, function(n) {
+      dag |>
+        dplyr::filter(children == n) |>
+        dplyr::pull(parent) |>
+        paste(collapse = ", ")
+    }))
 
   # Model is a list
   model <-
@@ -287,72 +301,16 @@ make_model <- function(statement,
   attr(model, "nonroot_nodes") <- endog_node
   attr(model, "root_nodes")  <- exog_node
 
+
+  # assign classes
+  class(model$dag) <- c("dag", "data.frame")
+  class(model$statement) <- c("statement", "character")
+  class(model$nodes) <- c("nodes", "character")
+  class(model$parents_df) <- c("parents", "data.frame")
+  class(model$nodal_types) <- c("nodal_types", "list")
+
   return(model)
 
-}
-
-#' @export
-print.causal_model <- function(x, ...) {
-	print(summary(x))
-	invisible(x)
-}
-
-
-#' @export
-summary.causal_model <- function(object, ...) {
-	structure(object, class = c("summary.causal_model", "data.frame"))
-
-}
-
-#' @export
-print.summary.causal_model <- function(x,  ...) {
-  cat("\nStatement: \n")
-  print(x$statement)
-  cat("\nDAG: \n")
-  print(x$dag)
-  cat("\n ------------------------------------------------------------------\n")
-  cat("\nNodal types: \n")
-
-  nodal_types <- get_nodal_types(x)
-  nodes <- x$nodes
-
-  for (n in nodes) {
-    nt <- nodal_types[[n]]
-    interpret <- attr(nodal_types, "interpret")[[n]]
-    stop_at <- min(length(nt), 16)
-    cat(paste0("$", n, "\n"))
-
-    cat(paste0(nt[1:stop_at], collapse = "  "))
-
-    if (stop_at != length(nt)) {
-      cat(paste0(" ...", length(nt) - 16, " nodal types omitted"))
-    }
-    cat("\n\n")
-    print(interpret)
-    cat("\n")
-  }
-
-  cat("\nNumber of types by node\n")
-
-  print(vapply(nodal_types , length, numeric(1) ,USE.NAMES = TRUE))
-
-
-  if (!is.null(x$causal_types)) {
-    cat("\nNumber of unit types:")
-    cat(paste0("  ", nrow(get_causal_types(x)), "\n"))
-  }
-
-  if (!is.null(attr(x, "restrictions"))) {
-    restrictions <- attr(x, "restrictions")
-    cat("\n ----------------------------------------------------------------\n")
-    cat("\nRestrictions: \n")
-    for (node in x$nodes) {
-      cat(paste0(node,
-                 ": ",
-                 length(restrictions[[node]]),
-                 " restricted types \n"))
-    }
-  }
 }
 
 
@@ -368,9 +326,9 @@ make_parameters_df <- function(nodal_types){
   pdf <- data.frame(node = rep(names(nodal_types), lapply(nodal_types, length)),
                     nodal_type = nodal_types %>% unlist) |>
     dplyr::mutate(param_set = node,
-           given = "",
-           priors = 1,
-           param_names = paste0(node, ".", nodal_type)) |>
+                  given = "",
+                  priors = 1,
+                  param_names = paste0(node, ".", nodal_type)) |>
     dplyr::group_by(param_set) |>
     dplyr::mutate(param_value = 1/n(), gen =  cur_group_id()) |>
     dplyr::ungroup() |>
@@ -378,8 +336,8 @@ make_parameters_df <- function(nodal_types){
     dplyr::select(param_names, node, gen, param_set, nodal_type,
                   given, param_value, priors)
 
+  class(pdf) <- c("parameters_df", "data.frame")
   return(pdf)
 }
-
 
 

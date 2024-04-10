@@ -364,10 +364,10 @@ For instance</p>
 <p><strong>Graphing</strong>: Once you have made a model you can inspect
 the DAG:</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(iv_model)</span></code></pre></div>
-<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASAAAAEgCAMAAAAjXV6yAAACqVBMVEUAAAABAQECAgIDAwMEBAQFBQUGBgYHBwcICAgJCQkKCgoLCwsMDAwNDQ0ODg4PDw8QEBARERESEhITExMUFBQWFhYXFxcYGBgZGRkaGhobGxsdHR0eHh4fHx8gICAhISEjIyMkJCQlJSUmJiYnJycoKCgpKSkqKiorKyssLCwtLS0uLi4vLy8wMDAyMjIzMzM0NDQ1NTU2NjY3Nzc4ODg5OTk6Ojo7Ozs8PDw9PT0+Pj4/Pz9AQEBDQ0NERERFRUVGRkZHR0dISEhJSUlKSkpNTU1OTk5PT09QUFBSUlJTU1NUVFRVVVVWVlZXV1dYWFhZWVlaWlpbW1tcXFxdXV1eXl5hYWFiYmJjY2NlZWVmZmZoaGhpaWlqampra2ttbW1wcHBxcXFycnJzc3N0dHR1dXV2dnZ3d3d5eXl6enp7e3t9fX1+fn5/f3+AgICBgYGCgoKDg4OEhISFhYWIiIiJiYmKioqLi4uNjY2Ojo6Pj4+QkJCRkZGSkpKTk5OVlZWWlpaXl5eZmZmampqbm5ucnJydnZ2enp6goKChoaGioqKjo6OkpKSlpaWmpqanp6eoqKipqamqqqqrq6usrKytra2urq6vr6+wsLCysrK0tLS1tbW2tra3t7e4uLi6urq7u7u8vLy9vb2+vr6/v7/AwMDBwcHCwsLExMTFxcXGxsbHx8fIyMjKysrLy8vMzMzNzc3Ozs7Pz8/Q0NDR0dHS0tLT09PU1NTV1dXW1tbX19fY2NjZ2dna2trb29vc3Nzd3d3e3t7f39/g4ODh4eHi4uLj4+Pk5OTl5eXm5ubn5+fo6Ojp6enq6urr6+vs7Ozt7e3u7u7v7+/w8PDx8fHy8vLz8/P09PT19fX29vb39/f4+Pj5+fn6+vr7+/v8/Pz9/f3+/v7///+ULO/sAAAACXBIWXMAAA7DAAAOwwHHb6hkAAALHklEQVR4nO2d+2MU1RXHz+7mnTSYlARNTNMUYiwNREsUrYC2CqVCoWiRFtIGWlGotamFStpiwUjxhS2CFhClplikRSqlSVEKWkDAAE1DgERCyOP+Jc3u5rk7M2ced+beO3M+P5Dszt053/kws7tzZ+4NMMIQEB1AdkgQAglCIEEIJAiBBCGQIAQShECCEEgQAglCIEEIJAiBBCGQIAQShECCEEgQAglCIEEIuoJACy+TSYLONmvqCaQi7S3W9RM8Q1obbKAneIY0ttfYT9AMJW8u5idghpK2FvcTLEO2BAXJUOK2mvITJEMJm2rSDwkiQ0OM3VLTfkgQGRpkzIZa8EOCyFAcEoRgLKiu9yvRH1X9NSQo9iCR9ON/if5491CYBMUeJDGLLQSY3z+NDrH4g2ReOZOdcXKTxgISFKewfc3qts+ToMEHGiy71rFU6/mgGEIFhQ83a7xDB8aPie9B23cEeQciQRgkCIEEIdC5GAJ1dyBQhxkCCUKgPmkEuqqBQBcOEewJEhJVDHRtHsHO7S9B8mPnBqpA+bFxC16w/GjfxEl+RrB6l6vH8cSjt8WYn5crf7TnijcRxaK/SxjvPksGHqbctmJnt/sRxWJ4zBgcXI2Dz/7GzXAyYPdNpTs35qf0U65pJMT2u+6DUT8F/+GZRUpsC3o+KijvEM8sUmJb0Lkw5K1LG7efZxgZsf/F5o6cA2x3ZnYjxzAyYl/Q+RMD/7yTk7GLXxgZMSnoStWT2gsO5KX+gV8aCTEpaBPANu0lhwsim/nFkQ+Tgu4FyHhPe9HRotB6fnmkw5yglsjAZ/qEU9oLT5TCGo6JJMOcoF/FvjZXXNJeerYcVnGMJBfmBFXFT7zm6yy+UAm1/fwySYUpQf+O+8laptfgYjU80ssvlEyYEvS3lJLZq24o6NJv0TEDFlznlUkqzH9R/Am8arD06gMw20CgupgXdCa12mhx9zyY2ek4jnxYONX4LuwzWty7GO5sdxpHPiwIag7NMlzeVwNTWx3GkQ8rJ6vfMt6FWP9KqPBdD6MVQUci1ci3nZ9D2UknaSTEUnfHEvg90qI+VHzMQRoJsSSo5XNF2LWwhnBhs4M48mGtw6wearEmW1LyD9pOIyHWBPVUhY3fpwfYkZ6LtlEIi12uTemlOqf0I+zJytpjN458WO2TXgcL0Db7ctN32EsjIVYF9X0DnkEbHcxP2WIvjnxYvqrRWpK6F23UPCHcYCeNhFi/7POP7PyjaKNjxaF6O3Hkw8Z1sdfDXziLNjpVBnU24siHnQuHG6DiAtqopQJW+qEb1taV1adgMm6odSrU9NlZu1zYu/T8Uyg/gzZqvxMWq99RbfPa/Bq4+UO0UedMeFD5W/Ts3rzwbCTvz2ijrtlw/1WbBWTB9t0dO7NTN6KNri+AGYrfC2v/9pdDxbAEvY7RuwSqL9ouIQMO7gw/fw9MQXvH+muhEv/Ekxgnt873PB7K2YS2Wg3l+PdKeXE2tmDPBJhzDmu0BkoVvhnW4eCL/86F/JewRs+EivCzN1lxPDrlpXy472OkzeZIwWGndUThfPjOuQWQWYd8nG1NzTvguJAYeIxvevOLUPqacZNdGTl4L5KUcBkA1lWXBTPeN2zSmJ25m0cpz+E0Qu70olBokeFn1f5xadv51PIWbkMID94DaT8wujJ/aHzkBV7FPITjGMvdUyBzucG3oiM3hRPP3hQY7ckzVt/WWwYU6e9FH5cUXR5dWokRsXwz9W65BdKX6X4tOj2qD0mVQcO8E/W9WgmRhfgwMh0/8inin6f/jbsAZr1l2GGvr0c6Q67E+evcMFQ8p9+XaOhHMkMupTlekwXjV52O/b56ecLehPiRy5BrYdrWFkPKvHcGztVSEsa6oH6kMuRilp5tXwO4dcMvAMI7R1c0g3uprOJulKal2RCdSzinaaSgOVyNZQW3k1x6NLa9xcP90iQogdr4Bn958I3apB95DLkdpHt8fHsLrg3WI0FjaUlLrZj/5LYPBsdKmfYjjSHXc/xvzDAyEoRUs4KnyXQhQQiiBU3qWhv9sfHiTSSIae5Bj/ZMAZje/xDtQbFqyYQP/D2S9uEfpT3GPE2h+VZT3rX8Z60FJChWTJPHOrvnaS7wMpouEggq7DmfRoLixTTZerz9KRIUL6bF/P67vtdzGwmKFdOgoHUDwN4P0klQrFoyr5/NBSi7ulZSP8IFfYfNif54rLeaBDE6F8OrkSCsnGp+SBAGCULwOodqfjwXZNqQ17n0kFWQ17F08T6JWn4ECKK7O9CSJAirqZAfIYIwRUIi6SEojSp6hAnSNzTUoO+9DkHRxiLuPwzZfV6D8Fd/vKtNWLwhRO7RhkfXP2PPhCejAz5dRvQhr//WUxJ//hEBoUYjWpA+P4z5qRb9TiSvoDejfnLwSWZcRl5BXdkAN4if2EJeQWwOfOnT5VDRIjaFxIL+NPMTxlaJnthCYkFxRE9sIb2g6MQW+GRX7iG/IMETWyggSOzEFioIYm9kZr8tqrYSgtjb4ia2UEOQwIktFBEkbmILVQSxIzeGN4ioq4wg9lFJ6GkBZdURxE5PhMe9r6qQIHZuMqzwfAZmlQSxttthaZ/HNZUSxC7fDYt6vC2pliD22dfhm9c8raiYIHZtLtz3mZcFVRPEeh6Cuy/jzbihnCDW93243cPrieoJYv0rYDI6wy43FBTE2BMw8bRXtZQUxH4ZKvnIo1JqCmIbwzce8aaSooLYi5HxxpPH8kJVQWx72rj9XtRRVhDbnZnd6EEZdQWxvTkZu9yvorAgdiAvdavrRVQWxA4XRDa7XUNpQexoUWi9yyXUFsROlCbMYskdxQWxs+WwytUCqgtiFyqh1s2OauUFsfY74GEXu2HVF8SuzIAF1/FmNvGBIHb1AZiN/qUzu/hBEOueBzM7XVq3LwSx3sUwHf0r5vbwhyDWVwNTW11Zs08ERbth3blf2DeCWB2UnXJhtf4RxOpDxejfpLSOjwSxhnBhE97KIn4SxLak5B/kvU5fCWI70nP3cV6lvwSxvTlZb/Fdo88EsX256Tu4rtBvgtjB/JRXeK7Pd4JYU2G4gePq/CeIHSsO1fNbmw8FsZNlUMdtZX4UxFpuhZW8umF9KYi1ToUaTvcL+1MQuzQdFvdyWZNPBbHOmTCvm8eK/CqIdc2G+/X/yqJ5fCuIXV8IM644X41/BbHeJTDN+cQWPhbE+muh8gLezBg/C+IysYW/BUUntjjhbA0+F8TWh4qOOlqB3wU5ntjC94KcTmzhf0FsV0bOXvuvDoAg1uhkYosgCHI0sUUgBLH3x0detPnSYAiKTmyx0d4rAyLI/sQWQRHEPpkITyQ8ZWqW5sAIYucmZ40epWh2JuvgCGJt7478bn6y7wAJGoXudN/JOoIoSF+PhqEACjL0k2QoeIIQP4mGAicI9ZNgKGiCTPgZa4gEIYYCJsicn+AKMulntCESRIJGMO1nlCESRIJGsCBo2EuQBFnxQ4JiVA4uWUeCoiRbyJoW5dfs2yQois7BNKnjOTrEYmj7yWxuziRBMbQF/a5jktbTwy8SmdhbtP08zBZpPj/8KpGRvUXTQ3lng7a44VeJjOwxGhoy/9WUQYKG0NDw/JWJ2n5IUIxF7OmqKDeToCjJFp4dXPJbEhRF52CiQ2wIEoRBghBs+AmWIAuGRl4iMK73WPcTMEGmDY16hbiwIrDsJ2iC6No8CgnCsOYngIJQQwmtxYQUihU/gRRkZCi5rYB84jHvJ6CCdBRpNvQ6mWqQIAQShECCEEgQAglCIEEIJAiBBCGQIAQShECCEP4PKDcfJDjHkSgAAAAASUVORK5CYII=" /><!-- --></p>
 <p><strong>Inspecting</strong>: The model has a set of parameters and a
 default distribution over these.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>xy_model<span class="sc">$</span>parameters_df <span class="sc">|&gt;</span> <span class="fu">kable</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>xy_model <span class="sc">|&gt;</span> <span class="fu">grab</span>(<span class="st">&quot;parameters_df&quot;</span>) <span class="sc">|&gt;</span> <span class="fu">kable</span>()</span></code></pre></div>
 <table style="width:100%;">
 <colgroup>
 <col width="17%" />
@@ -500,7 +500,7 @@ this:</p>
 <tr class="even">
 <td align="right">1</td>
 <td align="right">1</td>
-<td align="right">1</td>
+<td align="right">0</td>
 </tr>
 </tbody>
 </table>
@@ -518,7 +518,7 @@ You can pass all <code>rstan</code> arguments to
 <p><strong>Inspecting</strong>: You can access the posterior
 distribution on model parameters directly thus:</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>xy_model<span class="sc">$</span>posterior_distribution <span class="sc">|&gt;</span> </span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>xy_model <span class="sc">|&gt;</span> <span class="fu">grab</span>(<span class="st">&quot;posterior_distribution&quot;</span>) <span class="sc">|&gt;</span> </span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>() <span class="sc">|&gt;</span> <span class="fu">kable</span>()</span></code></pre></div>
 <table>
 <thead>
@@ -533,52 +533,52 @@ distribution on model parameters directly thus:</p>
 </thead>
 <tbody>
 <tr class="odd">
-<td align="right">0.4554032</td>
-<td align="right">0.5445968</td>
-<td align="right">0.2133428</td>
-<td align="right">0.0533077</td>
-<td align="right">0.6377230</td>
-<td align="right">0.0956265</td>
+<td align="right">0.4466199</td>
+<td align="right">0.5533801</td>
+<td align="right">0.1636397</td>
+<td align="right">0.1492105</td>
+<td align="right">0.6489364</td>
+<td align="right">0.0382134</td>
 </tr>
 <tr class="even">
-<td align="right">0.5088665</td>
-<td align="right">0.4911335</td>
-<td align="right">0.1799062</td>
-<td align="right">0.1110084</td>
-<td align="right">0.6423045</td>
-<td align="right">0.0667809</td>
+<td align="right">0.4789333</td>
+<td align="right">0.5210667</td>
+<td align="right">0.1054836</td>
+<td align="right">0.1500004</td>
+<td align="right">0.6119007</td>
+<td align="right">0.1326153</td>
 </tr>
 <tr class="odd">
-<td align="right">0.5843434</td>
-<td align="right">0.4156566</td>
-<td align="right">0.1351546</td>
-<td align="right">0.0203205</td>
-<td align="right">0.6599764</td>
-<td align="right">0.1845485</td>
+<td align="right">0.4718292</td>
+<td align="right">0.5281708</td>
+<td align="right">0.3269378</td>
+<td align="right">0.0828981</td>
+<td align="right">0.5177509</td>
+<td align="right">0.0724132</td>
 </tr>
 <tr class="even">
-<td align="right">0.5781881</td>
-<td align="right">0.4218119</td>
-<td align="right">0.2660972</td>
-<td align="right">0.1237393</td>
-<td align="right">0.5374835</td>
-<td align="right">0.0726800</td>
+<td align="right">0.4542422</td>
+<td align="right">0.5457578</td>
+<td align="right">0.3249261</td>
+<td align="right">0.0082074</td>
+<td align="right">0.5356523</td>
+<td align="right">0.1312142</td>
 </tr>
 <tr class="odd">
-<td align="right">0.5771600</td>
-<td align="right">0.4228400</td>
-<td align="right">0.1700487</td>
-<td align="right">0.0794219</td>
-<td align="right">0.6463647</td>
-<td align="right">0.1041647</td>
+<td align="right">0.4871812</td>
+<td align="right">0.5128188</td>
+<td align="right">0.2682652</td>
+<td align="right">0.0363204</td>
+<td align="right">0.5857549</td>
+<td align="right">0.1096594</td>
 </tr>
 <tr class="even">
-<td align="right">0.4761543</td>
-<td align="right">0.5238457</td>
-<td align="right">0.2182718</td>
-<td align="right">0.0959705</td>
-<td align="right">0.6140564</td>
-<td align="right">0.0717014</td>
+<td align="right">0.4524378</td>
+<td align="right">0.5475622</td>
+<td align="right">0.1585780</td>
+<td align="right">0.0936094</td>
+<td align="right">0.7336056</td>
+<td align="right">0.0142069</td>
 </tr>
 </tbody>
 </table>
@@ -598,10 +598,10 @@ model.</p>
 <col width="7%" />
 <col width="13%" />
 <col width="13%" />
-<col width="11%" />
-<col width="11%" />
-<col width="11%" />
-<col width="11%" />
+<col width="10%" />
+<col width="12%" />
+<col width="12%" />
+<col width="12%" />
 </colgroup>
 <thead>
 <tr class="header">
@@ -621,20 +621,20 @@ model.</p>
 <td align="left">-</td>
 <td align="left">priors</td>
 <td align="left">FALSE</td>
-<td align="right">0.2538130</td>
-<td align="right">0.1957065</td>
-<td align="right">0.0090679</td>
-<td align="right">0.7107930</td>
+<td align="right">0.248373</td>
+<td align="right">0.1904903</td>
+<td align="right">0.0076384</td>
+<td align="right">0.6923843</td>
 </tr>
 <tr class="even">
 <td align="left">Y[X=1] &gt; Y[X=0]</td>
 <td align="left">-</td>
 <td align="left">posteriors</td>
 <td align="left">FALSE</td>
-<td align="right">0.6226124</td>
-<td align="right">0.0857011</td>
-<td align="right">0.4449809</td>
-<td align="right">0.7725678</td>
+<td align="right">0.587883</td>
+<td align="right">0.0888942</td>
+<td align="right">0.4039806</td>
+<td align="right">0.7455046</td>
 </tr>
 </tbody>
 </table>
@@ -672,20 +672,20 @@ model.</p>
 <td align="left">X==1 &amp; Y == 1</td>
 <td align="left">priors</td>
 <td align="left">FALSE</td>
-<td align="right">0.4959161</td>
-<td align="right">0.2907514</td>
-<td align="right">0.0218644</td>
-<td align="right">0.9752001</td>
+<td align="right">0.4963863</td>
+<td align="right">0.2859801</td>
+<td align="right">0.0251328</td>
+<td align="right">0.9727251</td>
 </tr>
 <tr class="even">
 <td align="left">Y[X=1] &gt; Y[X=0]</td>
 <td align="left">X==1 &amp; Y == 1</td>
 <td align="left">posteriors</td>
 <td align="left">FALSE</td>
-<td align="right">0.8710234</td>
-<td align="right">0.0837827</td>
-<td align="right">0.6865481</td>
-<td align="right">0.9921468</td>
+<td align="right">0.8572202</td>
+<td align="right">0.0989188</td>
+<td align="right">0.6380308</td>
+<td align="right">0.9948683</td>
 </tr>
 </tbody>
 </table>
@@ -724,20 +724,20 @@ the probability of a positive effect given <em>some</em> effect:</p>
 <td align="left">Y[X=1] != Y[X=0]</td>
 <td align="left">priors</td>
 <td align="left">FALSE</td>
-<td align="right">0.4970856</td>
-<td align="right">0.2895303</td>
-<td align="right">0.0271811</td>
-<td align="right">0.9728868</td>
+<td align="right">0.5037974</td>
+<td align="right">0.2908795</td>
+<td align="right">0.0276229</td>
+<td align="right">0.9754840</td>
 </tr>
 <tr class="even">
 <td align="left">Y[X=1] &gt; Y[X=0]</td>
 <td align="left">Y[X=1] != Y[X=0]</td>
 <td align="left">posteriors</td>
 <td align="left">FALSE</td>
-<td align="right">0.8852670</td>
-<td align="right">0.0646467</td>
-<td align="right">0.7582853</td>
-<td align="right">0.9931525</td>
+<td align="right">0.8650345</td>
+<td align="right">0.0733055</td>
+<td align="right">0.7222992</td>
+<td align="right">0.9929217</td>
 </tr>
 </tbody>
 </table>

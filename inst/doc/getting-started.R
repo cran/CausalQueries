@@ -24,7 +24,7 @@ iv_model <- make_model("Z -> X -> Y <-> X")
 plot(iv_model)
 
 ## -----------------------------------------------------------------------------
-xy_model$parameters_df |> kable()
+xy_model |> grab("parameters_df") |> kable()
 
 ## -----------------------------------------------------------------------------
 iv_model <- 
@@ -49,7 +49,7 @@ xy_model <-
 
 ## -----------------------------------------------------------------------------
 
-xy_model$posterior_distribution |> 
+xy_model |> grab("posterior_distribution") |> 
   head() |> kable()
 
 

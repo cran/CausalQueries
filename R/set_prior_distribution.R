@@ -28,31 +28,27 @@ make_prior_distribution <- function(model, n_draws = 4000) {
       as.data.frame()
 
     colnames(prior_distribution) <- model$parameters_df$param_names
+    class(prior_distribution) <- c("parameters_prior", "data.frame")
 
     return(prior_distribution)
 
 }
 
 
-#' Get a prior distribution from priors
+#' Get a prior distribution from model
 #'
-#' Add to the model a `n_draws x n_param` matrix of possible parameters.
+#' Access the prior distribution from the model if one has been added via `set_prior_distribution`.
+#' Otherwise call  `make_prior_distribution` to generate and return an `n_draws x n_param`  prior distribution.
 #'
 #' @inheritParams CausalQueries_internal_inherit_params
 #' @param n_draws A scalar. Number of draws.
+#' @keywords internal
 #' @return A `data.frame` with dimension `n_param`x `n_draws` of possible
 #'   lambda draws
-#' @export
 #' @family prior_distribution
-#' @examples
-#' make_model('X -> Y') %>%
-#'   set_prior_distribution(n_draws = 5) %>%
-#'   get_prior_distribution()
-#' make_model('X -> Y') %>%
-#'   get_prior_distribution(3)
-#'
 
 get_prior_distribution <- function(model, n_draws = 4000) {
+  .Deprecated("grab")
   if (!is.null(model$prior_distribution)) {
     return(model$prior_distribution)
   }
@@ -67,20 +63,18 @@ get_prior_distribution <- function(model, n_draws = 4000) {
 
 #' Add prior distribution draws
 #'
-#' Add `n_param x n_draws` database of possible lambda draws to the model.
+#' Add `n_param x n_draws` database of possible parameter draws to the model.
 #'
 #' @inheritParams CausalQueries_internal_inherit_params
 #' @param n_draws A scalar. Number of draws.
-#' @return An object of class \code{causal_model}. It essentially returns a
-#'   list containing the elements comprising a model
-#'   (e.g. 'statement', 'nodal_types' and 'DAG') with the `prior_distribution`
+#' @return An object of class \code{causal_model} with the `prior_distribution`
 #'   attached to it.
 #' @export
 #' @family prior_distribution
 #' @examples
 #' make_model('X -> Y') %>%
 #'   set_prior_distribution(n_draws = 5) %>%
-#'   get_prior_distribution()
+#'   grab("prior_distribution")
 #'
 
 set_prior_distribution <- function(model, n_draws = 4000) {
