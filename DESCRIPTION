@@ -1,7 +1,7 @@
 Package: CausalQueries
 Type: Package
 Title: Make, Update, and Query Binary Causal Models
-Version: 1.1.0
+Version: 1.1.1
 Authors@R: c(person("Clara", "Bicalho", email = "clarabmcorreia@gmail.com", role = c("ctb")),
              person("Jasper", "Cooper", email = "jjc2247@columbia.edu", role = c("ctb")),
              person("Macartan", "Humphreys", email = "macartan@gmail.com", role = c("aut"),
@@ -34,7 +34,7 @@ SystemRequirements: GNU make
 Biarch: true
 VignetteBuilder: knitr
 NeedsCompilation: yes
-Packaged: 2024-04-10 13:28:13 UTC; tilltietz
+Packaged: 2024-04-25 19:53:16 UTC; tilltietz
 Author: Clara Bicalho [ctb],
   Jasper Cooper [ctb],
   Macartan Humphreys [aut] (<https://orcid.org/0000-0001-7029-2326>),
@@ -46,4 +46,4 @@ Author: Clara Bicalho [ctb],
   Georgiy Syunyaev [aut] (<https://orcid.org/0000-0002-4391-6313>)
 Maintainer: Till Tietz <ttietz2014@gmail.com>
 Repository: CRAN
-Date/Publication: 2024-04-10 13:50:02 UTC
+Date/Publication: 2024-04-26 09:00:07 UTC
