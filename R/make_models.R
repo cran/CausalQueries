@@ -1,7 +1,7 @@
 #' Make a model
 #'
-#' \code{make_model} uses \link{dagitty} syntax and functionality to
-#' specify nodes and edges of a graph. Implied causal types are calculated
+#' \code{make_model} uses causal statements encoded as strings to specify
+#' the nodes and edges of a graph. Implied causal types are calculated
 #' and default priors are provided under the assumption of no confounding.
 #' Models can be updated with specification of a parameter matrix, \code{P}, by
 #' providing restrictions on causal types, and/or by providing informative
@@ -10,8 +10,8 @@
 #' within each parameter set. These can be adjust with \code{set_priors}
 #' and \code{set_parameters}
 #'
-#' @param statement A character. Statement describing causal
-#'   relations using \link{dagitty} syntax. Only directed relations are
+#' @param statement character string. Statement describing causal
+#'   relations between nodes. Only directed relations are
 #'   permitted. For instance "X -> Y" or  "X1 -> Y <- X2; X1 -> X2".
 #' @param add_causal_types Logical. Whether to create and attach causal
 #'   types to \code{model}. Defaults to `TRUE`.
@@ -53,13 +53,13 @@
 #'
 #' # Examples with confounding
 #' model <- make_model("X->Y; X <-> Y")
-#' model$P
+#' inspect(model, "parameter_matrix")
 #' model <- make_model("Y2 <- X -> Y1; X <-> Y1; X <-> Y2")
-#' dim(model$P)
-#' model$P
+#' dim(inspect(model, "parameter_matrix"))
+#' inspect(model, "parameter_matrix")
 #' model <- make_model("X1 -> Y <- X2; X1 <-> Y; X2 <-> Y")
-#' dim(model$P)
-#' model$parameters_df
+#' dim(inspect(model, "parameter_matrix"))
+#' inspect(model, "parameters_df")
 #'
 #' # A single node graph is also possible
 #' model <- make_model("X")
@@ -86,11 +86,13 @@
 #'       "11111111111111111111111111111111" ))
 #'
 #' make_model("A -> Y; B ->Y; C->Y; D->Y; E->Y",
-#'           nodal_types = nodal_types)$parameters_df
+#'           nodal_types = nodal_types) |>
+#'  inspect("parameters_df")
 #'
 #' nodal_types = list(Y = c("01", "10"), Z = c("0", "1"))
-#' make_model("Z -> Y", nodal_types = nodal_types)$parameters_df
-#' make_model("Z -> Y", nodal_types = FALSE)$parents_df
+#' make_model("Z -> Y", nodal_types = nodal_types) |>
+#'  inspect("parameters_df")
+
 
 make_model <- function(statement,
                        add_causal_types = TRUE,
@@ -111,37 +113,22 @@ make_model <- function(statement,
     stop("The model statement should be of type character.")
   }
 
-  # names and allowable names
-  node_names <- strsplit(statement,
-                         paste0(c("->", "<->", "<-", ";"), collapse = "|"),
-                         perl = TRUE) |>
-    unlist() |>
-    trimws() |>
-    unique()
-
-  if (any(grepl("-", 	node_names))) {
-    stop("No hyphens in varnames please; try dots?")
-  }
-
-  if (any(grepl("_", node_names))) {
-    stop("No underscores in varnames please; try dots?")
-  }
-
   # generate DAG
-  x <-
-    dagitty::edges(dagitty::dagitty(paste0("dag{", statement, "}"))) %>%
-    data.frame(stringsAsFactors = FALSE)
+  .dag <- make_dag(statement)
 
-  if (nrow(x) == 0) {
-    dag <- data.frame(v = statement, w = NA)
-  } else {
-    dag  <- x %>%
-      dplyr::filter(e == "->") %>%
+  # clean dag statement
+  statement <- ifelse(nrow(.dag) ==1  & all(is.na(.dag$e)),
+                      statement,
+                      paste(paste(.dag$v, .dag$e, .dag$w), collapse = "; ")
+                      )
+
+  # parent child data.frame
+   dag  <- .dag |>
+      dplyr::filter(e == "->" | is.na(e)) |>
       dplyr::select(v, w)
-  }
 
-  if (length(x) > 0 &&
-      any(!(unlist(x[, 1:2]) %in% unlist(dag)))) {
+  # disallow dangling confound e.g. X -> M <-> Y (single nodes allowed)
+  if (any(!(unlist(.dag[, 1:2]) %in% unlist(dag)))) {
     stop("Graph should not contain isolates.")
   }
 
@@ -197,7 +184,6 @@ make_model <- function(statement,
   model <-
     list(
       statement = statement,
-      dag = dag,
       nodes = nodes,
       parents_df = parents_df
     )
@@ -254,7 +240,7 @@ make_model <- function(statement,
     attr(model$nodal_types, "interpret") <- interpret_type(model)
   }
 
-  # Parameters dataframe
+  # Parameters data frame
   if (!is.logical(nodal_types)) {
     model$parameters_df <- make_parameters_df(nodal_types)
   }
@@ -269,10 +255,10 @@ make_model <- function(statement,
 
   # Add confounds if any provided
 
-  if (any(x$e == "<->")) {
+  if (grepl("<->", statement)) {
     confounds <- NULL
 
-    z  <- x |>
+    z  <- .dag |>
       dplyr::filter(e == "<->") |>
       dplyr::select(v, w)
     z$v <- as.character(z$v)
@@ -295,7 +281,10 @@ make_model <- function(statement,
       ))
     }
     model <- set_confound(model, confounds)
+    # overwrite duplication of confound in model statement produced by set_confound
+    model$statement <- statement
   }
+
 
   # Prep for export
   attr(model, "nonroot_nodes") <- endog_node
@@ -303,11 +292,10 @@ make_model <- function(statement,
 
 
   # assign classes
-  class(model$dag) <- c("dag", "data.frame")
-  class(model$statement) <- c("statement", "character")
-  class(model$nodes) <- c("nodes", "character")
-  class(model$parents_df) <- c("parents", "data.frame")
-  class(model$nodal_types) <- c("nodal_types", "list")
+  class(model$statement) <- "character"
+  class(model$nodes) <- "character"
+  class(model$parents_df) <- "data.frame"
+  class(model$nodal_types) <- "list"
 
   return(model)
 
@@ -316,15 +304,14 @@ make_model <- function(statement,
 
 #' function to make a parameters_df from nodal types
 #' @param nodal_types a list of nodal types
-#' @export
 #' @keywords internal
 #' @examples
 #'
-#' make_parameters_df(list(X = "1", Y = c("01", "10")))
+#' CausalQueries:::make_parameters_df(list(X = "1", Y = c("01", "10")))
 
 make_parameters_df <- function(nodal_types){
   pdf <- data.frame(node = rep(names(nodal_types), lapply(nodal_types, length)),
-                    nodal_type = nodal_types %>% unlist) |>
+                    nodal_type = nodal_types |> unlist()) |>
     dplyr::mutate(param_set = node,
                   given = "",
                   priors = 1,
@@ -336,8 +323,196 @@ make_parameters_df <- function(nodal_types){
     dplyr::select(param_names, node, gen, param_set, nodal_type,
                   given, param_value, priors)
 
-  class(pdf) <- c("parameters_df", "data.frame")
+  class(pdf) <- "data.frame"
   return(pdf)
 }
+
+
+#' Helper to clean and check the validity of causal statements specifying a DAG.
+#' This function isolates nodes and edges specified in a causal statements and
+#' makes them processable by \code{make_dag}
+#'
+#' @param statement character string. Statement describing causal
+#'    relations between nodes.
+#' @return a list of nodes and edges specified in the input statement
+#' @keywords internal
+
+clean_statement <- function(statement) {
+  ## consolidate edges
+  statement <- gsub("\\s+", "", statement)
+  statement <- strsplit(statement, "")[[1]]
+
+  i <- 1
+  st_edge <- c()
+
+  while (i <= length(statement)) {
+    # Check for pattern "<", "-", ">"
+    if (i <= length(statement) - 2 &&
+        statement[i] == "<" &&
+        statement[i + 1] == "-" && statement[i + 2] == ">") {
+      st_edge <- c(st_edge, "<->")
+      i <- i + 3 # Skip the next two elements
+    }
+    # Check for pattern "<", "-"
+    else if (i <= length(statement) - 1 &&
+             statement[i] == "<" && statement[i + 1] == "-") {
+      st_edge <- c(st_edge, "<-")
+      i <- i + 2 # Skip the next element
+    }
+    # Check for pattern "-", ">"
+    else if (i <= length(statement) - 1 &&
+             statement[i] == "-" && statement[i + 1] == ">") {
+      st_edge <- c(st_edge, "->")
+      i <- i + 2 # Skip the next element
+    }
+    # Otherwise, just append the current element
+    else {
+      st_edge <- c(st_edge, statement[i])
+      i <- i + 1
+    }
+  }
+
+  # detect edges
+  is_edge <- st_edge %in% c("->", "<-", "<->")
+
+  # check for bare edges (i.e. edges without origin or destination nodes)
+  # either dangling edge at beginning / end of statement
+  has_dangling_edge <- any(c(is_edge[1], is_edge[length(is_edge)]))
+  # or consecutive edges within statement
+  consecutive_edge <- rle(is_edge)
+  has_consecutive_edge <-any(consecutive_edge$values & consecutive_edge$lengths >= 2)
+
+  if(has_dangling_edge || has_consecutive_edge) {
+    stop("Statement contains bare edges without a source or destination node or both. Edges should connect nodes.")
+  }
+
+  ## consolidate nodes
+  # check for unsupported characters in varnames
+  if(any(c("<",">") %in% st_edge[!is_edge])) {
+    stop(
+      paste0(
+        "Unsupported characters in varnames. No '<' or '>' in varnames please.",
+        "\n",
+        "\n You may have tried to define an edge but misspecified it.",
+        "\n Edges should be specified via ->, <-, <-> not >, <, <> or ->>, <<-, <<->> etc."
+      )
+    )
+  }
+
+  if("-" %in% st_edge[!is_edge]) {
+    stop(
+      paste0(
+        "Unsupported characters in varnames. No hyphens '-' in varnames please; try dots?",
+        "\n",
+        "\n You may have tried to define an edge but misspecified it.",
+        "\n Edges should be specified via ->, <-, <-> not -."
+      )
+    )
+  }
+
+  if("_" %in% st_edge[!is_edge]) {
+    stop(
+      paste0(
+        "Unsupported characters in varnames. No underscores '_' in varnames please; try dots?",
+        "\n",
+        "\n You may have tried to define an edge but misspecified it.",
+        "\n Edges should be specified via ->, <-, <-> not _>, <_, <_> etc."
+      )
+    )
+  }
+
+  # counter that increments every time we hit an edge --> each character
+  # belonging to a node thus has the same number (node_id)
+  node_id <- cumsum(is_edge)
+  # split by node_id and paste all characters with same node_id together
+  nodes <- split(st_edge[!is_edge], node_id[!is_edge]) |>
+    vapply(paste, collapse = "", "") |>
+    unname()
+
+  return(list(nodes = nodes, edges = st_edge[is_edge]))
+}
+
+
+#' Helper to run a causal statement specifying a DAG into a \code{data.frame} of
+#' pairwise parent child relations between nodes specified by a respective edge.
+#'
+#' @param statement character string. Statement describing causal
+#'   relations between nodes. Only directed relations are
+#'   permitted. For instance "X -> Y" or  "X1 -> Y <- X2; X1 -> X2"
+#' @return a \code{data.frame} with columns v, w, e specifying parent, child and
+#'   edge respectively
+#' @keywords internal
+
+make_dag <- function(statement) {
+  # split by ; first to separate discrete parts of the DAG statement
+  sub_statements <- strsplit(statement, ";")[[1]]
+
+  dags <- lapply(sub_statements, function(sub_statement) {
+
+    if(sub_statement == "") {
+      return(NULL)
+    }
+
+    sub_statement <- clean_statement(sub_statement)
+
+    nodes <- sub_statement$nodes
+    edges <- sub_statement$edges
+
+    if(length(nodes) == 1) {
+      return(NULL)
+    }
+
+    dag <- as.data.frame(matrix(NA, length(nodes) - 1, 3))
+    colnames(dag) <- c("v","w","e")
+
+    for(i in 1:(length(nodes) - 1)) {
+      if((!is.na(edges[i])) && (edges[i] == "<-")) {
+        dag[i,"v"] <- nodes[i+1]
+        dag[i,"w"] <- nodes[i]
+        dag[i,"e"] <- "->"
+      } else {
+        dag[i,"v"] <- nodes[i]
+        dag[i,"w"] <- nodes[i+1]
+        dag[i,"e"] <- edges[i]
+      }
+    }
+
+    return(dag)
+  })
+
+  dag <- dags[!vapply(dags, is.null, logical(1))]
+
+  if(length(dag) == 0) {
+    # Single node case
+    data.frame(v = statement, w = NA, e = NA)
+
+  } else {
+
+    dag |>
+      dplyr::bind_rows() |>
+      dplyr::arrange(v) |>
+      distinct() |>
+      remove_duplicates()
+  }
+
+}
+
+
+
+remove_duplicates <- function(df) {
+  if(nrow(df) == 1) return(df)
+
+  df <- df |> mutate(
+    normalized_v = ifelse(e == "<->", pmin(v, w), v),
+    normalized_w = ifelse(e == "<->", pmax(v, w), w)
+  )
+  # Remove duplicates (eg X<-Y; Y<->X)
+
+  df <- df[!duplicated(df[, c("normalized_v", "normalized_w", "e")]), ]
+
+  df[, c("v", "w", "e")]
+
+}
+
 
 

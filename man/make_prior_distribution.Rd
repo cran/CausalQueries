@@ -21,12 +21,9 @@ Create a `n_param`x `n_draws` database of possible lambda draws to be
 attached to the model.
 }
 \examples{
-make_model('X -> Y') \%>\% make_prior_distribution(n_draws = 5)
+make_model('X -> Y') |>
+  CausalQueries:::make_prior_distribution(n_draws = 5)
 
 }
-\seealso{
-Other prior_distribution: 
-\code{\link{get_prior_distribution}()},
-\code{\link{set_prior_distribution}()}
-}
 \concept{prior_distribution}
+\keyword{internal}

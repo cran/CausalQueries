@@ -8,12 +8,14 @@ plot_model(
   model = NULL,
   x_coord = NULL,
   y_coord = NULL,
+  labels = NULL,
   title = "",
   textcol = "white",
   textsize = 3.88,
   shape = 16,
   nodecol = "black",
-  nodesize = 16
+  nodesize = 12,
+  strength = 0.3
 )
 }
 \arguments{
@@ -24,6 +26,8 @@ If left empty, coordinates are randomly generated}
 
 \item{y_coord}{A vector of y coordinates for DAG nodes.
 If left empty, coordinates are randomly generated}
+
+\item{labels}{Optional labels for nodes}
 
 \item{title}{String specifying title of graph}
 
@@ -37,28 +41,45 @@ If left empty, coordinates are randomly generated}
 ggplot's default palette}
 
 \item{nodesize}{Size of node.}
+
+\item{strength}{Degree of curvature of curved arcs}
 }
 \value{
-A DAG plot in ggplot style.
+A ggplot object.
 }
 \description{
-If confounds are indicated (provided in \code{attr(model$P, 'confounds')}),
-then these are represented as bidirectional arcs. Builds on functionality
-from ggdag and dagitty.
+Creates a plot of a DAG using ggplot functionality and a Sugiyama layout from igraph.  Unmeasured confounds  (<->) are indicated
+then these are represented as curved dotted lines.  Users can control node sizes and colors as well as coordinates and label behavior. Other modifications can be made by adding additional ggplot layers.
 }
 \examples{
 
 \dontrun{
-model <- make_model('X -> K -> Y; X <-> Y')
+model <- make_model('X -> K -> Y')
 
+# Simple plot
+model |> plot_model()
+
+# Adding additional layers
+model |> plot_model() +
+  ggplot2::coord_flip()
+
+# Adding labels
 model |>
-  CausalQueries:::plot_model()
-model |>
-  CausalQueries:::plot_model(
-    x_coord = 1:3,
-    y_coord = 1:3,
+  plot_model(
+    labels = c("A long name for a \n node", "This", "That"),
+    nodecol = "white",
+    textcol = "black")
+
+# Controlling  positions and using math labels
+model |> plot_model(
+    x_coord = 0:2,
+    y_coord = 0:2,
     title = "Mixed text and math: $\\\\alpha^2 + \\\\Gamma$")
 }
+
+# DAG with unobserved confounding and shapes
+make_model('Z -> X -> Y; X <-> Y') |>
+  plot(x_coord = 1:3, y_coord = 1:3, shape = c(15, 16, 16))
 
 }
 \keyword{internal}

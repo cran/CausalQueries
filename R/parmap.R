@@ -4,6 +4,8 @@
 #'
 #'@inheritParams CausalQueries_internal_inherit_params
 #' @return A matrix
+#' @keywords internal
+#' @noRd
 
 make_parmap <- function(model, A = NULL, P = NULL) {
   d <- NULL
@@ -22,7 +24,7 @@ make_parmap <- function(model, A = NULL, P = NULL) {
     map <- diag(ncol(type_matrix))
     rownames(map) <- colnames(map) <- colnames(A)
     attr(type_matrix, "map") <- map
-    class(type_matrix) <- c("parameter_mapping", class(type_matrix))
+    class(type_matrix) <- class(type_matrix)
     return(type_matrix)
   }
 
@@ -34,24 +36,24 @@ make_parmap <- function(model, A = NULL, P = NULL) {
     paste(model$parameters_df$given[j == 1], collapse = " ")
   })
 
-  .type_matrix <- t(P) %>%
-    data.frame() %>%
-    mutate(type = type, d = data_names) %>%
-    group_by(d, type) %>% summarize_all(max) %>%
-    ungroup
+  .type_matrix <- t(P) |>
+    data.frame() |>
+    mutate(type = type, d = data_names) |>
+    group_by(d, type) |> summarize_all(max) |>
+    ungroup()
 
   # reorder -- so that order is consistent with
   .type_matrix <- .type_matrix[order(match(.type_matrix$d, colnames(A))), ]
 
 
-  type_matrix <- .type_matrix %>%
-    select(-d, -type) %>%
+  type_matrix <- .type_matrix |>
+    select(-d, -type) |>
     t()
 
   colnames(type_matrix) <- .type_matrix$d
 
   attr(type_matrix, "map") <- data_to_data(type_matrix, A)
-  class(type_matrix) <- c("parameter_mapping", class(type_matrix))
+  class(type_matrix) <- class(type_matrix)
   type_matrix
 }
 
@@ -60,6 +62,7 @@ make_parmap <- function(model, A = NULL, P = NULL) {
 #' @param A a matrix
 #' @return a matrix
 #' @keywords internal
+#' @noRd
 
 data_to_data <- function(M, A){
   dnames <- colnames(A)
@@ -77,6 +80,8 @@ data_to_data <- function(M, A){
 #'
 #'@inheritParams CausalQueries_internal_inherit_params
 #' @return A matrix
+#' @keywords internal
+#' @noRd
 
 get_parmap <- function(model, A = NULL, P = NULL){
     if(!is.null(model$parmap)) {
@@ -91,7 +96,9 @@ get_parmap <- function(model, A = NULL, P = NULL){
 #' Generates and adds parmap to a model
 #'
 #'@inheritParams CausalQueries_internal_inherit_params
-#' @return A matrix
+#'@return A matrix
+#' @keywords internal
+#' @noRd
 
 set_parmap <- function(model) {
     model$parmap <- make_parmap(model)

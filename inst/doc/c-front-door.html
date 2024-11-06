@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>Through the front door</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Through the front door</h1>
+
+
+
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a></span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">library</span>(CausalQueries)</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="fu">library</span>(knitr)</span></code></pre></div>
+<p>Here is an example of a model in which <code>X</code> causes
+<code>M</code> and <code>M</code> causes <code>Y</code>. There is, in
+addition, unobservable confounding between <code>X</code> and
+<code>Y</code>. This is an example of a model in which you might use
+information on <code>M</code> to figure out whether <code>X</code>
+caused <code>Y</code> making use of the “front door criterion.”</p>
+<p>The DAG is defined using <code>dagitty</code> syntax like this:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">make_model</span>(<span class="st">&quot;X -&gt; M -&gt; Y &lt;-&gt; X&quot;</span>)</span></code></pre></div>
+<p>We might set priors thus:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">set_priors</span>(model, <span class="at">distribution =</span> <span class="st">&quot;jeffreys&quot;</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="co">#&gt; Altering all parameters.</span></span></code></pre></div>
+<p>You can plot the dag thus.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">plot</span>(model)</span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p>Updating is done like this:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="co"># Lets imagine highly correlated data; here an effect of .9 at each step</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">X =</span> <span class="fu">rep</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">1</span>, <span class="dv">2000</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>    <span class="at">M =</span> <span class="fu">rbinom</span>(<span class="fu">n</span>(), <span class="dv">1</span>, .<span class="dv">05</span> <span class="sc">+</span> .<span class="dv">9</span><span class="sc">*</span>X),</span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>    <span class="at">Y =</span> <span class="fu">rbinom</span>(<span class="fu">n</span>(), <span class="dv">1</span>, .<span class="dv">05</span> <span class="sc">+</span> .<span class="dv">9</span><span class="sc">*</span>M))</span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a><span class="co"># Updating</span></span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a>model <span class="ot">&lt;-</span> model <span class="sc">|&gt;</span> <span class="fu">update_model</span>(data, <span class="at">refresh =</span> <span class="dv">0</span>)</span></code></pre></div>
+<p>Finally you can calculate an estimand of interest like this:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="fu">query_model</span>(</span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>    <span class="at">model =</span> model, </span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>    <span class="at">using =</span> <span class="fu">c</span>(<span class="st">&quot;priors&quot;</span>, <span class="st">&quot;posteriors&quot;</span>),</span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>    <span class="at">query =</span> <span class="st">&quot;Y[X=1] - Y[X=0]&quot;</span>,</span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a>    ) <span class="sc">|&gt;</span></span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a>  <span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">2</span>)</span></code></pre></div>
+<table>
+<colgroup>
+<col width="21%" />
+<col width="8%" />
+<col width="15%" />
+<col width="15%" />
+<col width="6%" />
+<col width="6%" />
+<col width="12%" />
+<col width="13%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">query</th>
+<th align="left">given</th>
+<th align="left">using</th>
+<th align="left">case_level</th>
+<th align="right">mean</th>
+<th align="right">sd</th>
+<th align="right">cred.low</th>
+<th align="right">cred.high</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Y[X=1] - Y[X=0]</td>
+<td align="left">-</td>
+<td align="left">priors</td>
+<td align="left">FALSE</td>
+<td align="right">0.00</td>
+<td align="right">0.15</td>
+<td align="right">-0.33</td>
+<td align="right">0.35</td>
+</tr>
+<tr class="even">
+<td align="left">Y[X=1] - Y[X=0]</td>
+<td align="left">-</td>
+<td align="left">posteriors</td>
+<td align="left">FALSE</td>
+<td align="right">0.82</td>
+<td align="right">0.01</td>
+<td align="right">0.78</td>
+<td align="right">0.84</td>
+</tr>
+</tbody>
+</table>
+<p>This uses the posterior distribution and the model to assess the
+average treatment effect estimand.</p>
+<p>Let’s compare now with the case where you do not have data on
+<code>M</code>:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a></span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>model <span class="sc">|&gt;</span></span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>  <span class="fu">update_model</span>(data <span class="sc">|&gt;</span> dplyr<span class="sc">::</span><span class="fu">select</span>(X, Y), <span class="at">refresh =</span> <span class="dv">0</span>) <span class="sc">|&gt;</span></span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>  <span class="fu">query_model</span>(</span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>    <span class="at">using =</span> <span class="fu">c</span>(<span class="st">&quot;priors&quot;</span>, <span class="st">&quot;posteriors&quot;</span>),</span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a>    <span class="at">query =</span> <span class="st">&quot;Y[X=1] - Y[X=0]&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a>  <span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">2</span>)</span></code></pre></div>
+<table>
+<colgroup>
+<col width="21%" />
+<col width="8%" />
+<col width="15%" />
+<col width="15%" />
+<col width="6%" />
+<col width="6%" />
+<col width="12%" />
+<col width="13%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">query</th>
+<th align="left">given</th>
+<th align="left">using</th>
+<th align="left">case_level</th>
+<th align="right">mean</th>
+<th align="right">sd</th>
+<th align="right">cred.low</th>
+<th align="right">cred.high</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Y[X=1] - Y[X=0]</td>
+<td align="left">-</td>
+<td align="left">priors</td>
+<td align="left">FALSE</td>
+<td align="right">0.00</td>
+<td align="right">0.14</td>
+<td align="right">-0.35</td>
+<td align="right">0.33</td>
+</tr>
+<tr class="even">
+<td align="left">Y[X=1] - Y[X=0]</td>
+<td align="left">-</td>
+<td align="left">posteriors</td>
+<td align="left">FALSE</td>
+<td align="right">0.09</td>
+<td align="right">0.16</td>
+<td align="right">-0.02</td>
+<td align="right">0.57</td>
+</tr>
+</tbody>
+</table>
+<p>Here we update much less and are (relatively) much less certain in
+our beliefs precisely because we are aware of the confounded related
+between <code>X</code> and <code>Y</code>, without having the data on
+<code>M</code> we could use to address it.</p>
+<div id="try-it" class="section level1">
+<h1>Try it</h1>
+<p>Say <code>X</code>, <code>M</code>, and <code>Y</code> were perfectly
+correlated. Would the average treatment effect be identified?</p>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

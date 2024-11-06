@@ -36,21 +36,22 @@
 #'
 #' @examples
 #'  model <- make_model('X->Y')
-#'  data_long   <- simulate_data(model, n = 4)
+#'  data_long   <- make_data(model, n = 4)
 #'  data_short  <- collapse_data(data_long, model)
-#'  \donttest{
 #'  model <-  update_model(model, data_long)
 #'  model <-  update_model(model, data_short)
-#'  }
-#'  \dontrun{
+#'
 #'    # It is possible to implement updating without data, in which
 #'    # case the posterior is a stan object that reflects the prior
+#'
 #'    update_model(model)
 #'
-#'    data <- data.frame(X=rep(0:1, 10), Y=rep(0:1,10))
+#'  \dontrun{
 #'
-#'    # Censored data types
-#'    # We update less than we might because we are aware of filtered data
+#'    # Censored data types illustrations
+#'    # Here we update less than we might because we are aware of filtered data
+#'
+#'    data <- data.frame(X=rep(0:1, 10), Y=rep(0:1,10))
 #'    uncensored <-
 #'      make_model("X->Y") |>
 #'      update_model(data) |>
@@ -118,10 +119,16 @@ update_model <- function(model,
   if (data_type == "compact") {
     if (!all(c("event", "strategy", "count") %in% names(data))) {
       stop(paste(
-        "Compact data should contain columnes",
+        "Compact data should contain columns",
         "`event`, `strategy` and `count`"
       ))
     }
+
+    if(!is.integer(data$count)){
+      data$count <- as.integer(data$count)
+      warning("count column should be integer valued; value has been forced to integer")
+    }
+
     data_events <- data
   }
 
@@ -165,22 +172,21 @@ update_model <- function(model,
     extract(newfit, pars = "lambdas")$lambdas |>
     as.data.frame()
   colnames(model$posterior_distribution) <- get_parameter_names(model)
-  class(model$posterior_distribution) <- c("parameters_posterior", "data.frame")
+  class(model$posterior_distribution) <- "data.frame"
 
   # Retain type distribution
   if(keep_type_distribution) {
     model$stan_objects$type_distribution <- extract(newfit, pars = "types")$types
 
     colnames(model$stan_objects$type_distribution) <- colnames(stan_data$P)
-    class(model$stan_objects$type_distribution) <- c("type_distribution", "matrix", "array")
+    class(model$stan_objects$type_distribution) <- c("matrix", "array")
   }
 
   # Retain event (pre-censoring) probabilities
   if (keep_event_probabilities) {
     model$stan_objects$event_probabilities <- extract(newfit, pars = "w")$w
     colnames(model$stan_objects$event_probabilities) <- colnames(stan_data$E)
-    class(model$stan_objects$event_probabilities) <- c("posterior_event_probabilities",
-                                                       "matrix", "array")
+    class(model$stan_objects$event_probabilities) <- c("matrix", "array")
   }
 
   # Retain stanfit summary with readable names
@@ -213,7 +219,6 @@ update_model <- function(model,
 
 
   model$stan_objects$stan_summary <- utils::capture.output(print(newfit))
-  class(model$stan_objects$stan_summary) <- "stan_summary"
 
   for (i in seq_along(params)) {
     model$stan_objects$stan_summary <-

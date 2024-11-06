@@ -4,10 +4,12 @@
 #' realization of parameters, possibly drawn from model priors.
 #'
 #' By default, parameters is drawn from `using` argument
-#' (either from priors, posteriors, or from model$parameters)
+#' (either from priors, posteriors, or from `inspect(model, "parameters")`)
 #'
 #'@inheritParams CausalQueries_internal_inherit_params
 #' @return A vector with probabilities of vector of causal types
+#' @keywords internal
+#' @noRd
 
 get_type_prob <- function(model,
                           P = NULL,
@@ -40,6 +42,7 @@ get_type_prob <- function(model,
 #' @param param_dist A \code{matrix}.  Distribution of parameters.
 #'   Optional for speed.
 #' @keywords internal
+#' @noRd
 #' @return A \code{matrix} of type probabilities.
 
 get_type_prob_multiple <- function(model,
@@ -72,7 +75,7 @@ get_type_prob_multiple <- function(model,
 
     res <- get_type_prob_multiple_c(params = param_dist, P = as.matrix(P))
     rownames(res) <- colnames(P)
-    class(res) <- c("type_prior", "matrix", "array")
+    class(res) <- c("matrix", "array")
     return(res)
 }
 
@@ -83,6 +86,7 @@ get_type_prob_multiple <- function(model,
 #'
 #' @inheritParams CausalQueries_internal_inherit_params
 #' @keywords internal
+#' @noRd
 #' @return A \code{matrix} with the distribution of the parameters in the model
 
 get_param_dist <- function(model,

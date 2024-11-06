@@ -31,13 +31,13 @@ A \code{data.frame} with all data types (including NA types)
   that are possible from a model.
 }
 \description{
-Creates dataframe with all data types (including NA types)
+Creates data frame with all data types (including NA types)
 that are possible from a model.
 }
 \examples{
 \donttest{
 make_model('X -> Y') |> get_all_data_types()
-model <- make_model('X -> Y') \%>\%
+model <- make_model('X -> Y') |>
   set_restrictions(labels = list(Y = '00'), keep = TRUE)
   get_all_data_types(model)
   get_all_data_types(model, complete_data = TRUE)
@@ -46,3 +46,10 @@ model <- make_model('X -> Y') \%>\%
   get_all_data_types(model, given  = 'X==1 & Y==1')
 }
 }
+\seealso{
+Other data_generation: 
+\code{\link{data_helpers}},
+\code{\link{make_data_single}()},
+\code{\link{observe_data}()}
+}
+\concept{data_generation}

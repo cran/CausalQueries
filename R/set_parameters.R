@@ -16,13 +16,12 @@
 #'
 #' @name parameter_setting
 NULL
-#> NULL
+
 #' Make a 'true' parameter vector
 #'
 #' A vector of 'true' parameters; possibly drawn from prior or posterior.
 #'
 #' @rdname parameter_setting
-#'
 #' @param normalize Logical. If parameter given for a subset of a family the
 #'   residual elements are normalized so that parameters in param_set sum
 #'   to 1 and provided params are unaltered.
@@ -50,19 +49,19 @@ NULL
 #'\donttest{
 #'
 #' #altering values using \code{alter_at}
-#' make_model("X -> Y") %>% make_parameters(parameters = c(0.5,0.25),
+#' make_model("X -> Y") |> make_parameters(parameters = c(0.5,0.25),
 #' alter_at = "node == 'Y' & nodal_type %in% c('00','01')")
 #'
 #' #altering values using \code{param_names}
-#' make_model("X -> Y") %>% make_parameters(parameters = c(0.5,0.25),
+#' make_model("X -> Y") |> make_parameters(parameters = c(0.5,0.25),
 #' param_names = c("Y.10","Y.01"))
 #'
 #' #altering values using \code{statement}
-#' make_model("X -> Y") %>% make_parameters(parameters = c(0.5),
+#' make_model("X -> Y") |> make_parameters(parameters = c(0.5),
 #' statement = "Y[X=1] > Y[X=0]")
 #'
 #' #altering values using a combination of other arguments
-#' make_model("X -> Y") %>% make_parameters(parameters = c(0.5,0.25),
+#' make_model("X -> Y") |> make_parameters(parameters = c(0.5,0.25),
 #' node = "Y", nodal_type = c("00","01"))
 #'
 #' # Normalize renormalizes values not set so that value set is not renomalized
@@ -85,7 +84,7 @@ make_parameters <- function(model,
   if (!is.null(parameters) &&
       (length(parameters) == length(get_parameters(model)))) {
     out <- clean_param_vector(model, parameters)
-    class(out) <- c("parameters", "numeric")
+    class(out) <- "numeric"
   } else {
     if (!is.null(param_type)) {
       if (!(
@@ -194,7 +193,6 @@ make_parameters <- function(model,
 #' \code{\link{make_priors}}.
 #'
 #' @rdname parameter_setting
-#'
 #' @return An object of class \code{causal_model}. It essentially returns a
 #'   list containing the elements comprising a model
 #'   (e.g. 'statement', 'nodal_types' and 'DAG') with true vector of
@@ -205,7 +203,7 @@ make_parameters <- function(model,
 #'
 #' # set_parameters examples:
 #'
-#' make_model('X->Y') %>% set_parameters(1:6) %>% grab("parameters")
+#' make_model('X->Y') |>  set_parameters(1:6) |>  inspect("parameters")
 #'
 #' # Simple examples
 #' model <- make_model('X -> Y')
@@ -222,19 +220,19 @@ make_parameters <- function(model,
 #'\donttest{
 #'
 #' #altering values using \code{alter_at}
-#' make_model("X -> Y") %>% set_parameters(parameters = c(0.5,0.25),
+#' make_model("X -> Y") |> set_parameters(parameters = c(0.5,0.25),
 #' alter_at = "node == 'Y' & nodal_type %in% c('00','01')")
 #'
 #' #altering values using \code{param_names}
-#' make_model("X -> Y") %>% set_parameters(parameters = c(0.5,0.25),
+#' make_model("X -> Y") |> set_parameters(parameters = c(0.5,0.25),
 #' param_names = c("Y.10","Y.01"))
 #'
 #' #altering values using \code{statement}
-#' make_model("X -> Y") %>% set_parameters(parameters = c(0.5),
+#' make_model("X -> Y") |> set_parameters(parameters = c(0.5),
 #' statement = "Y[X=1] > Y[X=0]")
 #'
 #' #altering values using a combination of other arguments
-#' make_model("X -> Y") %>% set_parameters(parameters = c(0.5,0.25),
+#' make_model("X -> Y") |> set_parameters(parameters = c(0.5,0.25),
 #' node = "Y", nodal_type = c("00","01"))
 #'
 #'
@@ -271,7 +269,6 @@ set_parameters <- function(model,
 #' Extracts parameters as a named vector
 #'
 #' @rdname parameter_setting
-#'
 #' @return A vector of draws from the prior or distribution of parameters
 #' @importFrom dirmult rdirichlet
 #' @family parameters
@@ -281,7 +278,7 @@ get_parameters <- function(model, param_type = NULL) {
   if (is.null(param_type)) {
     x <- model$parameters_df$param_value
     names(x) <- model$parameters_df$param_names
-    class(x) <- c("parameters", "numeric")
+    class(x) <- "numeric"
   }
 
   if (!is.null(param_type)){

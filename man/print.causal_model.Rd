@@ -13,10 +13,10 @@ a call to \code{make_model} or \code{update_model}.}
 \item{...}{Further arguments passed to or from other methods.}
 }
 \description{
-print method for class \code{causal_model}.
+print method for class "\code{causal_model}".
 }
 \details{
 The information regarding the causal model includes the statement describing
-causal relations using \link{dagitty} syntax,
+causal relations using \code{dagitty} syntax,
 number of nodal types per parent in a DAG, and number of causal types.
 }

@@ -31,8 +31,8 @@ get_parameters(model, param_type = NULL)
 \code{\link{make_model}}.}
 
 \item{parameters}{A vector of real numbers in [0,1]. Values of parameters to
-specify (optional). By default, parameters is drawn from
-\code{model$parameters_df}.}
+specify (optional). By default, parameters is drawn from the parameters dataframe.
+See \code{inspect(model, "parameters_df")}.}
 
 \item{param_type}{A character. String specifying type of parameters to make
 "flat", "prior_mean", "posterior_mean", "prior_draw",
@@ -91,19 +91,19 @@ make_parameters(model, param_type = 'posterior_mean')
 \donttest{
 
 #altering values using \code{alter_at}
-make_model("X -> Y") \%>\% make_parameters(parameters = c(0.5,0.25),
+make_model("X -> Y") |> make_parameters(parameters = c(0.5,0.25),
 alter_at = "node == 'Y' & nodal_type \%in\% c('00','01')")
 
 #altering values using \code{param_names}
-make_model("X -> Y") \%>\% make_parameters(parameters = c(0.5,0.25),
+make_model("X -> Y") |> make_parameters(parameters = c(0.5,0.25),
 param_names = c("Y.10","Y.01"))
 
 #altering values using \code{statement}
-make_model("X -> Y") \%>\% make_parameters(parameters = c(0.5),
+make_model("X -> Y") |> make_parameters(parameters = c(0.5),
 statement = "Y[X=1] > Y[X=0]")
 
 #altering values using a combination of other arguments
-make_model("X -> Y") \%>\% make_parameters(parameters = c(0.5,0.25),
+make_model("X -> Y") |> make_parameters(parameters = c(0.5,0.25),
 node = "Y", nodal_type = c("00","01"))
 
 # Normalize renormalizes values not set so that value set is not renomalized
@@ -117,7 +117,7 @@ make_parameters(make_model('X -> Y'),
 
 # set_parameters examples:
 
-make_model('X->Y') \%>\% set_parameters(1:6) \%>\% grab("parameters")
+make_model('X->Y') |>  set_parameters(1:6) |>  inspect("parameters")
 
 # Simple examples
 model <- make_model('X -> Y')
@@ -134,19 +134,19 @@ set_parameters(model, param_type = 'posterior_mean')
 \donttest{
 
 #altering values using \code{alter_at}
-make_model("X -> Y") \%>\% set_parameters(parameters = c(0.5,0.25),
+make_model("X -> Y") |> set_parameters(parameters = c(0.5,0.25),
 alter_at = "node == 'Y' & nodal_type \%in\% c('00','01')")
 
 #altering values using \code{param_names}
-make_model("X -> Y") \%>\% set_parameters(parameters = c(0.5,0.25),
+make_model("X -> Y") |> set_parameters(parameters = c(0.5,0.25),
 param_names = c("Y.10","Y.01"))
 
 #altering values using \code{statement}
-make_model("X -> Y") \%>\% set_parameters(parameters = c(0.5),
+make_model("X -> Y") |> set_parameters(parameters = c(0.5),
 statement = "Y[X=1] > Y[X=0]")
 
 #altering values using a combination of other arguments
-make_model("X -> Y") \%>\% set_parameters(parameters = c(0.5,0.25),
+make_model("X -> Y") |> set_parameters(parameters = c(0.5,0.25),
 node = "Y", nodal_type = c("00","01"))
 
 

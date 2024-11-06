@@ -7,8 +7,8 @@
 make_model(statement, add_causal_types = TRUE, nodal_types = NULL)
 }
 \arguments{
-\item{statement}{A character. Statement describing causal
-relations using \link{dagitty} syntax. Only directed relations are
+\item{statement}{character string. Statement describing causal
+relations between nodes. Only directed relations are
 permitted. For instance "X -> Y" or  "X1 -> Y <- X2; X1 -> X2".}
 
 \item{add_causal_types}{Logical. Whether to create and attach causal
@@ -37,8 +37,8 @@ following components:
   nodal types that produce them}
 }
 \description{
-\code{make_model} uses \link{dagitty} syntax and functionality to
-specify nodes and edges of a graph. Implied causal types are calculated
+\code{make_model} uses causal statements encoded as strings to specify
+the nodes and edges of a graph. Implied causal types are calculated
 and default priors are provided under the assumption of no confounding.
 Models can be updated with specification of a parameter matrix, \code{P}, by
 providing restrictions on causal types, and/or by providing informative
@@ -58,13 +58,13 @@ modelXKY <- make_model("X -> K -> Y; X -> Y")
 
 # Examples with confounding
 model <- make_model("X->Y; X <-> Y")
-model$P
+inspect(model, "parameter_matrix")
 model <- make_model("Y2 <- X -> Y1; X <-> Y1; X <-> Y2")
-dim(model$P)
-model$P
+dim(inspect(model, "parameter_matrix"))
+inspect(model, "parameter_matrix")
 model <- make_model("X1 -> Y <- X2; X1 <-> Y; X2 <-> Y")
-dim(model$P)
-model$parameters_df
+dim(inspect(model, "parameter_matrix"))
+inspect(model, "parameters_df")
 
 # A single node graph is also possible
 model <- make_model("X")
@@ -91,11 +91,12 @@ nodal_types <-
       "11111111111111111111111111111111" ))
 
 make_model("A -> Y; B ->Y; C->Y; D->Y; E->Y",
-          nodal_types = nodal_types)$parameters_df
+          nodal_types = nodal_types) |>
+ inspect("parameters_df")
 
 nodal_types = list(Y = c("01", "10"), Z = c("0", "1"))
-make_model("Z -> Y", nodal_types = nodal_types)$parameters_df
-make_model("Z -> Y", nodal_types = FALSE)$parents_df
+make_model("Z -> Y", nodal_types = nodal_types) |>
+ inspect("parameters_df")
 }
 \seealso{
 \code{\link{summary.causal_model}} provides summary method for

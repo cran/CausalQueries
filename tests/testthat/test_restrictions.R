@@ -21,7 +21,7 @@ for(i in length(dags)){
 		desc = "Simple restrictions on exogenous nodes work",
 
 		code = {
-			model <- make_model(dags[i]) %>%
+			model <- make_model(dags[i]) |>
 							 set_restrictions(exogenous[i])
 
 			expect_equal(model$nodal_types$X, "1")
@@ -36,7 +36,7 @@ for(i in length(dags)){
 			model <- make_model(dags[i])
 		  rest_model <-	set_restrictions(model, monotonicity[i])
 			expect_true(
-			  length(get_nodal_types(model)$Y) > length(get_nodal_types(rest_model)$Y)
+			  (length(get_nodal_types(model)$Y) - length(get_nodal_types(rest_model)$Y) == 4)
 			)
 		}
 	)
@@ -95,7 +95,7 @@ testthat::test_that(
                        given = c('X.1'))
 
     expect_true(nrow(model$parameters_df)==8)
-    expect_true(all(get_ambiguities_matrix(model) %>%
+    expect_true(all(get_ambiguities_matrix(model) |>
                       apply(2, sum) == c(2,2,2)))
   }
 )
@@ -111,7 +111,7 @@ testthat::test_that(
       set_restrictions(param_names = c("X.0", "Y.11_X.1"))
 
     expect_true(nrow(model$parameters_df)==4)
-    expect_true(all(get_ambiguities_matrix(model) %>% apply(2, sum)== c(2,1)))
+    expect_true(all(get_ambiguities_matrix(model) |> apply(2, sum)== c(2,1)))
   }
 )
 
@@ -141,7 +141,7 @@ testthat::test_that(
       set_restrictions(param_names = c("X.0", "Y.11_X.0"), keep = TRUE)
 
     expect_true(nrow(model$parameters_df)==2)
-    expect_true(all(get_ambiguities_matrix(model) %>% apply(2, sum)== 1))
+    expect_true(all(get_ambiguities_matrix(model) |> apply(2, sum)== 1))
   }
 )
 

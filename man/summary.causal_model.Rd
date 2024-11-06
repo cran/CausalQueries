@@ -5,28 +5,111 @@
 \alias{print.summary.causal_model}
 \title{Summarizing causal models}
 \usage{
-\method{summary}{causal_model}(object, ...)
+\method{summary}{causal_model}(object, include = NULL, ...)
 
-\method{print}{summary.causal_model}(x, stanfit = FALSE, ...)
+\method{print}{summary.causal_model}(x, what = NULL, ...)
 }
 \arguments{
 \item{object}{An object of \code{causal_model} class produced using
 \code{make_model} or \code{update_model}.}
 
+\item{include}{A character string specifying the additional objects to include in summary. Defaults to \code{NULL}. See details for full list of available values.}
+
 \item{...}{Further arguments passed to or from other methods.}
 
-\item{x}{An object of \code{summary.causal_model} class, usually a result of
-a call to \code{summary.causal_model}.}
+\item{x}{An object of \code{summary.causal_model} class, produced using \code{summary.causal_model}.}
 
-\item{stanfit}{Logical. Whether to include readable summary of
-\code{stanfit} produced when updating a model via \code{update_model}.
-Defaults to `FALSE`.}
+\item{what}{A character string specifying the objects summaries to print. Defaults to \code{NULL} printing causal statement, specification of nodal types and summary of model restrictions. See details for full list of available values.}
+}
+\value{
+Returns the object of class \code{summary.causal_model} that preserves the list structure of \code{causal_model} class and adds the following additional objects:
+\itemize{
+  \item \code{"parents"} a list of parents of all nodes in a model,
+  \item \code{"parameters"} a vector of 'true' parameters,
+  \item \code{"parameter_names"} a vector of names of parameters,
+  \item \code{"data_types"} a list with the all data  types consistent with the model; for options see \code{"?get_all_data_types"},
+  \item \code{"prior_event_probabilities"} a vector of prior data (event) probabilities given a parameter vector; for options see \code{"?get_event_probabilities"},
+  \item \code{"prior_hyperparameters"} a vector of alpha values used to parameterize Dirichlet prior distributions; optionally provide node names to reduce output \code{"inspect(prior_hyperparameters, c('M', 'Y'))"}
+}
 }
 \description{
-summary method for class \code{causal_model}.
+summary method for class "\code{causal_model}".
 }
 \details{
-\code{print.summary.causal_model} reports DAG data frame, full specification of
-nodal types and summary of model restrictions in addition to standard
-\code{print.causal_model} output.
+In addition to the default objects included in `summary.causal_model` users can request additional objects via `include` argument. Note that these additional objects can be large for complex models and can increase computing time. The `include` argument can be a vector of any of the following additional objects:
+\itemize{
+  \item \code{"parameter_matrix"} A matrix mapping from parameters into causal types,
+  \item \code{"parameter_mapping"} a matrix mapping from parameters into data types,
+  \item \code{"causal_types"} A data frame listing causal types and the nodal types that produce them,
+  \item \code{"prior_distribution"} A data frame of the parameter prior distribution,
+  \item \code{"ambiguities_matrix"} A matrix mapping from causal types into data types,
+  \item \code{"type_prior"} A matrix of type probabilities using priors.
+}
+
+\code{print.summary.causal_model} reports causal statement, full specification of nodal types and summary of model restrictions. By specifying `what` argument users can instead print a custom summary of any set of the following objects contained in the `summary.causal_model`:
+\itemize{
+  \item \code{"statement"} A character string giving the causal statement,
+  \item \code{"nodes"} A list containing the nodes in the model,
+  \item \code{"parents"} A list of parents of all nodes in a model,
+  \item \code{"parents_df"} A data frame listing nodes, whether they are root nodes or not, and the number and names of parents they have,
+  \item \code{"parameters"} A vector of 'true' parameters,
+  \item \code{"parameters_df"} A data frame containing parameter information,
+  \item \code{"parameter_names"} A vector of names of parameters,
+  \item \code{"parameter_mapping"} A matrix mapping from parameters into data types,
+  \item \code{"parameter_matrix"} A matrix mapping from parameters into causal types,
+  \item \code{"causal_types"} A data frame listing causal types and the nodal types that produce them,
+  \item \code{"nodal_types"} A list with the nodal types of the model,
+  \item \code{"data_types"} A list with the all data types consistent with the model; for options see `"?get_all_data_types"`,
+  \item \code{"prior_hyperparameters"} A vector of alpha values used to parameterize Dirichlet prior distributions; optionally provide node names to reduce output `inspect(prior_hyperparameters, c('M', 'Y'))`
+  \item \code{"prior_distribution"} A data frame of the parameter prior distribution,
+  \item \code{"prior_event_probabilities"} A vector of data (event) probabilities given a single (sepcified) parameter vector; for options see `"?get_event_probabilities"`,
+  \item \code{"ambiguities_matrix"} A matrix mapping from causal types into data types,
+  \item \code{"type_prior"} A matrix of type probabilities using priors,
+  \item \code{"type_distribution"} A matrix of type probabilities using posteriors,
+  \item \code{"posterior_distribution"} A data frame of the parameter posterior distribution,
+  \item \code{"posterior_event_probabilities"} A sample of data (event) probabilities from the posterior,
+  \item \code{"data"} A data frame with data that was used to update model.
+  \item \code{"stanfit"} A `stanfit` object generated by Stan,
+  \item \code{"stan_summary"} A `stanfit` summary with updated parameter names,
+  \item \code{"stan_objects"} A list of Stan outputs that includes `stanfit`, `data`, and, if requested when updating the model, posterior `event_probabilities` and `type_distribution`.
+}
+}
+\examples{
+\donttest{
+model <-
+  make_model("X -> Y")
+
+model |>
+  update_model(
+    keep_event_probabilities = TRUE,
+    keep_fit = TRUE,
+    data = make_data(model, n = 100)
+  ) |>
+  summary()
+}
+
+\donttest{
+model <-
+  make_model("X -> Y") |>
+  update_model(
+    keep_event_probabilities = TRUE,
+    keep_fit = TRUE,
+    data = make_data(model, n = 100)
+  )
+
+print(summary(model), what = "type_distribution")
+print(summary(model), what = "posterior_distribution")
+print(summary(model), what = "posterior_event_probabilities")
+print(summary(model), what = "data_types")
+print(summary(model), what = "ambiguities_matrix")
+print(summary(model), what = "prior_hyperparameters")
+print(summary(model), what = c("statement", "nodes"))
+print(summary(model), what = "parameters_df")
+print(summary(model), what = "posterior_event_probabilities")
+print(summary(model), what = "posterior_distribution")
+print(summary(model), what = "data")
+print(summary(model), what = "stanfit")
+print(summary(model), what = "type_distribution")
+}
+
 }

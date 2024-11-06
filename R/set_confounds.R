@@ -40,22 +40,23 @@
 #' @return An object of class \code{causal_model} with updated parameters_df
 #'   and parameter matrix.
 #' @export
+#' @family set
 #' @examples
 #'
 #' make_model('X -> Y; X <-> Y') |>
-#' grab("parameters")
+#' inspect("parameters")
 #'
 #' make_model('X -> M -> Y; X <-> Y') |>
-#' grab("parameters")
+#' inspect("parameters")
 #'
 #' model <- make_model('X -> M -> Y; X <-> Y; M <-> Y')
-#' model$parameters_df
+#' inspect(model, "parameters_df")
 #'
 #' # Example where set_confound is implemented after restrictions
 #'make_model("A -> B -> C") |>
 #' set_restrictions(increasing("A", "B")) |>
 #' set_confound("B <-> C") |>
-#' grab("parameters")
+#' inspect("parameters")
 #'
 #' # Example where two parents are confounded
 #' make_model('A -> B <- C; A <-> C') |>
@@ -66,11 +67,12 @@
 #'  # Example with two confounds, added sequentially
 #' model <- make_model('A -> B -> C') |>
 #'   set_confound(list("A <-> B", "B <-> C"))
-#' model$statement
+#' inspect(model, "statement")
 #' # plot(model)
 
 
-set_confound <- function(model, confound = NULL) {
+set_confound <- function(model,
+                         confound = NULL) {
   # handle global variables
   x <- NULL
 
@@ -125,10 +127,11 @@ set_confound <- function(model, confound = NULL) {
 
 
   # Add confounds to model statement
-  model$statement <-
-    paste0(model$statement,
-           "; ",
-           paste(names(confound), "<->", confound, collapse = "; "))
+  model$statement <- paste0(
+    model$statement,
+    "; ",
+    paste(names(confound), "<->", confound, collapse = "; ")
+  )
 
 
   # Expand parameters_df ------------------------------------------------------

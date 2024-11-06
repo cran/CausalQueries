@@ -11,11 +11,9 @@ testthat::test_that(
 		out <- capture.output(print(model))
 		expect_true(any(grepl("X -> Y", out)) &
 		              any(grepl("^Number of types by node:", out)) &
-		              any(grepl("^Number of unit types:", out)))
+		              any(grepl("^Number of causal types:", out)))
 		out <- class(summary(model))
-		expect_equal(out[1], "summary.causal_model")
-		expect_equal(out[2], "data.frame")
-		expect_warning(print(summary(model), stanfit = TRUE))
+		expect_equal(out, "summary.causal_model")
 
 		model <- update_model(model)
 		out <- capture.output(print(model))
@@ -28,6 +26,7 @@ testthat::test_that(
 		expect_true(any(grepl("Restrictions.+", out)))
  	}
 )
+
 
 
 testthat::test_that(
@@ -64,6 +63,18 @@ testthat::test_that(
                                 Y = c("01", "10"),
                                 Z = c("0", "1"))
                               ))
+  }
+)
+
+
+
+testthat::test_that(
+
+  desc = "Clean statement",
+
+  code = {
+    expect_equal(make_model("X -> Y<-  X") |> grab("statement"), "X -> Y")
+    expect_equal(make_model("X -> Y; X<->Y; Y<->X") |> grab("statement"), "X -> Y; X <-> Y")
   }
 )
 

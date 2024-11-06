@@ -24,12 +24,12 @@
 #' @param case_level Logical. If TRUE estimates the probability of
 #'   the query for a case.
 #' @param query alias for queries
-#' @return A \code{DataFrame} where columns contain draws from the distribution
+#' @return A data frame where columns contain draws from the distribution
 #'   of the potential outcomes specified in \code{query}
 #' @importFrom stats sd weighted.mean
 #' @export
 #' @examples
-#' model <- make_model("X -> Y") %>%
+#' model <- make_model("X -> Y") |>
 #'          set_parameters(c(.5, .5, .1, .2, .3, .4))
 #'  \donttest{
 #'  # simple  queries
@@ -109,11 +109,13 @@
 #'  query_distribution(model, Q, given = G,
 #'     using = "posteriors", case_level = TRUE)
 #'
-#'  # 2. Case level query by hand using Bayes
-#'  distribution <- query_distribution(
-#'     model, list(QG = QG, G = G), using = "posteriors")
+#'  # 2. Case level query by hand using Bayes' rule
+#'  query_distribution(
+#'      model,
+#'      list(QG = QG, G = G),
+#'      using = "posteriors") |>
+#'     dplyr::summarize(mean(QG)/mean(G))
 #'
-#'  mean(distribution$QG)/mean(distribution$G)
 #' }
 #'
 query_distribution <- function(model,
@@ -247,7 +249,7 @@ query_distribution <- function(model,
 }
 
 
-#' Generate estimands dataframe
+#' Generate estimands data frame
 #'
 #' Calculated from a parameter vector, from a prior or
 #' from a posterior distribution.
@@ -276,7 +278,7 @@ query_distribution <- function(model,
 #'   query for a case.
 #' @param query alias for queries
 #' @param cred size of the credible interval ranging between 0 and 100
-#' @return A \code{DataFrame} with columns Model, Query, Given and Using
+#' @return A data frame with columns Model, Query, Given and Using
 #'   defined by corresponding input values. Further columns are generated
 #'   as specified in \code{stats}.
 #' @export
@@ -334,6 +336,10 @@ query_model <- function(model,
                         query = NULL,
                         cred = 95) {
   # handle global variables
+
+  func_call <- match.call()
+  date <- date()
+
   query_name <- NULL
 
   # if single model passed to function place it in a list
@@ -520,6 +526,10 @@ query_model <- function(model,
 
   class(estimands) <- c("model_query", "data.frame")
 
+  attr(estimands, "call") <- func_call
+  attr(estimands, "date") <- date
+
+
   return(estimands)
 }
 
@@ -610,13 +620,13 @@ check_args <-
 
 #' helper to get types from queries
 #'
-#' @param jobs \code{DataFrame} of argument combinations
+#' @param jobs a data frame of argument combinations
 #' @param model a list of models
 #' @param query_col string specifying the name of the column in jobs
 #'   holding queries to be evaluated
-#' @param realisations list of \code{DataFrame} outputs from calls
+#' @param realisations list of data frame outputs from calls
 #'   to \code{realise_outcomes}
-#' @return jobs \code{DataFrame} with a nested column of
+#' @return jobs data frame with a nested column of
 #'   \code{map_query_to_nodal_type} outputs
 #' @keywords internal
 
@@ -647,11 +657,11 @@ queries_to_types <- function(jobs,
 
 #' helper to get type distributions
 #'
-#' @param jobs \code{DataFrame} of argument combinations
+#' @param jobs data frame of argument combinations
 #' @param model a list of models
 #' @param n_draws integer specifying number of draws from prior distribution
 #' @param parameters optional list of parameter vectors
-#' @return jobs \code{DataFrame} with a nested column of type distributions
+#' @return jobs data frame with a nested column of type distributions
 #' @keywords internal
 
 get_type_distributions <- function(jobs,
@@ -698,7 +708,7 @@ get_type_distributions <- function(jobs,
 
 #' helper to get estimands
 #'
-#' @param jobs \code{DataFrame} of argument combinations
+#' @param jobs a data frame of argument combinations
 #' @param given_types output from \code{queries_to_types}
 #' @param query_types output from \code{queries_to_types}
 #' @param type_distributions output from \code{get_type_distributions}
@@ -764,4 +774,37 @@ get_type_distributions <- function(jobs,
   }
 
 
+  plot_query <- function(model_query) {
+    # create bindings
+    query <- case_level <- using <- cred.low <- cred.high <- NULL
+    # adjust this value to control the amount of dodge
+    dodge_width <- 0.2
+
+    if (!("model" %in% names(model_query)))
+      model_query$model <- "Causal Queries"
+
+
+    model_query <- model_query |>
+      mutate(
+        given = gsub("==", "=", given),
+        query = ifelse(given != "-", paste(query, "|", given), query),
+        query = ifelse(case_level, paste(query, "(case)"), query)
+      )
+
+    model_query |>
+      ggplot(aes(mean, query, color = using)) +
+      geom_point(position = position_dodge(width = dodge_width)) +
+      geom_errorbarh(aes(
+        xmin = cred.low,
+        xmax = cred.high,
+        height = .2
+      ),
+      position = position_dodge(width = dodge_width)) +
+      theme_bw() + facet_wrap( ~ model) + xlab("value")
+  }
+
+#' @export
+plot.model_query <- function(x, ...) {
+    plot_query(x,...)
+  }
 

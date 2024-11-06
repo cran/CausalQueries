@@ -2,8 +2,10 @@ context(desc = "Testing plot_model")
 
 testthat::skip_on_cran()
 
+
+
 testthat::test_that(
-  desc = "Testing plot.dag",
+  desc = "Testing basic functioning",
   code = {
     model <- make_model("X -> M -> Y; X -> Y")
     pdf(file = NULL)
@@ -12,23 +14,19 @@ testthat::test_that(
   })
 
 
+
 testthat::test_that(
-  desc = "Testing coordinates",
+  desc = "Testing plot isolate",
   code = {
-    model <- make_model("X -> K -> Y")
-    x <- c(1, 2, 3)
-    y <- c(1, 1, 1)
-    P <- plot(model, x_coord = x, y_coord = y)
-    dat <- data.frame(name = model$nodes,
-                      x = x,
-                      y = y)
-    expect_false(!any(P$data[match(P$data$name, model$nodes),
-                             c("name", "x", "y")] == dat))
+    model <- make_model("X")
+    pdf(file = NULL)
+    expect_silent(plot(model))
+    dev.off()
   })
 
 
 testthat::test_that(
-  desc = "Testing setting labels",
+  desc = "Testing setting coordinates",
   code = {
     model <- make_model("X -> K -> Y")
     x <- c(1, 2, 3)
@@ -36,14 +34,6 @@ testthat::test_that(
     P <- CausalQueries:::plot_model(model,
                                   x_coord = x,
                                   y_coord = y)
-
-    dat <- data.frame(name = model$nodes,
-                      x = x,
-                      y = y)
-    expect_false(
-      !any(P$data[match(P$data$name, model$nodes),
-                  c('name', 'x', 'y')] == dat)
-    )
 
     expect_message(
       CausalQueries:::plot_model(model, x_coord = x)
@@ -74,7 +64,4 @@ testthat::test_that(
                  "length of coordinates supplied must equal number of nodes")
 
   })
-
-
-
 

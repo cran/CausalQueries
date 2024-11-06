@@ -11,7 +11,7 @@ set_parameter_matrix(model, P = NULL)
 \code{\link{make_model}}.}
 
 \item{P}{A \code{data.frame}. Parameter matrix. Not required but may be
-provided to avoid repeated computation for simulations.}
+provided to avoid repeated computation for simulations. See \code{inspect(model, "parameter_matrix")}.}
 }
 \value{
 An object of class \code{causal_model}. It essentially returns a
@@ -25,6 +25,7 @@ Add a parameter matrix to a model
 \examples{
 model <- make_model('X -> Y')
 P <- diag(8)
-colnames(P) <- rownames(model$causal_types)
+colnames(P) <- inspect(model, "causal_types") |> rownames()
 model <- set_parameter_matrix(model, P = P)
 }
+\keyword{internal}

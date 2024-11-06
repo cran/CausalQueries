@@ -48,7 +48,7 @@ the query for a case.}
 \item{query}{alias for queries}
 }
 \value{
-A \code{DataFrame} where columns contain draws from the distribution
+A data frame where columns contain draws from the distribution
   of the potential outcomes specified in \code{query}
 }
 \description{
@@ -56,7 +56,7 @@ Calculated distribution of a query from a prior or
 posterior distribution of parameters
 }
 \examples{
-model <- make_model("X -> Y") \%>\%
+model <- make_model("X -> Y") |>
          set_parameters(c(.5, .5, .1, .2, .3, .4))
  \donttest{
  # simple  queries
@@ -136,11 +136,13 @@ model <- make_model("X -> Y") \%>\%
  query_distribution(model, Q, given = G,
     using = "posteriors", case_level = TRUE)
 
- # 2. Case level query by hand using Bayes
- distribution <- query_distribution(
-    model, list(QG = QG, G = G), using = "posteriors")
+ # 2. Case level query by hand using Bayes' rule
+ query_distribution(
+     model,
+     list(QG = QG, G = G),
+     using = "posteriors") |>
+    dplyr::summarize(mean(QG)/mean(G))
 
- mean(distribution$QG)/mean(distribution$G)
 }
 
 }

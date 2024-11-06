@@ -50,97 +50,95 @@
 #' @param keep Logical. If `FALSE`, removes and if `TRUE` keeps only causal
 #'   types specified by \code{statement} or \code{labels}.
 #'
-#' @family restrictions
-#'
 #' @export
 #' @return An object of class \code{model}. The causal types and nodal types
 #'   in the model are reduced according to the stated restriction.
-#'
+#' @family set
 #' @examples
 #'
 #' # 1. Restrict parameter space using statements
-#' model <- make_model('X->Y') %>%
+#' model <- make_model('X->Y') |>
 #'   set_restrictions(statement = c('X[] == 0'))
 #'
-#' model <- make_model('X->Y') %>%
+#' model <- make_model('X->Y') |>
 #'   set_restrictions(non_increasing('X', 'Y'))
 #'
-#' model <- make_model('X -> Y <- W') %>%
+#' model <- make_model('X -> Y <- W') |>
 #'   set_restrictions(c(decreasing('X', 'Y'), substitutes('X', 'W', 'Y')))
 #'
-#' model$parameters_df
+#' inspect(model, "parameters_df")
 #'
-#' model <- make_model('X-> Y <- W') %>%
+#' model <- make_model('X-> Y <- W') |>
 #'   set_restrictions(statement = decreasing('X', 'Y'))
-#' model$parameters_df
+#' inspect(model, "parameters_df")
 #'
-#' model <- make_model('X->Y') %>%
+#' model <- make_model('X->Y') |>
 #'   set_restrictions(decreasing('X', 'Y'))
-#' model$parameters_df
+#' inspect(model, "parameters_df")
 #'
-#' model <- make_model('X->Y') %>%
+#' model <- make_model('X->Y') |>
 #'   set_restrictions(c(increasing('X', 'Y'), decreasing('X', 'Y')))
-#' model$parameters_df
+#' inspect(model, "parameters_df")
 #' \donttest{
 #' # Restrict to define a model with monotonicity
-#' model <- make_model('X->Y') %>%
+#' model <- make_model('X->Y') |>
 #' set_restrictions(statement = c('Y[X=1] < Y[X=0]'))
-#' grab(model, "parameter_matrix")
+#' inspect(model, "parameter_matrix")
 #'
 #' # Restrict to a single type in endogenous node
-#' model <- make_model('X->Y') %>%
+#' model <- make_model('X->Y') |>
 #' set_restrictions(statement =  '(Y[X = 1] == 1)', join_by = '&', keep = TRUE)
-#' grab(model, "parameter_matrix")
+#' inspect(model, "parameter_matrix")
 #'
 #'#  Use of | and &
 #'# Keep node if *for some value of B* Y[A = 1] == 1
-#'model <- make_model('A->Y<-B') %>%
+#'model <- make_model('A->Y<-B') |>
 #' set_restrictions(statement =  '(Y[A = 1] == 1)', join_by = '|', keep = TRUE)
-#'dim(grab(model ,"parameter_matrix"))
+#'dim(inspect(model ,"parameter_matrix"))
 #'
 #'
 #'# Keep node if *for all values of B* Y[A = 1] == 1
-#'model <- make_model('A->Y<-B') %>%
+#'model <- make_model('A->Y<-B') |>
 #' set_restrictions(statement =  '(Y[A = 1] == 1)', join_by = '&', keep = TRUE)
-#' dim(grab(model, "parameter_matrix"))
+#' dim(inspect(model, "parameter_matrix"))
 #'
 #' # Restrict multiple nodes
-#' model <- make_model('X->Y<-M; X -> M' ) %>%
+#' model <- make_model('X->Y<-M; X -> M' ) |>
 #' set_restrictions(statement =  c('(Y[X = 1] == 1)', '(M[X = 1] == 1)'),
 #'                  join_by = '&', keep = TRUE)
-#' grab(model, "parameter_matrix")
+#' inspect(model, "parameter_matrix")
 #'
 #' # Restrict using statements and given:
-#' model <- make_model("X -> Y -> Z; X <-> Z") %>%
+#' model <- make_model("X -> Y -> Z; X <-> Z") |>
 #'  set_restrictions(list(decreasing('X','Y'), decreasing('Y','Z')),
 #'                   given = c(NA,'X.0'))
-#' grab(model, "parameter_matrix")
+#' inspect(model, "parameter_matrix")
 #'
 #' # Restrictions on levels for endogenous nodes aren't allowed
 #' \dontrun{
-#' model <- make_model('X->Y') %>%
+#' model <- make_model('X->Y') |>
 #' set_restrictions(statement =  '(Y == 1)')
 #' }
 #'
 #' # 2. Restrict parameter space Using labels:
-#' model <- make_model('X->Y') %>%
+#' model <- make_model('X->Y') |>
 #' set_restrictions(labels = list(X = '0', Y = '00'))
 #'
 #' # Restrictions can be  with wildcards
-#' model <- make_model('X->Y') %>%
+#' model <- make_model('X->Y') |>
 #' set_restrictions(labels = list(Y = '?0'))
-#' grab(model, "parameter_matrix")
+#' inspect(model, "parameter_matrix")
 #'
 #' # Deterministic model
-#' model <- make_model('S -> C -> Y <- R <- X; X -> C -> R') %>%
+#' model <- make_model('S -> C -> Y <- R <- X; X -> C -> R') |>
 #' set_restrictions(labels = list(C = '1000', R = '0001', Y = '0001'),
 #'                  keep = TRUE)
-#' grab(model, "parameter_matrix")
+#' inspect(model, "parameter_matrix")
 #'
 #' # Restrict using labels and given:
-#' model <- make_model("X -> Y -> Z; X <-> Z") %>%
+#' model <- make_model("X -> Y -> Z; X <-> Z") |>
 #'  set_restrictions(labels = list(X = '0', Z = '00'), given = c(NA,'X.0'))
-#' grab(model, "parameter_matrix")
+#' inspect(model, "parameter_matrix")
 #'}
 
 set_restrictions <- function(model,
@@ -383,7 +381,7 @@ set_restrictions <- function(model,
 #'   parameters implicated by the restrictions, 2. a vector of subsetting
 #'   instructions used to identify implicated causal types
 #' @keywords internal
-#' @family restrictions
+#' @noRd
 
 restrict_by_query <- function(model,
                               statement,
@@ -469,7 +467,7 @@ restrict_by_query <- function(model,
 #'   parameters implicated by the restrictions, 2. a vector of subsetting
 #'   instructions used to identify implicated causal types
 #' @keywords internal
-#' @family restrictions
+#' @noRd
 
 restrict_by_labels <- function(model,
                                labels,
@@ -575,9 +573,10 @@ restrict_by_labels <- function(model,
 
 
 #' Get type names
-#' @param nodal_types Nodal types of a model. See \code{\link{get_nodal_types}}.
+#' @param nodal_types Nodal types of a model. See \code{get_nodal_types}.
 #' @return A vector containing causal type names
 #' @keywords internal
+#' @noRd
 
 
 get_type_names <- function(nodal_types) {
@@ -594,6 +593,7 @@ get_type_names <- function(nodal_types) {
 #'   characters '?' to be unpacked.
 #' @return A type label with wildcard characters '?' substituted by 0 and 1.
 #' @keywords internal
+#' @noRd
 
 
 unpack_wildcard <- function(x) {
@@ -618,6 +618,7 @@ unpack_wildcard <- function(x) {
 #'   rows to be dropped from causal types data.frame.
 #' @return A \code{data.frame} containing updated causal types in a model
 #' @keywords internal
+#' @noRd
 #' @examples
 #' CausalQueries:::update_causal_types(make_model('X->Y'))
 
@@ -644,7 +645,7 @@ update_causal_types <- function(model, restrict_given = NULL) {
   # Add names
   cnames <- causal_type_names(df)
   rownames(df) <- do.call(paste, c(cnames, sep = "."))
-  class(df) <- c("causal_types", "data.frame")
+  class(df) <- "data.frame"
   return(df)
 }
 

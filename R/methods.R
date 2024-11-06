@@ -1,7 +1,6 @@
-
 #' Print a short summary for a causal model
 #'
-#' print method for class \code{causal_model}.
+#' print method for class "\code{causal_model}".
 #'
 #' @param x An object of \code{causal_model} class, usually a result of
 #'   a call to \code{make_model} or \code{update_model}.
@@ -9,27 +8,28 @@
 #'
 #' @details
 #' The information regarding the causal model includes the statement describing
-#' causal relations using \link{dagitty} syntax,
+#' causal relations using \code{dagitty} syntax,
 #' number of nodal types per parent in a DAG, and number of causal types.
 #'
 #' @export
 print.causal_model <- function(x, ...) {
-  print.statement(x$statement)
+  cat("\nCausal statement: \n")
+  cat(x$statement)
+  cat("\n")
 
   cat("\nNumber of types by node:\n")
-  nodal_types <- get_nodal_types(x)
-  print(vapply(nodal_types , length, numeric(1) ,USE.NAMES = TRUE))
+  print(vapply(get_nodal_types(x), length, numeric(1), USE.NAMES = TRUE))
 
 
   if (!is.null(x$causal_types)) {
-    cat("\nNumber of unit types:")
-    cat(paste0(" ", nrow(get_causal_types(x)), "\n\n"))
+    cat("\nNumber of causal types:")
+    cat(paste0(" ", nrow(get_causal_types(x)), "\n"))
   }
 
-  if (!is.null(x$posterior_distribution)) {
+  if (!is.null(x$posterior_distribution) & !is.null(x$stan_objects)) {
     cat("\nModel has been updated and contains a posterior distribution with\n")
-    cat(paste(grab(x, object = "stan_summary")[[2]],"\n"))
-    cat("Use grab(model, object = 'stan_summary') to inspect stan summary \n\n")
+    cat(paste(x$stan_objects$stan_summary[[2]], "\n"))
+    cat("Use inspect(model, 'stan_objects') to inspect stan summary\n\n")
   }
 
   return(invisible(x))
@@ -37,422 +37,779 @@ print.causal_model <- function(x, ...) {
 
 #' Summarizing causal models
 #'
-#' summary method for class \code{causal_model}.
+#' summary method for class "\code{causal_model}".
 #'
 #' @param object An object of \code{causal_model} class produced using
 #'   \code{make_model} or \code{update_model}.
+#' @param include A character string specifying the additional objects to include in summary. Defaults to \code{NULL}. See details for full list of available values.
 #' @param ... Further arguments passed to or from other methods.
 #'
+#' @return Returns the object of class \code{summary.causal_model} that preserves the list structure of \code{causal_model} class and adds the following additional objects:
+#' \itemize{
+#'   \item \code{"parents"} a list of parents of all nodes in a model,
+#'   \item \code{"parameters"} a vector of 'true' parameters,
+#'   \item \code{"parameter_names"} a vector of names of parameters,
+#'   \item \code{"data_types"} a list with the all data  types consistent with the model; for options see \code{"?get_all_data_types"},
+#'   \item \code{"prior_event_probabilities"} a vector of prior data (event) probabilities given a parameter vector; for options see \code{"?get_event_probabilities"},
+#'   \item \code{"prior_hyperparameters"} a vector of alpha values used to parameterize Dirichlet prior distributions; optionally provide node names to reduce output \code{"inspect(prior_hyperparameters, c('M', 'Y'))"}
+#' }
+#'
 #' @details
-#' \code{print.summary.causal_model} reports DAG data frame, full specification of
-#' nodal types and summary of model restrictions in addition to standard
-#' \code{print.causal_model} output.
+#' In addition to the default objects included in `summary.causal_model` users can request additional objects via `include` argument. Note that these additional objects can be large for complex models and can increase computing time. The `include` argument can be a vector of any of the following additional objects:
+#' \itemize{
+#'   \item \code{"parameter_matrix"} A matrix mapping from parameters into causal types,
+#'   \item \code{"parameter_mapping"} a matrix mapping from parameters into data types,
+#'   \item \code{"causal_types"} A data frame listing causal types and the nodal types that produce them,
+#'   \item \code{"prior_distribution"} A data frame of the parameter prior distribution,
+#'   \item \code{"ambiguities_matrix"} A matrix mapping from causal types into data types,
+#'   \item \code{"type_prior"} A matrix of type probabilities using priors.
+#' }
+#'
+#' @examples
+#' \donttest{
+#' model <-
+#'   make_model("X -> Y")
+#'
+#' model |>
+#'   update_model(
+#'     keep_event_probabilities = TRUE,
+#'     keep_fit = TRUE,
+#'     data = make_data(model, n = 100)
+#'   ) |>
+#'   summary()
+#' }
 #'
 #' @export
-summary.causal_model <- function(object, ...) {
-  structure(object, class = c("summary.causal_model", "data.frame"))
+summary.causal_model <- function(object, include = NULL, ...) {
+  is_a_model(object)
+
+  object$parents <- get_parents(object)
+  object$parameters <- get_parameters(object)
+
+  # Collect '...' into a list
+  dots <- list(...)
+
+  # Extract and pass specific arguments to each function
+  object$data_types <-
+    list(object) |>
+    c(get_args_for(get_all_data_types, dots)) |>
+    do.call(get_all_data_types, args = _)
+
+  object$prior_event_probabilities <-
+    list(object) |>
+    c(get_args_for(get_event_probabilities, dots)) |>
+    do.call(get_event_probabilities, args = _)
+
+  object$parameter_names <-
+    list(object) |>
+    c(get_args_for(get_parameter_names, dots)) |>
+    do.call(get_parameter_names, args = _)
+
+  object$prior_hyperparameters <-
+    list(object) |>
+    c(get_args_for(get_priors, dots)) |>
+    do.call(get_priors, args = _)
+
+  if (!is.null(include)) {
+    # Only below values admissible to add to summary or to pass to printing
+    wrong <-
+      base::setdiff(include, c(
+        "statement",
+        "nodes",
+        "parents",
+        "parents_df",
+        "parameters",
+        "parameters_df",
+        "parameter_names",
+        "parameter_mapping",
+        "parameter_matrix",
+        "causal_types",
+        "nodal_types",
+        "data_types",
+        "prior_hyperparameters",
+        "prior_distribution",
+        "prior_event_probabilities",
+        "ambiguities_matrix",
+        "type_prior",
+        "type_distribution",
+        "posterior_distribution",
+        "posterior_event_probabilities",
+        "data",
+        "stanfit",
+        "stan_summary",
+        "stan_xs"
+      ))
+
+    if (length(wrong) > 0 & length(wrong) <= length(include)) {
+      stop(
+        "The following requested objects are not supported: ",
+        paste0(wrong, collapse = ", ")
+      )
+    }
+
+    if ("parameter_mapping" %in% include) {
+    object$parameter_mapping <-
+      list(object) |>
+      c(get_args_for(get_parmap, dots)) |>
+      do.call(get_parmap, args = _)
+    }
+
+    if ("parameter_matrix" %in% include) {
+      object$parameter_matrix <- get_parameter_matrix(object)
+    }
+
+    if ("causal_types" %in% include) {
+      object$causal_types <- get_causal_types(object)
+    }
+
+    if ("prior_distribution" %in% include) {
+      object$prior_distribution <-
+        list(object, using = "priors") |>
+        c(get_args_for(get_param_dist, dots)) |>
+        do.call(get_param_dist, args = _) |>
+        suppressMessages()
+    }
+
+    if ("ambiguities_matrix" %in% include) {
+      object$ambiguities_matrix <- get_ambiguities_matrix(object)
+    }
+
+    if ("type_prior" %in% include) {
+      object$type_prior <-
+        list(object, using = "priors") |>
+        c(get_args_for(get_type_prob_multiple, dots)) |>
+        do.call(get_type_prob_multiple, args = _)
+    }
+  }
+
+  object <- structure(object, class = c("summary.causal_model"))
+  attr(object, "include") <- include
+
+  return(object)
 }
+
 
 #' @rdname summary.causal_model
 #'
-#' @param x An object of \code{summary.causal_model} class, usually a result of
-#'   a call to \code{summary.causal_model}.
-#' @param stanfit Logical. Whether to include readable summary of
-#'   \code{stanfit} produced when updating a model via \code{update_model}.
-#'   Defaults to `FALSE`.
+#' @param x An object of \code{summary.causal_model} class, produced using \code{summary.causal_model}.
+#' @param what A character string specifying the objects summaries to print. Defaults to \code{NULL} printing causal statement, specification of nodal types and summary of model restrictions. See details for full list of available values.
 #' @param ... Further arguments passed to or from other methods.
 #'
+#'
+#' @details
+#' \code{print.summary.causal_model} reports causal statement, full specification of nodal types and summary of model restrictions. By specifying `what` argument users can instead print a custom summary of any set of the following objects contained in the `summary.causal_model`:
+#' \itemize{
+#'   \item \code{"statement"} A character string giving the causal statement,
+#'   \item \code{"nodes"} A list containing the nodes in the model,
+#'   \item \code{"parents"} A list of parents of all nodes in a model,
+#'   \item \code{"parents_df"} A data frame listing nodes, whether they are root nodes or not, and the number and names of parents they have,
+#'   \item \code{"parameters"} A vector of 'true' parameters,
+#'   \item \code{"parameters_df"} A data frame containing parameter information,
+#'   \item \code{"parameter_names"} A vector of names of parameters,
+#'   \item \code{"parameter_mapping"} A matrix mapping from parameters into data types,
+#'   \item \code{"parameter_matrix"} A matrix mapping from parameters into causal types,
+#'   \item \code{"causal_types"} A data frame listing causal types and the nodal types that produce them,
+#'   \item \code{"nodal_types"} A list with the nodal types of the model,
+#'   \item \code{"data_types"} A list with the all data types consistent with the model; for options see `"?get_all_data_types"`,
+#'   \item \code{"prior_hyperparameters"} A vector of alpha values used to parameterize Dirichlet prior distributions; optionally provide node names to reduce output `inspect(prior_hyperparameters, c('M', 'Y'))`
+#'   \item \code{"prior_distribution"} A data frame of the parameter prior distribution,
+#'   \item \code{"prior_event_probabilities"} A vector of data (event) probabilities given a single (sepcified) parameter vector; for options see `"?get_event_probabilities"`,
+#'   \item \code{"ambiguities_matrix"} A matrix mapping from causal types into data types,
+#'   \item \code{"type_prior"} A matrix of type probabilities using priors,
+#'   \item \code{"type_distribution"} A matrix of type probabilities using posteriors,
+#'   \item \code{"posterior_distribution"} A data frame of the parameter posterior distribution,
+#'   \item \code{"posterior_event_probabilities"} A sample of data (event) probabilities from the posterior,
+#'   \item \code{"data"} A data frame with data that was used to update model.
+#'   \item \code{"stanfit"} A `stanfit` object generated by Stan,
+#'   \item \code{"stan_summary"} A `stanfit` summary with updated parameter names,
+#'   \item \code{"stan_objects"} A list of Stan outputs that includes `stanfit`, `data`, and, if requested when updating the model, posterior `event_probabilities` and `type_distribution`.
+#' }
+#'
+#' @examples
+#' \donttest{
+#' model <-
+#'   make_model("X -> Y") |>
+#'   update_model(
+#'     keep_event_probabilities = TRUE,
+#'     keep_fit = TRUE,
+#'     data = make_data(model, n = 100)
+#'   )
+#'
+#' print(summary(model), what = "type_distribution")
+#' print(summary(model), what = "posterior_distribution")
+#' print(summary(model), what = "posterior_event_probabilities")
+#' print(summary(model), what = "data_types")
+#' print(summary(model), what = "ambiguities_matrix")
+#' print(summary(model), what = "prior_hyperparameters")
+#' print(summary(model), what = c("statement", "nodes"))
+#' print(summary(model), what = "parameters_df")
+#' print(summary(model), what = "posterior_event_probabilities")
+#' print(summary(model), what = "posterior_distribution")
+#' print(summary(model), what = "data")
+#' print(summary(model), what = "stanfit")
+#' print(summary(model), what = "type_distribution")
+#' }
+#'
 #' @export
-print.summary.causal_model <- function(x, stanfit = FALSE, ... ) {
+print.summary.causal_model <-
+  function(x, what = NULL, ...) {
 
-  if (stanfit & is.null(x$stan_objects))
-    warning(paste0("You requested summary of stan fit on the causal_model",
-                   "that was not updated. The summary of stan fit will",
-                   "not be printed"))
+    note_1 <- NA
+    short <- !is.null(what)
 
-  print.statement(x$statement)
-  print.dag(x$dag)
-  cat("\n------------------------------------------------------------------\n\n")
-  print.nodal_types(x$nodal_types)
+    # general printing requests: provided whenever 'what' is not specified
+    if (is.null(what)) {
 
-  if (!is.null(x$causal_types)) {
-    cat("\nNumber of unit types:")
-    cat(paste0("  ", nrow(x$causal_types), "\n\n"))
-  }
+      # create dummy messages for updating
+      printout <- c()
+      printout_upd <- c()
 
-  if (!is.null(attr(x, "restrictions"))) {
-    restrictions <- attr(x, "restrictions")
-    cat("----------------------------------------------------------------\n")
-    cat("\nRestrictions: \n")
-    for (node in x$nodes) {
-      cat(paste0(node,
-                 ": ",
-                 length(restrictions[[node]]),
-                 " restricted types \n\n"))
+      ## IF WHAT IS EMPTY
+
+      # main summary printout: statement
+      cat("\nCausal statement: \n")
+      cat(x$statement)
+      cat("\n")
+
+      # main summary printout: nodal types
+      cat("\nNodal types: \n")
+
+      nodal_types <- x$nodal_types
+      nodes <- names(x$nodal_types)
+
+      for (n in nodes) {
+        nt <- nodal_types[[n]]
+        interpret <- attr(nodal_types, "interpret")[[n]]
+        stop_at <- min(length(nt), 16)
+        cat(paste0("$", n, "\n"))
+
+        cat(paste0(nt[1:stop_at], collapse = "  "))
+
+        if (stop_at != length(nt)) {
+          cat(paste0(" ...", length(nt) - 16, " nodal types omitted"))
+        }
+        cat("\n\n")
+        print(interpret)
+        cat("\n")
+      }
+
+      cat("Number of types by node:\n")
+
+      print(vapply(nodal_types, length, numeric(1), USE.NAMES = TRUE))
+
+      if (!is.null(x$causal_types)) {
+        cat("\nNumber of causal types:")
+        cat(paste0("  ", nrow(x$causal_types), "\n"))
+      }
+
+      if (!is.null(attr(x, "restrictions"))) {
+        restrictions <- attr(x, "restrictions")
+        cat("\n\nRestrictions:\n")
+        for (node in x$nodes) {
+          cat(paste0(
+            node,
+            ": ",
+            length(restrictions[[node]]),
+            " restricted types \n\n"
+          ))
+        }
+      }
+
+      if (!is.null(x$posterior_distribution) & !is.null(x$stan_objects)) {
+        cat("\nModel has been updated and contains a posterior distribution with\n")
+        cat(paste(x$stan_objects$stan_summary[[2]], "\n"))
+        cat("Use inspect(model, 'stan_summary') to inspect stan summary\n")
+      }
+
+      if (is.null(x$posterior_distribution) | is.null(x$stan_objects)) {
+        printout <-
+          c(printout, "posterior_distribution, stan_objects")
+      } else {
+        if (is.null(x$stan_objects$data)) {
+          printout <- c(printout, "specified 'data'")
+          printout_upd <- c(printout_upd, "'data'")
+        }
+
+        if (is.null(x$stan_objects$event_probabilities)) {
+          printout <-
+            c(printout, "posterior event_probabilities")
+          printout_upd <-
+            c(printout_upd, "'keep_event_probabilities = TRUE'")
+        }
+
+        if (is.null(x$stan_objects$type_distribution)) {
+          printout <-
+            c(printout, "type_distribution")
+          printout_upd <-
+            c(printout_upd, "'type_distribution = TRUE'")
+        }
+
+        if (is.null(x$stan_objects$stanfit)) {
+          printout <-
+            c(printout, "stanfit")
+          printout_upd <-
+            c(printout_upd, "'keep_fit = TRUE'")
+        }
+      }
+
+      if (length(printout) > 0) {
+        note_1 <- {
+          if (length(printout_upd) > 0) {
+            (
+              paste0(
+                "\nNote: Model does not contain the following objects: ",
+                paste0(unique(printout), collapse = ", "),
+                ";\nto include these objects update model with ",
+                paste0(unique(printout_upd), collapse = ", "),
+                "\n"
+              )
+            )
+          } else {
+            (
+              paste0(
+                "\nNote: Model does not contain: ",
+                paste0(unique(printout), collapse = ", "),
+                ";\nto include these objects use update_model()\n"
+              )
+            )
+          }
+        }
+      }
     }
-  }
 
-  if (stanfit & !is.null(x$stan_objects)) {
-    cat("----------------------------------------------------------------\n\n")
-    print.stan_summary(x$stan_objects$stan_summary)
-    cat("\n")
-  }
+    # specific printing requests:
 
-  return(invisible(x))
-}
+    # pass on any additional elements to what from include argument in summary
+    what <- c(what, attr(x, "include"))
 
-#' Print a short summary for a causal_model DAG
-#'
-#' print method for class \code{dag}.
-#'
-#' @param x An object of \code{dag} class, which is a sub-object of
-#'    an object of the \code{causal_model} class produced using
-#'    \code{make_model} or \code{update_model}.
-#' @param ... Further arguments passed to or from other methods.
-#'
-#' @export
-print.dag <- function(x, ...) {
-  cat("\nDag: \n")
-  base::print.data.frame(x)
-  return(invisible(x))
-}
+    # avoid any repetition in long summaries
+    if(!short)
+    what <- base::setdiff(what, c("statement", "nodal_types"))
 
-#' Print a short summary for a causal_model statement
-#'
-#' print method for class \code{statement}.
-#'
-#' @param x An object of \code{statement} class, which is a sub-object of
-#'    an object of the \code{causal_model} class produced using
-#'    \code{make_model} or \code{update_model}.
-#' @param ... Further arguments passed to or from other methods.
-#'
-#' @export
-print.statement <- function(x, ...) {
-  cat("\nStatement: \n")
-  cat(x)
-  cat("\n")
-  return(invisible(x))
-}
 
-#' Print a short summary for causal_model nodes
-#'
-#' print method for class \code{nodes}.
-#'
-#' @param x An object of \code{nodes} class, which is a sub-object of
-#'    an object of the \code{causal_model} class produced using
-#'    \code{make_model} or \code{update_model}.
-#' @param ... Further arguments passed to or from other methods.
-#'
-#' @export
-print.nodes <- function(x, ...) {
-  cat("\nNodes: \n")
-  cat(paste(x, collapse = ", "))
-  return(invisible(x))
-}
 
-#' Print a short summary for a causal_model parents data-frame
-#'
-#' print method for class \code{parents_df}.
-#'
-#' @param x An object of \code{parents_df} class, which is a sub-object of
-#'    an object of the \code{causal_model} class produced using
-#'    \code{make_model} or \code{update_model}.
-#' @param ... Further arguments passed to or from other methods.
-#'
-#' @export
-print.parents_df <- function(x, ...) {
-  cat("\nRoot vs Non-Root status with number and names of parents for each node: \n")
-  base::print.data.frame(x)
-  return(invisible(x))
-}
+    if(!is.null(what)) {
 
-#' Print a short summary for a causal_model parameters data-frame
-#'
-#' print method for class \code{parameters_df}.
-#'
-#' @param x An object of \code{parameters_df} class, which is a sub-object of
-#'    an object of the \code{causal_model} class produced using
-#'    \code{make_model} or \code{update_model}.
-#' @param ... Further arguments passed to or from other methods.
-#'
-#' @export
-print.parameters_df <- function(x, ...) {
-  cat("Mapping of model parameters to nodal types: \n\n")
-  cat("----------------------------------------------------------------\n")
-  cat("\n param_names: name of parameter")
-  cat("\n node: name of endogeneous node associated with the parameter")
-  cat("\n gen: partial causal ordering of the parameter's node")
-  cat("\n param_set: parameter groupings forming a simplex")
-  cat("\n given: if model has confounding gives conditioning nodal type")
-  cat("\n param_value: parameter values")
-  cat("\n priors: hyperparameters of the prior Dirichlet distribution \n\n")
-  cat("----------------------------------------------------------------\n\n")
-  if(nrow(x) > 10) {
-    cat("\n first 10 rows: \n")
-    print.data.frame(x[1:10,])
-  } else {
-    print.data.frame(x)
-  }
-  return(invisible(x))
-}
+      # create dummy messages for updating
+      printout <- c()
+      printout_upd <- c()
 
-#' Print a short summary for causal_model causal-types
-#'
-#' print method for class \code{causal_types}.
-#'
-#' @param x An object of \code{causal_types} class, which is a sub-object of
-#'    an object of the \code{causal_model} class produced using
-#'    \code{make_model} or \code{update_model}.
-#' @param ... Further arguments passed to or from other methods.
-#'
-#' @export
-print.causal_types <- function(x, ...) {
-  cat("\nCausal Types: ")
-  cat("\ncartesian product of nodal types\n\n")
-  if(nrow(x) > 10) {
-    cat("\n first 10 causal types: \n")
-    print.data.frame(x[1:10,])
-  } else {
-    print.data.frame(x)
-  }
-  return(invisible(x))
-}
 
-#' Print a short summary for causal_model nodal-types
-#'
-#' print method for class \code{nodal_types}.
-#'
-#' @param x An object of \code{nodal_types} class, which is a sub-object of
-#'    an object of the \code{causal_model} class produced using
-#'    \code{make_model} or \code{update_model}.
-#' @param ... Further arguments passed to or from other methods.
-#'
-#' @export
-print.nodal_types <- function(x, ...) {
-  cat("Nodal types: \n")
+      ## IF WHAT IS SPECIFIED
 
-  nodal_types <- x
-  nodes <- names(x)
+      wrong <-
+        base::setdiff(what, c(
+          "statement",
+          "nodes",
+          "parents",
+          "parents_df",
+          "parameters",
+          "parameters_df",
+          "parameter_names",
+          "parameter_mapping",
+          "parameter_matrix",
+          "causal_types",
+          "nodal_types",
+          "data_types",
+          "prior_hyperparameters",
+          "prior_distribution",
+          "prior_event_probabilities",
+          "ambiguities_matrix",
+          "type_prior",
+          "type_distribution",
+          "posterior_distribution",
+          "posterior_event_probabilities",
+          "data",
+          "stanfit",
+          "stan_summary",
+          "stan_objects"
+        ))
 
-  for (n in nodes) {
-    nt <- nodal_types[[n]]
-    interpret <- attr(nodal_types, "interpret")[[n]]
-    stop_at <- min(length(nt), 16)
-    cat(paste0("$", n, "\n"))
+      if (length(wrong) > 0 & length(wrong) <= length(what)) {
+        stop(
+          "The following requested objects are not supported: ",
+          paste0(wrong, collapse = ", ")
+        )
+      }
 
-    cat(paste0(nt[1:stop_at], collapse = "  "))
+      # statement
+      if ("statement" %in% what) {
+        cat("\nCausal statement: \n")
+        cat(x$statement)
+        cat("\n")
+      }
 
-    if (stop_at != length(nt)) {
-      cat(paste0(" ...", length(nt) - 16, " nodal types omitted"))
+      # nodes
+      if ("nodes" %in% what) {
+        cat("\nNodes: \n")
+        cat(paste(x$nodes, collapse = ", "))
+        cat("\n")
+      }
+
+      if ("parents" %in% what) {
+        cat("\nParents: \n\n")
+        nodes <- names(x$parents)
+
+        for (n in nodes) {
+          n_parents <- x$parents[[n]]
+          cat(paste0("$", n, "\n"))
+          if (length(n_parents) == 0) {
+            cat("Node has no parents \n")
+          } else {
+            cat(paste(n_parents, sep = " "))
+          }
+          cat("\n")
+        }
+      }
+
+      # parents_df
+      if ("parents_df" %in% what) {
+        cat("\nRoot vs Non-Root status with number and names of parents for each node: \n\n")
+        print(x$parents_df)
+      }
+
+      # parameters
+      if ("parameters" %in% what) {
+        cat("\nparameters\nModel parameters with associated probabilities: \n\n")
+        print(x$parameters)
+      }
+
+
+      # parameters_df
+      if ("parameters_df" %in% what) {
+        cat("\nparameters_df\nMapping of model parameters to nodal types: \n")
+        # cat("----------------------------------------------------------------\n")
+        cat("\n  param_names: name of parameter")
+        cat("\n  node:        name of endogeneous node associated")
+        cat("\n               with the parameter")
+        cat("\n  gen:         partial causal ordering of the")
+        cat("\n               parameter's node")
+        cat("\n  param_set:   parameter groupings forming a simplex")
+        cat("\n  given:       if model has confounding gives")
+        cat("\n               conditioning nodal type")
+        cat("\n  param_value: parameter values")
+        cat("\n  priors:      hyperparameters of the prior")
+        cat("\n               Dirichlet distribution \n\n")
+        # cat("----------------------------------------------------------------\n\n")
+
+        snippet(x$parameters_df)
+
+      }
+
+      # parameter_names
+      if ("parameter_names" %in% what) {
+        cat("\nParameter names: \n")
+        cat(x$parameter_names, sep = ", ")
+        cat("\n")
+      }
+
+      # parameter_matrix
+      if (("parameter_matrix" %in% what) & !is.null(x$parameter_matrix)) {
+        cat(paste0("\nparameter_matrix:\n"))
+        cat(paste0("\n  rows:   parameters"))
+        cat(paste0("\n  cols:   causal types"))
+        cat(paste0("\n  cells:  whether a parameter probability is used"))
+        cat(paste0("\n          in the calculation of causal type probability\n\n"))
+
+        print(x$parameter_matrix)
+        if (!is.null(attr(x, "param_set"))) {
+          cat("\n")
+          param_set <- attr(x, "param_set")
+          cat("\n param_set  (P)\n ")
+          cat(paste0(param_set, collapse = "  "))
+        }
+      } else if (("parameter_matrix" %in% what) & is.null(x$parameter_matrix)) {
+        warning("Model summary does not contain parameter_matrix; to include this object use summary with 'include = 'parameter_matrix''")
+      }
+
+      # parameter_mapping
+      if (("parameter_mapping" %in% what) & !is.null(x$parameter_mapping)) {
+        cat("\nparameter_mapping (Parameter mapping matrix) \n")
+        cat("\n  Maps from parameters to data types, with")
+        cat("\n  possibly multiple columns for each data type")
+        cat("\n  in cases with confounding. \n\n")
+        snippet(data.frame(x$parameter_mapping))
+      } else if (("parameter_mapping" %in% what) & is.null(x$parameter_mapping)) {
+        warning("Model summary does not contain parameter_mapping; to include this object use summary with 'include = 'parameter_mapping''")
+      }
+
+      # causal_types
+      if ("causal_types" %in% what & !is.null(x$causal_types)) {
+        cat("\ncausal_types (Causal Types)\n")
+        cat("\nCartesian product of nodal types\n")
+        snippet(x$causal_types)
+
+      } else if ("causal_types" %in% what & is.null(x$causal_types)) {
+        warning("Model summary does not contain causal_types; to include this object use summary with 'include = 'causal_types''")
+      }
+
+      # nodal_types
+      if ("nodal_types" %in% what) {
+        cat("\nnodal_types (Nodal types): \n")
+
+        .nodal_types <- x$nodal_types
+        nodes <- names(.nodal_types)
+
+        for (n in nodes) {
+          nt <- .nodal_types[[n]]
+          interpret <- attr(.nodal_types, "interpret")[[n]]
+          stop_at <- min(length(nt), 16)
+          cat(paste0("$", n, "\n"))
+
+          cat(paste0(nt[1:stop_at], collapse = "  "))
+
+          if (stop_at != length(nt)) {
+            cat(paste0(" ...", length(nt) - 16, " nodal types omitted"))
+          }
+          cat("\n\n")
+          print(interpret)
+          cat("\n")
+        }
+
+        cat("\nNumber of types by node:\n")
+
+        print(vapply(.nodal_types, length, numeric(1), USE.NAMES = TRUE))
+      }
+
+      # data_types
+      if ("data_types" %in% what) {
+        cat("\ndata_types (Data types):\nData frame of all possible data (events) given the model:\n\n")
+        print(x$data_types)
+      }
+
+      # ambiguities_matrix
+      if (("ambiguities_matrix" %in% what) & !is.null(x$ambiguities_matrix)) {
+        cat("\nambiguities_matrix (Ambiguities matrix)\nMapping from causal types into data types:\n")
+
+        snippet(data.frame(x$ambiguities_matrix))
+
+      } else if (("ambiguities_matrix" %in% what) & is.null(x$ambiguities_matrix)) {
+        warning("Model summary does not contain ambiguities_matrix; to include this object use summary with 'include = 'ambiguities_matrix''")
+      }
+
+      # prior_event_probabilties
+      if ("prior_event_probabilities" %in% what) {
+        cat("\nprior_event_probabilities\nProbabilities of observing data (events)")
+        cat("\nfor a specified set of parameter values:\n\n")
+        print(data.frame(event_probs = x$prior_event_probabilities))
+      }
+
+      # prior_hyperparameters
+      if ("prior_hyperparameters" %in% what) {
+        cat("\nprior_hyperparameters\nAlpha parameter values used for Dirichlet prior distributions:\n\n")
+        print(x$prior_hyperparameters)
+      }
+
+      # prior_distribution
+      if (("prior_distribution" %in% what) & !is.null(x$prior_distribution)) {
+        cat("\nprior_distribution\nSummary statistics of model parameters prior distributions:\n")
+        cat(paste(
+          "\n  Distributions matrix dimensions are",
+          "\n ", dim(x$prior_distribution)[1], "rows (draws) by",
+          dim(x$prior_distribution)[2], "cols (parameters)\n\n",
+          sep = " "
+        ))
+        distribution_summary <-
+          as.data.frame(t(apply(
+            x$prior_distribution, 2,
+            summarise_distribution
+          )))
+        rounding_threshold <- find_rounding_threshold(distribution_summary)
+        print.data.frame(round(distribution_summary, rounding_threshold))
+      } else if (("prior_distribution" %in% what) & is.null(x$prior_distribution)) {
+        warning("Model summary does not contain prior_distribution; to include this object use summary with 'include = 'prior_distribution''")
+      }
+
+      # type_prior
+      if (("type_prior" %in% what) & !is.null(x$type_prior)) {
+        cat("\ntype_prior\nSummary statistics of causal types prior distributions:\n")
+        cat(paste(
+          "\n  Distributions matrix dimensions are",
+          "\n ", dim(x$type_prior)[1], "rows (causal types) by",
+          dim(x$type_prior)[2], "cols (draws)\n\n",
+          sep = " "
+        ))
+        distribution_summary <-
+          # why is this the case
+          as.data.frame(t(apply(x$type_prior, 1, summarise_distribution)))
+        rounding_threshold <- find_rounding_threshold(distribution_summary)
+        print.data.frame(round(distribution_summary, rounding_threshold))
+      } else if (("type_prior" %in% what) & is.null(x$type_prior)) {
+        warning("Model summary does not contain type_prior; to include this object use summary with 'include = 'type_prior''")
+      }
+
+      # type_distribution
+      if ("type_distribution" %in% what) {
+        if (!is.null(x$stan_objects$type_distribution)) {
+          cat("\ntype_distribution\nPosterior draws of causal types (transformed parameters):\n")
+          cat(paste(
+            "\n  Distributions matrix dimensions are",
+            "\n ", dim(x$stan_objects$type_distribution)[1], "rows (draws) by",
+            dim(x$stan_objects$type_distribution)[2], "cols (causal types)\n\n",
+            sep = " "
+          ))
+          distribution_summary <-
+            as.data.frame(t(apply(
+              x$stan_objects$type_distribution, 2,
+              summarise_distribution
+            )))
+          rounding_threshold <- find_rounding_threshold(distribution_summary)
+          print.data.frame(round(distribution_summary, rounding_threshold))
+        } else {
+          printout <- c(
+            printout,
+            "posterior type_distribution"
+          )
+          printout_upd <- c(
+            printout_upd,
+            "'type_distribution = TRUE'"
+          )
+        }
+      }
+
+      # posterior_distribution
+      if ("posterior_distribution" %in% what) {
+        if (!is.null(x$posterior_distribution)) {
+          cat("\nposterior_distribution\nSummary statistics of model parameters posterior distributions:\n")
+          cat(paste(
+            "\n  Distributions matrix dimensions are",
+            "\n ", dim(x$posterior_distribution)[1], "rows (draws) by",
+            dim(x$posterior_distribution)[2], "cols (parameters)\n\n",
+            sep = " "
+          ))
+          distribution_summary <-
+            as.data.frame(t(apply(
+              x$posterior_distribution, 2,
+              summarise_distribution
+            )))
+          rounding_threshold <- find_rounding_threshold(distribution_summary)
+          print.data.frame(round(distribution_summary, rounding_threshold))
+        } else {
+          printout <- c(
+            printout,
+            "posterior_distribution"
+          )
+          # printout_upd <- c(printout_upd, "")
+        }
+      }
+
+      # posterior_event_probabilities
+      if ("posterior_event_probabilities" %in% what) {
+        if (!is.null(x$stan_objects$event_probabilities)) {
+          cat("\nposterior_event_probabilities\nPosterior draws of event probabilities (transformed parameters):\n")
+          cat(paste(
+            "\n  Distributions matrix dimensions are",
+            "\n ", dim(x$stan_objects$event_probabilities)[1], "rows (draws) by",
+            dim(x$stan_objects$event_probabilities)[2], "cols (events)\n\n",
+            sep = " "
+          ))
+          distribution_summary <-
+            as.data.frame(t(apply(
+              x$stan_objects$event_probabilities, 2,
+              summarise_distribution
+            )))
+          rounding_threshold <- find_rounding_threshold(distribution_summary)
+          print.data.frame(round(distribution_summary, rounding_threshold))
+        } else {
+          printout <- c(
+            printout,
+            "event_probabilities"
+          )
+          printout_upd <- c(
+            printout_upd,
+            "'keep_event_probabilities = TRUE'"
+          )
+        }
+      }
+
+      # data
+      if ("data" %in% what) {
+        if (!is.null(x$stan_objects$data)) {
+          cat("\nData used to update the model:\n")
+          cat(paste(
+            "\ndata\n  Data frame dimensions are",
+            "\n ", dim(x$stan_objects$data)[1], "rows by",
+            dim(x$stan_objects$data)[2], "cols\n\n",
+            sep = " "
+          ))
+
+          snippet(x$stan_objects$data)
+
+        } else {
+          printout <- c(printout, "specified 'data'")
+          printout_upd <- c(printout_upd, "'data'")
+        }
+      }
+
+      # stan_objects
+      if ("stanfit" %in% what) {
+        if (!is.null(x$stan_objects$stanfit)) {
+          cat("\nstanfit\nStan model summary:\n")
+          print(x$stan_objects$stanfit)
+        } else {
+          printout <- c(printout, "stanfit")
+          printout_upd <- c(printout_upd, "'keep_fit = TRUE'")
+        }
+      }
+
+      # stan_objects
+      if ("stan_summary" %in% what | "stan_objects" %in% what) {
+        if (!is.null(x$stan_objects)) {
+          cat("\nstan_summary\nStan model summary:\n")
+          print(x$stan_objects)
+        } else {
+          printout <- c(printout, "stan_objects")
+          # printout_upd <- c(printout_upd, "")
+        }
+      }
+
+      if (length(printout) > 0) {
+        if (length(printout_upd) > 0) {
+          stop(
+            paste0(
+              "Model does not contain the following requested objects: ",
+              paste0(unique(printout), collapse = ", "),
+              ";\n  to include these objects update model with ",
+              paste0(unique(printout_upd), collapse = ", ")
+            )
+          )
+        } else {
+          stop(
+            paste0(
+              "Model does not contain: ",
+              paste0(unique(printout), collapse = ", "),
+              ";\n  to include these objects update model"
+            )
+          )
+        }
+      }
     }
-    cat("\n\n")
-    print(interpret)
-    cat("\n")
-  }
 
-  cat("\nNumber of types by node\n")
+    # Add notes if not short summary
+    if(!short) {
 
-  print(vapply(nodal_types , length, numeric(1), USE.NAMES = TRUE))
-
-  return(invisible(x))
-}
-
-#' Print a short summary for causal_model parameters
-#'
-#' print method for class \code{parameters}.
-#'
-#' @param x An object of \code{parameters} class, which is a sub-object of
-#'    an object of the \code{causal_model} class produced using
-#'    \code{make_model} or \code{update_model}.
-#' @param ... Further arguments passed to or from other methods.
-#'
-#' @export
-print.parameters <- function(x, ...) {
-  cat("Model parameters with associated probabilities: \n\n")
-  cat(names(x))
-  cat("\n")
-  cat(x)
-  return(invisible(x))
-}
-
-#' Print a short summary for causal_model parameter prior distributions
-#'
-#' print method for class \code{parameters_prior}.
-#'
-#' @param x An object of \code{parameters_prior} class, which is a sub-object of
-#'    an object of the \code{causal_model} class produced using
-#'    \code{set_prior_distribution}.
-#' @param ... Further arguments passed to or from other methods.
-#'
-#' @export
-print.parameters_prior <- function(x, ...) {
-  cat("Summary statistics of model parameter prior distributions:")
-  cat(paste("\nDimensions:", dim(x)[1], "rows (draws) by", dim(x)[2], "cols (parameters) \n\n", sep = " "))
-  cat("Summary: \n\n")
-  distribution_summary <- as.data.frame(t(apply(x, 2, summarise_distribution)))
-  rounding_threshold <- find_rounding_threshold(distribution_summary)
-  print.data.frame(round(distribution_summary, rounding_threshold))
-  return(invisible(x))
-}
-
-#' Print a short summary for causal_model parameter posterior distributions
-#'
-#' print method for class \code{parameters_posterior}.
-#'
-#' @param x An object of \code{parameters_posterior} class, which is a sub-object of
-#'    an object of the \code{causal_model} class produced using
-#'    \code{update_model}.
-#' @param ... Further arguments passed to or from other methods.
-#'
-#' @export
-print.parameters_posterior <- function(x, ...) {
-  cat("Summary statistics of model parameter posterior distributions:")
-  cat(paste("\n:", dim(x)[1], "rows (draws) by", dim(x)[2], "cols (parameters)\n\n", sep = " "))
-  distribution_summary <- as.data.frame(t(apply(x, 2, summarise_distribution)))
-  rounding_threshold <- find_rounding_threshold(distribution_summary)
-  print.data.frame(round(distribution_summary, rounding_threshold))
-  return(invisible(x))
-}
+      if(!is.na(note_1)) cat(note_1)
+      cat("\n")
+      cat("Note: To pose causal queries of this model use query_model()\n")
+      cat("\n")
+    }
 
 
-#' Print a short summary for causal-type prior distributions
-#'
-#' print method for class \code{type_prior}.
-#'
-#' @param x An object of \code{type_prior} class, which is a sub-object of
-#'    an object of the \code{causal_model} class produced using
-#'    \code{make_model} or \code{update_model}.
-#' @param ... Further arguments passed to or from other methods.
-#'
-#' @export
-print.type_prior <- function(x, ...) {
-  cat("Summary statistics of causal type prior distributions:")
-  cat(paste("\nDimensions:", dim(x)[1], "rows (draws) by", dim(x)[2], "cols (types) \n\n", sep = " "))
-  cat("Summary: \n\n")
-  distribution_summary <- as.data.frame(t(apply(x, 2, summarise_distribution)))
-  rounding_threshold <- find_rounding_threshold(distribution_summary)
-  print.data.frame(round(distribution_summary, rounding_threshold))
-  return(invisible(x))
-}
-
-#' Print a short summary for paramater mapping matrix
-#'
-#' print method for class \code{parameter_mapping}.
-#'
-#' @param x An object of \code{parameter_mapping} class.
-#' @param ... Further arguments passed to or from other methods.
-#'
-#' @export
-print.parameter_mapping <- function(x,  ...) {
-  cat("\nParameter mapping matrix: \n\n")
-  cat("Maps from parameters to data types, with \n")
-  cat("possibly multiple columns for each data type \n")
-  cat("in cases with confounding. \n\n")
-  print(data.frame(x))
-  cat("\n")
-  return(invisible(x))
-}
-
-
-#' Print a short summary for stan fit
-#'
-#' print method for class \code{stan_summary}.
-#'
-#' @param x An object of \code{stan_summary} class, which is a sub-object of
-#'    an object of the \code{causal_model} class produced using
-#'    \code{update_model}.
-#' @param ... Further arguments passed to or from other methods.
-#'
-#' @export
-print.stan_summary <- function(x, ...) {
-  cat(x, sep = "\n")
-  return(invisible(x))
-}
-
-
-#' helper to compute mean and sd of a distribution data.frame
-#' @param x An object for summarizing
-summarise_distribution <- function(x) {
-  summary <- c(mean(x, na.rm = TRUE), sd(x, na.rm = TRUE))
-  names(summary) <- c("mean", "sd")
-  return(summary)
-}
-
-#' helper to find rounding thresholds for print methods
-#' @param x An object for rounding
-find_rounding_threshold <- function(x) {
-  x <- max(abs(x)) - min(abs(x))
-  pow <- 1
-  x_pow <- x * 10^pow
-
-  while(x_pow < 1) {
-    pow <- pow + 1
-    x_pow <- x * 10^pow
-  }
-
-  return(pow + 1)
-}
-
-
-
-#' Print a short summary of posterior_event_probabilities
-#'
-#' print method for class \code{posterior_event_probabilities}.
-#'
-#' @param x An object of \code{posterior_event_probabilities} class.
-#' @param ... Further arguments passed to or from other methods.
-#'
-#' @export
-#'
-print.posterior_event_probabilities <-
-  function(x, ...) {
-    cat("\nPosterior draws of event probabilities (transformed parameters)\n")
-    cat(paste("\nDimensions:", dim(x)[1], "rows (draws) by", dim(x)[2], "cols (data types)\n\n", sep = " "))
-    cat("Summary: \n\n")
-    distribution_summary <- as.data.frame(t(apply(x, 2, summarise_distribution)))
-    rounding_threshold <- find_rounding_threshold(distribution_summary)
-    print.data.frame(round(distribution_summary, rounding_threshold))
     return(invisible(x))
   }
 
-#' Print a short summary for event probabilities
-#'
-#' print method for class \code{event_probabilities}.
-#'
-#' @param x An object of \code{event_probabilities} class, which is a sub-object of
-#'    an object of the \code{causal_model} class produced using
-#'    \code{update_model}.
-#' @param ... Further arguments passed to or from other methods.
-#'
-#' @export
-print.event_probabilities <- function(x, ...) {
-  cat("\nThe probability of observing a given combination of data ")
-  cat("\nrealizations for a given set of parameter values.\n\n")
-  print.data.frame(data.frame(event_probs = x))
-  return(invisible(x))
+#' helper to print snippets of large objects
+#' @noRd
+#' @keywords internal
+
+snippet <- function(df, nc = 10, nr = 10) {
+  if (nrow(df) > nr | ncol(df) > nc) {
+    cat(paste0("\nsnippet (use grab() to access full ", nrow(df), " x ", ncol(df), " object): \n\n"))
+    print.data.frame(df[1:(min(nrow(df), nr)), 1:(min(ncol(df), nc))])
+  } else {
+    print.data.frame(df)
+  }
 }
-
-
-#' Print a short summary for causal-type posterior distributions
-#'
-#' print method for class \code{type_distribution}.
-#'
-#' @param x An object of \code{type_distribution} class, which is a sub-object of
-#'    an object of the \code{causal_model} class produced using
-#'    \code{get_type_prob_multiple}.
-#' @param ... Further arguments passed to or from other methods.
-#'
-#' @export
-print.type_distribution <- function(x, ...) {
-  cat("Posterior draws of causal types (transformed parameters)")
-  cat(paste("\nDimensions:", dim(x)[1], "rows (draws) by", dim(x)[2], "cols (types) \n\n", sep = " "))
-  cat("Summary: \n\n")
-  distribution_summary <- as.data.frame(t(apply(x, 2, summarise_distribution)))
-  rounding_threshold <- find_rounding_threshold(distribution_summary)
-  print.data.frame(round(distribution_summary, rounding_threshold))
-  return(invisible(x))
-}
-
 
 
 #' Print a tightened summary of model queries
@@ -462,10 +819,10 @@ print.type_distribution <- function(x, ...) {
 #' @param x An object of \code{model_query} class.
 #' @param ... Further arguments passed to or from other methods.
 #'
+#' @rdname print.model_query
 #' @export
 #'
 print.model_query <- function(x, ...) {
-
   cred.low <- NULL
   cred.high <- NULL
   case_level <- NULL
@@ -477,7 +834,7 @@ print.model_query <- function(x, ...) {
   if (all(c("using", "case_level", "sd", "given") %in% names(x))) {
     if (all(x$using == "parameters" | x$case_level)) {
       x <- x |>
-        dplyr::select(-sd,-cred.low,-cred.high)
+        dplyr::select(-sd, -cred.low, -cred.high)
     }
     if (all(x$given == "-")) {
       x <- x |>
@@ -498,3 +855,72 @@ print.model_query <- function(x, ...) {
 }
 
 
+
+
+#' Summarizing model queries
+#'
+#' summary method for class "\code{model_query}".
+#'
+#' @param object An object of \code{model_query} class produced using
+#'   \code{query_model}
+#' @param ... Further arguments passed to or from other methods.
+#'
+#' @return Returns the object of class \code{summary.model_query}
+#'
+#' @examples
+#' \donttest{
+#' model <-
+#'   make_model("X -> Y") |>
+#'   query_model("Y[X=1] > Y[X=1]")  |>
+#'   summary()
+#'}
+#'
+#' @export
+summary.model_query <- function(object, ...) {
+  print_call_and_date(object)
+  print.model_query(object)
+}
+
+
+#' @rdname summary.model_query
+#'
+#' @param x an object of \code{model_query} class produced using
+#'  \code{query_model}
+#' @param ... Further arguments passed to or from other methods.
+#'
+#' @export
+
+print.summary.model_query <- function(x, ...) {
+  print_call_and_date(x)
+  print.model_query(x)
+}
+
+# Helper function to print the call and date attributes
+#'
+#' @noRd
+#' @keywords internal
+print_call_and_date <- function(object) {
+  cat("Call: \n")
+  cat(paste(deparse(attr(object, "call")), collapse = " "), "\n")
+
+  cat("\nQueries evaluated on: \n")
+  cat(attr(object, "date"))
+  cat("\n")
+}
+
+
+#' Print a short summary for stan_objects
+#'
+#' print method for class \code{stan_objects}.
+#'
+#' @param x An object of the \code{stan_objects} class, which is a list
+#' containing the data, \code{type_distribution} and  \code{stan_summary}.
+#' @param ... Further arguments passed to or from other methods.
+#'
+#' @noRd
+#' @keywords internal
+print.stan_objects <- function(x, ...) {
+  cat("\n")
+  cat(x$stan_summary, sep = "\n")
+  return(invisible(x))
+}

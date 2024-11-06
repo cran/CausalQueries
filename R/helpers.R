@@ -43,6 +43,7 @@ perm <- function(max = rep(1, 2)) {
 #' @param rm_right An integer. Number of bites after right-side match to remove
 #'   from result. Defaults to 0.
 #' @return A character vector.
+#' @noRd
 #' @keywords internal
 #' @examples
 #' a <- '(XX[Y=0] == 1) > (XX[Y=1] == 0)'
@@ -96,6 +97,7 @@ st_within <- function(x,
 #' Applies \code{gsub()} from multiple patterns to multiple
 #' replacements with 1:1 mapping.
 #' @return Returns multiple expression with substituted elements
+#' @noRd
 #' @keywords internal
 #' @param x A character vector.
 #' @param pattern_vector A character vector.
@@ -119,6 +121,7 @@ gsub_many <- function(x,
 #' Clean condition
 #'
 #' Takes a string specifying condition and returns properly spaced string.
+#' @noRd
 #' @keywords internal
 #' @return A properly spaced string.
 #' @param condition A character string. Condition that refers to a unique
@@ -178,7 +181,7 @@ interpret_type <- function(model,
     }
 
   if(is.null(nodes)){
-    nodes <- grab(model, object = "nodes")
+    nodes <- model$nodes
   }
 
     parents <- get_parents(model)
@@ -285,7 +288,8 @@ interpret_type <- function(model,
 #'
 #' # Expressions not requiring expansion are allowed
 #' expand_wildcard('(Y[X=1])')
-#' @export
+#' @noRd
+#' @keywords internal
 
 expand_wildcard <- function(to_expand,
                             join_by = "|",
@@ -364,6 +368,8 @@ expand_wildcard <- function(to_expand,
 #' @param include_paramset Logical. Whether to include the param set
 #'   prefix as part of the name.
 #' @return A character vector with the names of the parameters in the model
+#' @noRd
+#' @keywords internal
 
 get_parameter_names <- function(model, include_paramset = TRUE) {
 
@@ -382,10 +388,10 @@ get_parameter_names <- function(model, include_paramset = TRUE) {
 #' @inheritParams CausalQueries_internal_inherit_params
 #' @return An error message if argument is not a model.
 #' @keywords internal
+#' @noRd
 
 is_a_model <- function(model){
-  minimum_components <- c("dag",
-                          "nodes",
+  minimum_components <- c("nodes",
                           "statement",
                           "nodal_types",
                           "parameters_df" )
@@ -407,6 +413,7 @@ is_a_model <- function(model){
 #'
 #' @param query a string specifying a query
 #' @return fixed query as string
+#' @noRd
 #' @keywords internal
 
 check_query <- function(query) {
@@ -477,5 +484,42 @@ check_query <- function(query) {
   return(query)
 }
 
+#' helper to compute mean and sd of a distribution data.frame
+#' @param x An object for summarizing
+#' @noRd
+#' @keywords internal
+summarise_distribution <- function(x) {
+  summary <- c(mean(x, na.rm = TRUE), sd(x, na.rm = TRUE))
+  names(summary) <- c("mean", "sd")
+  return(summary)
+}
 
+#' helper to find rounding thresholds for print methods
+#' @param x An object for rounding
+#' @noRd
+#' @keywords internal
 
+find_rounding_threshold <- function(x) {
+  x <- max(abs(x)) - min(abs(x))
+  pow <- 1
+  x_pow <- x * 10^pow
+
+  while(x_pow < 1) {
+    pow <- pow + 1
+    x_pow <- x * 10^pow
+  }
+
+  return(pow + 1)
+}
+
+#' helper to extract arguments for a specific function
+#' @param fun a function to be checked
+#' @param dots a named list with possible arguments
+#' @noRd
+#' @keywords internal
+
+get_args_for <- function(fun, dots) {
+  formal_args <- names(formals(fun))
+  # Exclude arguments with no name
+  return(dots[names(dots) %in% formal_args])
+}

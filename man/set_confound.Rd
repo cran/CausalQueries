@@ -54,19 +54,19 @@ type of X for a total of 1+3+3 = 7 degrees of freedom.
 \examples{
 
 make_model('X -> Y; X <-> Y') |>
-grab("parameters")
+inspect("parameters")
 
 make_model('X -> M -> Y; X <-> Y') |>
-grab("parameters")
+inspect("parameters")
 
 model <- make_model('X -> M -> Y; X <-> Y; M <-> Y')
-model$parameters_df
+inspect(model, "parameters_df")
 
 # Example where set_confound is implemented after restrictions
 make_model("A -> B -> C") |>
 set_restrictions(increasing("A", "B")) |>
 set_confound("B <-> C") |>
-grab("parameters")
+inspect("parameters")
 
 # Example where two parents are confounded
 make_model('A -> B <- C; A <-> C') |>
@@ -77,6 +77,12 @@ make_model('A -> B <- C; A <-> C') |>
  # Example with two confounds, added sequentially
 model <- make_model('A -> B -> C') |>
   set_confound(list("A <-> B", "B <-> C"))
-model$statement
+inspect(model, "statement")
 # plot(model)
 }
+\seealso{
+Other set: 
+\code{\link{set_prior_distribution}()},
+\code{\link{set_restrictions}()}
+}
+\concept{set}

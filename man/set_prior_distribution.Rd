@@ -20,14 +20,14 @@ An object of class \code{causal_model} with the `prior_distribution`
 Add `n_param x n_draws` database of possible parameter draws to the model.
 }
 \examples{
-make_model('X -> Y') \%>\%
-  set_prior_distribution(n_draws = 5) \%>\%
-  grab("prior_distribution")
+make_model('X -> Y') |>
+  set_prior_distribution(n_draws = 5) |>
+  inspect("prior_distribution")
 
 }
 \seealso{
-Other prior_distribution: 
-\code{\link{get_prior_distribution}()},
-\code{\link{make_prior_distribution}()}
+Other set: 
+\code{\link{set_confound}()},
+\code{\link{set_restrictions}()}
 }
-\concept{prior_distribution}
+\concept{set}
