@@ -10,10 +10,22 @@ testthat::test_that(
     model <- make_model("X -> Y")
     q <- query_model(model, c("Y[X=1] - Y[X=0]", "Y[X=1] > Y[X=0]"),
                      given = c("Y==1", TRUE),
-                     using = c("priors", "parameters"), expand_grid = TRUE)
+                     using = c("priors", "parameters"),
+                     expand_grid = TRUE)
     pdf(file = NULL)
     expect_silent(plot(q))
     dev.off()
+
+    q <- query_model(model, c("Y[X=1] - Y[X=0]", "Y[X=1] > Y[X=0]"),
+                     given = c("Y==1", TRUE),
+                     using = c("priors", "parameters"),
+                     labels = LETTERS[1:8],
+                     expand_grid = TRUE)
+    pdf(file = NULL)
+    expect_silent(plot(q))
+    dev.off()
+
+
   })
 
 

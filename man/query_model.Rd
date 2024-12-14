@@ -2,7 +2,7 @@
 % Please edit documentation in R/query_model.R
 \name{query_model}
 \alias{query_model}
-\title{Generate estimands data frame}
+\title{Generate data frame for batches of causal queries}
 \usage{
 query_model(
   model,
@@ -12,10 +12,11 @@ query_model(
   parameters = NULL,
   stats = NULL,
   n_draws = 4000,
-  expand_grid = FALSE,
+  expand_grid = NULL,
   case_level = FALSE,
   query = NULL,
-  cred = 95
+  cred = 95,
+  labels = NULL
 )
 }
 \arguments{
@@ -23,11 +24,16 @@ query_model(
 \code{\link{make_model}}.}
 
 \item{queries}{A vector of strings or list of strings specifying queries
-on potential outcomes such as "Y[X=1] - Y[X=0]".}
+on potential outcomes such as "Y[X=1] - Y[X=0]".
+Queries can also indicate conditioning sets by placing second queries after a colon:
+"Y[X=1] - Y[X=0] :|: X == 1 & Y == 1". Note a colon, ':|:' is used rather than the traditional
+conditioning marker '|' to avoid confusion with logical operators.}
 
-\item{given}{A vector or list of strings specifying givens. A given is
-a quoted expression that evaluates to a logical statement. Allows estimand
-to be conditioned on *observational* (or counterfactual) distribution.}
+\item{given}{A character vector specifying given conditions for each query.
+A 'given' is a quoted expression that evaluates to logical statement.
+\code{given} allows the query to be conditioned on either observed
+or counterfactural distributions. A value of TRUE is interpreted as no conditioning.
+A given statement can alternatively be provided after a colon in the query statement.}
 
 \item{using}{A vector or list of strings. Whether to use priors,
 posteriors or parameters.}
@@ -36,7 +42,7 @@ posteriors or parameters.}
 specify (optional). By default, parameters is drawn from the parameters dataframe.
 See \code{inspect(model, "parameters_df")}.}
 
-\item{stats}{Functions to be applied to estimand distribution.
+\item{stats}{Functions to be applied to the query distribution.
 If NULL, defaults to mean, standard deviation,
 and 95\% confidence interval. Functions should return a single numeric
 value.}
@@ -53,6 +59,8 @@ query for a case.}
 \item{query}{alias for queries}
 
 \item{cred}{size of the credible interval ranging between 0 and 100}
+
+\item{labels}{labels for queries: if provided labels should have the length of the combinations of requests}
 }
 \value{
 A data frame with columns Model, Query, Given and Using
@@ -71,6 +79,11 @@ Nested or "complex" counterfactual queries of the form
 \examples{
 model <- make_model("X -> Y")
 query_model(model, "Y[X=1] - Y[X = 0]", using = "priors")
+query_model(model, "Y[X=1] - Y[X = 0] :|: X==1 & Y==1", using = "priors")
+query_model(model,
+  list("Y[X=1] - Y[X = 0]",
+       "Y[X=1] - Y[X = 0] :|: X==1 & Y==1"),
+  using = "priors")
 query_model(model, "Y[X=1] > Y[X = 0]", using = "parameters")
 query_model(model, "Y[X=1] > Y[X = 0]", using = c("priors", "parameters"))
 \donttest{
@@ -83,7 +96,7 @@ models <- list(
    set_restrictions("Y[X=1] < Y[X=0]")
  )
 
-
+# No expansion: lists should be equal length
 query_model(
   models,
   query = list(ATE = "Y[X=1] - Y[X=0]",
@@ -92,6 +105,15 @@ query_model(
   using = c("parameters", "priors"),
   expand_grid = FALSE)
 
+# Expansion when query and given arguments coupled
+query_model(
+  models,
+  query = list(ATE = "Y[X=1] - Y[X=0]",
+               Share_positive = "Y[X=1] > Y[X=0] :|: Y==1 & X==1"),
+  using = c("parameters", "priors"),
+  expand_grid = TRUE)
+
+# Expands over query and given argument when these are not coupled
 query_model(
   models,
   query = list(ATE = "Y[X=1] - Y[X=0]",

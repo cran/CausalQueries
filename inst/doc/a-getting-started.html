@@ -340,22 +340,16 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 
 
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="cf">if</span>(<span class="sc">!</span><span class="fu">requireNamespace</span>(<span class="st">&quot;fabricatr&quot;</span>, <span class="at">quietly =</span> <span class="cn">TRUE</span>)) {</span>
-<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>  <span class="fu">install.packages</span>(<span class="st">&quot;fabricatr&quot;</span>)</span>
-<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>}</span>
-<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a></span>
-<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="fu">library</span>(CausalQueries)</span>
-<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
-<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a><span class="fu">library</span>(knitr)</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(CausalQueries)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="fu">library</span>(knitr)</span></code></pre></div>
 <div id="make-a-model" class="section level1">
 <h1>Make a model</h1>
 <p><strong>Generating</strong>: To make a model you need to provide a
-DAG statement to <code>make_model</code>.<br />
-For instance</p>
+DAG statement to <code>make_model</code>. For instance</p>
 <ul>
 <li><code>&quot;X-&gt;Y&quot;</code></li>
-<li><code>&quot;X -&gt; M -&gt; Y &lt;- X&quot;</code> or<br />
-</li>
+<li><code>&quot;X -&gt; M -&gt; Y &lt;- X&quot;</code> or</li>
 <li><code>&quot;Z -&gt; X -&gt; Y &lt;-&gt; X&quot;</code>.</li>
 </ul>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co"># examples of models</span></span>
@@ -364,7 +358,10 @@ For instance</p>
 <p><strong>Graphing</strong>: Once you have made a model you can inspect
 the DAG:</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">plot</span>(xy_model)</span></code></pre></div>
-<p><img src="data:image/png;base64,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" /><!-- --></p>
+<div class="float">
+<img src="data:image/png;base64,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" alt="plot of chunk unnamed-chunk-3" />
+<div class="figcaption">plot of chunk unnamed-chunk-3</div>
+</div>
 <p><strong>Simple summaries:</strong> You can access a simple summary
 using <code>summary()</code></p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">summary</span>(xy_model)</span>
@@ -400,7 +397,7 @@ using <code>summary()</code></p>
 <p>or you can examine model details using <code>inspect()</code>.</p>
 <p><strong>Inspecting</strong>: The model has a set of parameters and a
 default distribution over these.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>xy_model <span class="sc">|&gt;</span> <span class="fu">inspect</span>(<span class="st">&quot;parameters_df&quot;</span>) </span>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>xy_model <span class="sc">|&gt;</span> <span class="fu">inspect</span>(<span class="st">&quot;parameters_df&quot;</span>)</span>
 <span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="co">#&gt; </span></span>
 <span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a><span class="co">#&gt; parameters_df</span></span>
 <span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a><span class="co">#&gt; Mapping of model parameters to nodal types: </span></span>
@@ -429,16 +426,16 @@ default distribution over these.</p>
 <code>set_parameters</code>.</p>
 <p>Here is an example of setting a monotonicity restriction (see
 <code>?set_restrictions</code> for more):</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>iv_model <span class="ot">&lt;-</span> </span>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>iv_model <span class="ot">&lt;-</span></span>
 <span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>  iv_model <span class="sc">|&gt;</span> <span class="fu">set_restrictions</span>(<span class="fu">decreasing</span>(<span class="st">&#39;Z&#39;</span>, <span class="st">&#39;X&#39;</span>))</span></code></pre></div>
 <p>Here is an example of setting priors (see <code>?set_priors</code>
 for more):</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a>iv_model <span class="ot">&lt;-</span> </span>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a>iv_model <span class="ot">&lt;-</span></span>
 <span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>  iv_model <span class="sc">|&gt;</span> <span class="fu">set_priors</span>(<span class="at">distribution =</span> <span class="st">&quot;jeffreys&quot;</span>)</span>
 <span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a><span class="co">#&gt; Altering all parameters.</span></span></code></pre></div>
 <p><strong>Simulation</strong>: Data can be drawn from a model like
 this:</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">make_data</span>(iv_model, <span class="at">n =</span> <span class="dv">4</span>) </span>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">make_data</span>(iv_model, <span class="at">n =</span> <span class="dv">4</span>)</span>
 <span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a></span>
 <span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>data <span class="sc">|&gt;</span> <span class="fu">kable</span>()</span></code></pre></div>
 <table>
@@ -461,14 +458,14 @@ this:</p>
 <td align="right">0</td>
 </tr>
 <tr class="odd">
-<td align="right">1</td>
-<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">0</td>
 <td align="right">0</td>
 </tr>
 <tr class="even">
-<td align="right">1</td>
-<td align="right">1</td>
 <td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1</td>
 </tr>
 </tbody>
 </table>
@@ -478,17 +475,117 @@ this:</p>
 <p><strong>Updating</strong>: Update using <code>update_model</code>.
 You can pass all <code>rstan</code> arguments to
 <code>update_model</code>.</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a>df <span class="ot">&lt;-</span> </span>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a>df <span class="ot">&lt;-</span></span>
 <span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>  <span class="fu">data.frame</span>(<span class="at">X =</span> <span class="fu">rbinom</span>(<span class="dv">100</span>, <span class="dv">1</span>, .<span class="dv">5</span>)) <span class="sc">|&gt;</span></span>
 <span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Y =</span> <span class="fu">rbinom</span>(<span class="dv">100</span>, <span class="dv">1</span>, .<span class="dv">25</span> <span class="sc">+</span> X<span class="sc">*</span>.<span class="dv">5</span>))</span>
 <span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a></span>
-<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a>xy_model <span class="ot">&lt;-</span> </span>
-<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a>  xy_model <span class="sc">|&gt;</span> </span>
-<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a>  <span class="fu">update_model</span>(df, <span class="at">refresh =</span> <span class="dv">0</span>)</span></code></pre></div>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a>xy_model <span class="ot">&lt;-</span></span>
+<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a>  xy_model <span class="sc">|&gt;</span></span>
+<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a>  <span class="fu">update_model</span>(df, <span class="at">refresh =</span> <span class="dv">0</span>)</span>
+<span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb9-9"><a href="#cb9-9" tabindex="-1"></a><span class="co">#&gt; SAMPLING FOR MODEL &#39;simplexes&#39; NOW (CHAIN 1).</span></span>
+<span id="cb9-10"><a href="#cb9-10" tabindex="-1"></a><span class="co">#&gt; Chain 1: </span></span>
+<span id="cb9-11"><a href="#cb9-11" tabindex="-1"></a><span class="co">#&gt; Chain 1: Gradient evaluation took 1.5e-05 seconds</span></span>
+<span id="cb9-12"><a href="#cb9-12" tabindex="-1"></a><span class="co">#&gt; Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.15 seconds.</span></span>
+<span id="cb9-13"><a href="#cb9-13" tabindex="-1"></a><span class="co">#&gt; Chain 1: Adjust your expectations accordingly!</span></span>
+<span id="cb9-14"><a href="#cb9-14" tabindex="-1"></a><span class="co">#&gt; Chain 1: </span></span>
+<span id="cb9-15"><a href="#cb9-15" tabindex="-1"></a><span class="co">#&gt; Chain 1: </span></span>
+<span id="cb9-16"><a href="#cb9-16" tabindex="-1"></a><span class="co">#&gt; Chain 1: Iteration:    1 / 2000 [  0%]  (Warmup)</span></span>
+<span id="cb9-17"><a href="#cb9-17" tabindex="-1"></a><span class="co">#&gt; Chain 1: Iteration:  200 / 2000 [ 10%]  (Warmup)</span></span>
+<span id="cb9-18"><a href="#cb9-18" tabindex="-1"></a><span class="co">#&gt; Chain 1: Iteration:  400 / 2000 [ 20%]  (Warmup)</span></span>
+<span id="cb9-19"><a href="#cb9-19" tabindex="-1"></a><span class="co">#&gt; Chain 1: Iteration:  600 / 2000 [ 30%]  (Warmup)</span></span>
+<span id="cb9-20"><a href="#cb9-20" tabindex="-1"></a><span class="co">#&gt; Chain 1: Iteration:  800 / 2000 [ 40%]  (Warmup)</span></span>
+<span id="cb9-21"><a href="#cb9-21" tabindex="-1"></a><span class="co">#&gt; Chain 1: Iteration: 1000 / 2000 [ 50%]  (Warmup)</span></span>
+<span id="cb9-22"><a href="#cb9-22" tabindex="-1"></a><span class="co">#&gt; Chain 1: Iteration: 1001 / 2000 [ 50%]  (Sampling)</span></span>
+<span id="cb9-23"><a href="#cb9-23" tabindex="-1"></a><span class="co">#&gt; Chain 1: Iteration: 1200 / 2000 [ 60%]  (Sampling)</span></span>
+<span id="cb9-24"><a href="#cb9-24" tabindex="-1"></a><span class="co">#&gt; Chain 1: Iteration: 1400 / 2000 [ 70%]  (Sampling)</span></span>
+<span id="cb9-25"><a href="#cb9-25" tabindex="-1"></a><span class="co">#&gt; Chain 1: Iteration: 1600 / 2000 [ 80%]  (Sampling)</span></span>
+<span id="cb9-26"><a href="#cb9-26" tabindex="-1"></a><span class="co">#&gt; Chain 1: Iteration: 1800 / 2000 [ 90%]  (Sampling)</span></span>
+<span id="cb9-27"><a href="#cb9-27" tabindex="-1"></a><span class="co">#&gt; Chain 1: Iteration: 2000 / 2000 [100%]  (Sampling)</span></span>
+<span id="cb9-28"><a href="#cb9-28" tabindex="-1"></a><span class="co">#&gt; Chain 1: </span></span>
+<span id="cb9-29"><a href="#cb9-29" tabindex="-1"></a><span class="co">#&gt; Chain 1:  Elapsed Time: 0.078 seconds (Warm-up)</span></span>
+<span id="cb9-30"><a href="#cb9-30" tabindex="-1"></a><span class="co">#&gt; Chain 1:                0.06 seconds (Sampling)</span></span>
+<span id="cb9-31"><a href="#cb9-31" tabindex="-1"></a><span class="co">#&gt; Chain 1:                0.138 seconds (Total)</span></span>
+<span id="cb9-32"><a href="#cb9-32" tabindex="-1"></a><span class="co">#&gt; Chain 1: </span></span>
+<span id="cb9-33"><a href="#cb9-33" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb9-34"><a href="#cb9-34" tabindex="-1"></a><span class="co">#&gt; SAMPLING FOR MODEL &#39;simplexes&#39; NOW (CHAIN 2).</span></span>
+<span id="cb9-35"><a href="#cb9-35" tabindex="-1"></a><span class="co">#&gt; Chain 2: </span></span>
+<span id="cb9-36"><a href="#cb9-36" tabindex="-1"></a><span class="co">#&gt; Chain 2: Gradient evaluation took 1.2e-05 seconds</span></span>
+<span id="cb9-37"><a href="#cb9-37" tabindex="-1"></a><span class="co">#&gt; Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.12 seconds.</span></span>
+<span id="cb9-38"><a href="#cb9-38" tabindex="-1"></a><span class="co">#&gt; Chain 2: Adjust your expectations accordingly!</span></span>
+<span id="cb9-39"><a href="#cb9-39" tabindex="-1"></a><span class="co">#&gt; Chain 2: </span></span>
+<span id="cb9-40"><a href="#cb9-40" tabindex="-1"></a><span class="co">#&gt; Chain 2: </span></span>
+<span id="cb9-41"><a href="#cb9-41" tabindex="-1"></a><span class="co">#&gt; Chain 2: Iteration:    1 / 2000 [  0%]  (Warmup)</span></span>
+<span id="cb9-42"><a href="#cb9-42" tabindex="-1"></a><span class="co">#&gt; Chain 2: Iteration:  200 / 2000 [ 10%]  (Warmup)</span></span>
+<span id="cb9-43"><a href="#cb9-43" tabindex="-1"></a><span class="co">#&gt; Chain 2: Iteration:  400 / 2000 [ 20%]  (Warmup)</span></span>
+<span id="cb9-44"><a href="#cb9-44" tabindex="-1"></a><span class="co">#&gt; Chain 2: Iteration:  600 / 2000 [ 30%]  (Warmup)</span></span>
+<span id="cb9-45"><a href="#cb9-45" tabindex="-1"></a><span class="co">#&gt; Chain 2: Iteration:  800 / 2000 [ 40%]  (Warmup)</span></span>
+<span id="cb9-46"><a href="#cb9-46" tabindex="-1"></a><span class="co">#&gt; Chain 2: Iteration: 1000 / 2000 [ 50%]  (Warmup)</span></span>
+<span id="cb9-47"><a href="#cb9-47" tabindex="-1"></a><span class="co">#&gt; Chain 2: Iteration: 1001 / 2000 [ 50%]  (Sampling)</span></span>
+<span id="cb9-48"><a href="#cb9-48" tabindex="-1"></a><span class="co">#&gt; Chain 2: Iteration: 1200 / 2000 [ 60%]  (Sampling)</span></span>
+<span id="cb9-49"><a href="#cb9-49" tabindex="-1"></a><span class="co">#&gt; Chain 2: Iteration: 1400 / 2000 [ 70%]  (Sampling)</span></span>
+<span id="cb9-50"><a href="#cb9-50" tabindex="-1"></a><span class="co">#&gt; Chain 2: Iteration: 1600 / 2000 [ 80%]  (Sampling)</span></span>
+<span id="cb9-51"><a href="#cb9-51" tabindex="-1"></a><span class="co">#&gt; Chain 2: Iteration: 1800 / 2000 [ 90%]  (Sampling)</span></span>
+<span id="cb9-52"><a href="#cb9-52" tabindex="-1"></a><span class="co">#&gt; Chain 2: Iteration: 2000 / 2000 [100%]  (Sampling)</span></span>
+<span id="cb9-53"><a href="#cb9-53" tabindex="-1"></a><span class="co">#&gt; Chain 2: </span></span>
+<span id="cb9-54"><a href="#cb9-54" tabindex="-1"></a><span class="co">#&gt; Chain 2:  Elapsed Time: 0.085 seconds (Warm-up)</span></span>
+<span id="cb9-55"><a href="#cb9-55" tabindex="-1"></a><span class="co">#&gt; Chain 2:                0.08 seconds (Sampling)</span></span>
+<span id="cb9-56"><a href="#cb9-56" tabindex="-1"></a><span class="co">#&gt; Chain 2:                0.165 seconds (Total)</span></span>
+<span id="cb9-57"><a href="#cb9-57" tabindex="-1"></a><span class="co">#&gt; Chain 2: </span></span>
+<span id="cb9-58"><a href="#cb9-58" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb9-59"><a href="#cb9-59" tabindex="-1"></a><span class="co">#&gt; SAMPLING FOR MODEL &#39;simplexes&#39; NOW (CHAIN 3).</span></span>
+<span id="cb9-60"><a href="#cb9-60" tabindex="-1"></a><span class="co">#&gt; Chain 3: </span></span>
+<span id="cb9-61"><a href="#cb9-61" tabindex="-1"></a><span class="co">#&gt; Chain 3: Gradient evaluation took 1.5e-05 seconds</span></span>
+<span id="cb9-62"><a href="#cb9-62" tabindex="-1"></a><span class="co">#&gt; Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0.15 seconds.</span></span>
+<span id="cb9-63"><a href="#cb9-63" tabindex="-1"></a><span class="co">#&gt; Chain 3: Adjust your expectations accordingly!</span></span>
+<span id="cb9-64"><a href="#cb9-64" tabindex="-1"></a><span class="co">#&gt; Chain 3: </span></span>
+<span id="cb9-65"><a href="#cb9-65" tabindex="-1"></a><span class="co">#&gt; Chain 3: </span></span>
+<span id="cb9-66"><a href="#cb9-66" tabindex="-1"></a><span class="co">#&gt; Chain 3: Iteration:    1 / 2000 [  0%]  (Warmup)</span></span>
+<span id="cb9-67"><a href="#cb9-67" tabindex="-1"></a><span class="co">#&gt; Chain 3: Iteration:  200 / 2000 [ 10%]  (Warmup)</span></span>
+<span id="cb9-68"><a href="#cb9-68" tabindex="-1"></a><span class="co">#&gt; Chain 3: Iteration:  400 / 2000 [ 20%]  (Warmup)</span></span>
+<span id="cb9-69"><a href="#cb9-69" tabindex="-1"></a><span class="co">#&gt; Chain 3: Iteration:  600 / 2000 [ 30%]  (Warmup)</span></span>
+<span id="cb9-70"><a href="#cb9-70" tabindex="-1"></a><span class="co">#&gt; Chain 3: Iteration:  800 / 2000 [ 40%]  (Warmup)</span></span>
+<span id="cb9-71"><a href="#cb9-71" tabindex="-1"></a><span class="co">#&gt; Chain 3: Iteration: 1000 / 2000 [ 50%]  (Warmup)</span></span>
+<span id="cb9-72"><a href="#cb9-72" tabindex="-1"></a><span class="co">#&gt; Chain 3: Iteration: 1001 / 2000 [ 50%]  (Sampling)</span></span>
+<span id="cb9-73"><a href="#cb9-73" tabindex="-1"></a><span class="co">#&gt; Chain 3: Iteration: 1200 / 2000 [ 60%]  (Sampling)</span></span>
+<span id="cb9-74"><a href="#cb9-74" tabindex="-1"></a><span class="co">#&gt; Chain 3: Iteration: 1400 / 2000 [ 70%]  (Sampling)</span></span>
+<span id="cb9-75"><a href="#cb9-75" tabindex="-1"></a><span class="co">#&gt; Chain 3: Iteration: 1600 / 2000 [ 80%]  (Sampling)</span></span>
+<span id="cb9-76"><a href="#cb9-76" tabindex="-1"></a><span class="co">#&gt; Chain 3: Iteration: 1800 / 2000 [ 90%]  (Sampling)</span></span>
+<span id="cb9-77"><a href="#cb9-77" tabindex="-1"></a><span class="co">#&gt; Chain 3: Iteration: 2000 / 2000 [100%]  (Sampling)</span></span>
+<span id="cb9-78"><a href="#cb9-78" tabindex="-1"></a><span class="co">#&gt; Chain 3: </span></span>
+<span id="cb9-79"><a href="#cb9-79" tabindex="-1"></a><span class="co">#&gt; Chain 3:  Elapsed Time: 0.078 seconds (Warm-up)</span></span>
+<span id="cb9-80"><a href="#cb9-80" tabindex="-1"></a><span class="co">#&gt; Chain 3:                0.069 seconds (Sampling)</span></span>
+<span id="cb9-81"><a href="#cb9-81" tabindex="-1"></a><span class="co">#&gt; Chain 3:                0.147 seconds (Total)</span></span>
+<span id="cb9-82"><a href="#cb9-82" tabindex="-1"></a><span class="co">#&gt; Chain 3: </span></span>
+<span id="cb9-83"><a href="#cb9-83" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb9-84"><a href="#cb9-84" tabindex="-1"></a><span class="co">#&gt; SAMPLING FOR MODEL &#39;simplexes&#39; NOW (CHAIN 4).</span></span>
+<span id="cb9-85"><a href="#cb9-85" tabindex="-1"></a><span class="co">#&gt; Chain 4: </span></span>
+<span id="cb9-86"><a href="#cb9-86" tabindex="-1"></a><span class="co">#&gt; Chain 4: Gradient evaluation took 1e-05 seconds</span></span>
+<span id="cb9-87"><a href="#cb9-87" tabindex="-1"></a><span class="co">#&gt; Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0.1 seconds.</span></span>
+<span id="cb9-88"><a href="#cb9-88" tabindex="-1"></a><span class="co">#&gt; Chain 4: Adjust your expectations accordingly!</span></span>
+<span id="cb9-89"><a href="#cb9-89" tabindex="-1"></a><span class="co">#&gt; Chain 4: </span></span>
+<span id="cb9-90"><a href="#cb9-90" tabindex="-1"></a><span class="co">#&gt; Chain 4: </span></span>
+<span id="cb9-91"><a href="#cb9-91" tabindex="-1"></a><span class="co">#&gt; Chain 4: Iteration:    1 / 2000 [  0%]  (Warmup)</span></span>
+<span id="cb9-92"><a href="#cb9-92" tabindex="-1"></a><span class="co">#&gt; Chain 4: Iteration:  200 / 2000 [ 10%]  (Warmup)</span></span>
+<span id="cb9-93"><a href="#cb9-93" tabindex="-1"></a><span class="co">#&gt; Chain 4: Iteration:  400 / 2000 [ 20%]  (Warmup)</span></span>
+<span id="cb9-94"><a href="#cb9-94" tabindex="-1"></a><span class="co">#&gt; Chain 4: Iteration:  600 / 2000 [ 30%]  (Warmup)</span></span>
+<span id="cb9-95"><a href="#cb9-95" tabindex="-1"></a><span class="co">#&gt; Chain 4: Iteration:  800 / 2000 [ 40%]  (Warmup)</span></span>
+<span id="cb9-96"><a href="#cb9-96" tabindex="-1"></a><span class="co">#&gt; Chain 4: Iteration: 1000 / 2000 [ 50%]  (Warmup)</span></span>
+<span id="cb9-97"><a href="#cb9-97" tabindex="-1"></a><span class="co">#&gt; Chain 4: Iteration: 1001 / 2000 [ 50%]  (Sampling)</span></span>
+<span id="cb9-98"><a href="#cb9-98" tabindex="-1"></a><span class="co">#&gt; Chain 4: Iteration: 1200 / 2000 [ 60%]  (Sampling)</span></span>
+<span id="cb9-99"><a href="#cb9-99" tabindex="-1"></a><span class="co">#&gt; Chain 4: Iteration: 1400 / 2000 [ 70%]  (Sampling)</span></span>
+<span id="cb9-100"><a href="#cb9-100" tabindex="-1"></a><span class="co">#&gt; Chain 4: Iteration: 1600 / 2000 [ 80%]  (Sampling)</span></span>
+<span id="cb9-101"><a href="#cb9-101" tabindex="-1"></a><span class="co">#&gt; Chain 4: Iteration: 1800 / 2000 [ 90%]  (Sampling)</span></span>
+<span id="cb9-102"><a href="#cb9-102" tabindex="-1"></a><span class="co">#&gt; Chain 4: Iteration: 2000 / 2000 [100%]  (Sampling)</span></span>
+<span id="cb9-103"><a href="#cb9-103" tabindex="-1"></a><span class="co">#&gt; Chain 4: </span></span>
+<span id="cb9-104"><a href="#cb9-104" tabindex="-1"></a><span class="co">#&gt; Chain 4:  Elapsed Time: 0.067 seconds (Warm-up)</span></span>
+<span id="cb9-105"><a href="#cb9-105" tabindex="-1"></a><span class="co">#&gt; Chain 4:                0.086 seconds (Sampling)</span></span>
+<span id="cb9-106"><a href="#cb9-106" tabindex="-1"></a><span class="co">#&gt; Chain 4:                0.153 seconds (Total)</span></span>
+<span id="cb9-107"><a href="#cb9-107" tabindex="-1"></a><span class="co">#&gt; Chain 4:</span></span></code></pre></div>
 <p><strong>Inspecting</strong>: You can access the posterior
 distribution on model parameters directly thus:</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a></span>
-<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a>xy_model <span class="sc">|&gt;</span> <span class="fu">grab</span>(<span class="st">&quot;posterior_distribution&quot;</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a>xy_model <span class="sc">|&gt;</span> <span class="fu">grab</span>(<span class="st">&quot;posterior_distribution&quot;</span>) <span class="sc">|&gt;</span></span>
 <span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a>  <span class="fu">head</span>() <span class="sc">|&gt;</span> <span class="fu">kable</span>()</span></code></pre></div>
 <table>
 <thead>
@@ -503,52 +600,52 @@ distribution on model parameters directly thus:</p>
 </thead>
 <tbody>
 <tr class="odd">
-<td align="right">0.6036868</td>
-<td align="right">0.3963132</td>
-<td align="right">0.0541182</td>
-<td align="right">0.3045143</td>
-<td align="right">0.5026073</td>
-<td align="right">0.1387602</td>
+<td align="right">0.5832223</td>
+<td align="right">0.4167777</td>
+<td align="right">0.3364434</td>
+<td align="right">0.0289015</td>
+<td align="right">0.4300116</td>
+<td align="right">0.2046435</td>
 </tr>
 <tr class="even">
-<td align="right">0.5410469</td>
-<td align="right">0.4589531</td>
-<td align="right">0.1754604</td>
-<td align="right">0.1201301</td>
-<td align="right">0.4878345</td>
-<td align="right">0.2165750</td>
+<td align="right">0.5197472</td>
+<td align="right">0.4802528</td>
+<td align="right">0.0094979</td>
+<td align="right">0.2362127</td>
+<td align="right">0.6339646</td>
+<td align="right">0.1203248</td>
 </tr>
 <tr class="odd">
-<td align="right">0.5876625</td>
-<td align="right">0.4123375</td>
-<td align="right">0.0830585</td>
-<td align="right">0.1461882</td>
-<td align="right">0.4991199</td>
-<td align="right">0.2716334</td>
+<td align="right">0.5027436</td>
+<td align="right">0.4972564</td>
+<td align="right">0.1816374</td>
+<td align="right">0.0558691</td>
+<td align="right">0.5533184</td>
+<td align="right">0.2091751</td>
 </tr>
 <tr class="even">
-<td align="right">0.4990042</td>
-<td align="right">0.5009958</td>
-<td align="right">0.1471899</td>
-<td align="right">0.1463460</td>
-<td align="right">0.5413010</td>
-<td align="right">0.1651632</td>
+<td align="right">0.5175010</td>
+<td align="right">0.4824990</td>
+<td align="right">0.1201199</td>
+<td align="right">0.1788905</td>
+<td align="right">0.6102219</td>
+<td align="right">0.0907677</td>
 </tr>
 <tr class="odd">
-<td align="right">0.6474818</td>
-<td align="right">0.3525182</td>
-<td align="right">0.0588975</td>
-<td align="right">0.2015043</td>
-<td align="right">0.5542513</td>
-<td align="right">0.1853468</td>
+<td align="right">0.4523010</td>
+<td align="right">0.5476990</td>
+<td align="right">0.2520335</td>
+<td align="right">0.1362207</td>
+<td align="right">0.5555310</td>
+<td align="right">0.0562148</td>
 </tr>
 <tr class="even">
-<td align="right">0.5848194</td>
-<td align="right">0.4151806</td>
-<td align="right">0.1531487</td>
-<td align="right">0.1683044</td>
-<td align="right">0.4717736</td>
-<td align="right">0.2067733</td>
+<td align="right">0.4981273</td>
+<td align="right">0.5018727</td>
+<td align="right">0.2911425</td>
+<td align="right">0.0848195</td>
+<td align="right">0.5178918</td>
+<td align="right">0.1061462</td>
 </tr>
 </tbody>
 </table>
@@ -561,159 +658,56 @@ distribution on model parameters directly thus:</p>
 <p><strong>Querying</strong>: You ask arbitrary causal queries of the
 model.</p>
 <p>Examples of <em>unconditional</em> queries:</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a>xy_model <span class="sc">|&gt;</span> </span>
-<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a>  <span class="fu">query_model</span>(<span class="st">&quot;Y[X=1] &gt; Y[X=0]&quot;</span>, <span class="at">using =</span> <span class="fu">c</span>(<span class="st">&quot;priors&quot;</span>, <span class="st">&quot;posteriors&quot;</span>)) </span>
-<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a><span class="co">#&gt; Causal queries generated by query_model (all at population level)</span></span>
-<span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb11-6"><a href="#cb11-6" tabindex="-1"></a><span class="co">#&gt; |query           |using      |  mean|    sd| cred.low| cred.high|</span></span>
-<span id="cb11-7"><a href="#cb11-7" tabindex="-1"></a><span class="co">#&gt; |:---------------|:----------|-----:|-----:|--------:|---------:|</span></span>
-<span id="cb11-8"><a href="#cb11-8" tabindex="-1"></a><span class="co">#&gt; |Y[X=1] &gt; Y[X=0] |priors     | 0.247| 0.190|    0.009|     0.709|</span></span>
-<span id="cb11-9"><a href="#cb11-9" tabindex="-1"></a><span class="co">#&gt; |Y[X=1] &gt; Y[X=0] |posteriors | 0.433| 0.117|    0.185|     0.630|</span></span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a>xy_model <span class="sc">|&gt;</span></span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a>  <span class="fu">query_model</span>(<span class="st">&quot;Y[X=1] &gt; Y[X=0]&quot;</span>,</span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a>              <span class="at">using =</span> <span class="fu">c</span>(<span class="st">&quot;priors&quot;</span>, <span class="st">&quot;posteriors&quot;</span>))</span>
+<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a><span class="co">#&gt; Causal queries generated by query_model (all at population level)</span></span>
+<span id="cb11-6"><a href="#cb11-6" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb11-7"><a href="#cb11-7" tabindex="-1"></a><span class="co">#&gt; |query           |using      |  mean|    sd| cred.low| cred.high|</span></span>
+<span id="cb11-8"><a href="#cb11-8" tabindex="-1"></a><span class="co">#&gt; |:---------------|:----------|-----:|-----:|--------:|---------:|</span></span>
+<span id="cb11-9"><a href="#cb11-9" tabindex="-1"></a><span class="co">#&gt; |Y[X=1] &gt; Y[X=0] |priors     | 0.246| 0.193|    0.007|     0.707|</span></span>
+<span id="cb11-10"><a href="#cb11-10" tabindex="-1"></a><span class="co">#&gt; |Y[X=1] &gt; Y[X=0] |posteriors | 0.523| 0.102|    0.317|     0.703|</span></span></code></pre></div>
+<p>This query asks the probability that <span class="math inline">\(Y(1)&gt; Y(0)\)</span>.</p>
 <p>Examples of <em>conditional</em> queries:</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a>xy_model <span class="sc">|&gt;</span> </span>
-<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a>  <span class="fu">query_model</span>(<span class="st">&quot;Y[X=1] &gt; Y[X=0]&quot;</span>, <span class="at">using =</span> <span class="fu">c</span>(<span class="st">&quot;priors&quot;</span>, <span class="st">&quot;posteriors&quot;</span>),</span>
-<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a>              <span class="at">given =</span> <span class="st">&quot;X==1 &amp; Y == 1&quot;</span>) </span>
-<span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb12-5"><a href="#cb12-5" tabindex="-1"></a><span class="co">#&gt; Causal queries generated by query_model (all at population level)</span></span>
-<span id="cb12-6"><a href="#cb12-6" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb12-7"><a href="#cb12-7" tabindex="-1"></a><span class="co">#&gt; |query           |given         |using      |  mean|    sd| cred.low| cred.high|</span></span>
-<span id="cb12-8"><a href="#cb12-8" tabindex="-1"></a><span class="co">#&gt; |:---------------|:-------------|:----------|-----:|-----:|--------:|---------:|</span></span>
-<span id="cb12-9"><a href="#cb12-9" tabindex="-1"></a><span class="co">#&gt; |Y[X=1] &gt; Y[X=0] |X==1 &amp; Y == 1 |priors     | 0.507| 0.286|    0.028|     0.975|</span></span>
-<span id="cb12-10"><a href="#cb12-10" tabindex="-1"></a><span class="co">#&gt; |Y[X=1] &gt; Y[X=0] |X==1 &amp; Y == 1 |posteriors | 0.642| 0.169|    0.296|     0.948|</span></span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a>xy_model <span class="sc">|&gt;</span></span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a>  <span class="fu">query_model</span>(<span class="st">&quot;Y[X=1] &gt; Y[X=0] :|: X == 1 &amp; Y == 1&quot;</span>, <span class="at">using =</span> <span class="fu">c</span>(<span class="st">&quot;priors&quot;</span>, <span class="st">&quot;posteriors&quot;</span>))</span>
+<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a><span class="co">#&gt; Error in parse(text = w_query): &lt;text&gt;:1:16: unexpected &#39;|&#39;</span></span>
+<span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a><span class="co">#&gt; 1: q &lt;- var4&gt;var3:|</span></span>
+<span id="cb12-5"><a href="#cb12-5" tabindex="-1"></a><span class="co">#&gt;                    ^</span></span></code></pre></div>
+<p>This query asks the probability that <span class="math inline">\(Y(1)
+&gt; Y(0)\)</span> <em>given</em> <span class="math inline">\(X=1\)</span> and <span class="math inline">\(Y=1\)</span>; it is a type of “causes of effects”
+query. Note that “:|:” is used to separate the main query element from
+the conditional statement to avoid ambiguity, since “|” is reserved for
+the “or” operator.</p>
 <p>Queries can even be conditional on counterfactual quantities. Here
 the probability of a positive effect given <em>some</em> effect:</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a>xy_model <span class="sc">|&gt;</span> </span>
-<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a>  <span class="fu">query_model</span>(<span class="st">&quot;Y[X=1] &gt; Y[X=0]&quot;</span>, <span class="at">using =</span> <span class="fu">c</span>(<span class="st">&quot;priors&quot;</span>, <span class="st">&quot;posteriors&quot;</span>),</span>
-<span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a>              <span class="at">given =</span> <span class="st">&quot;Y[X=1] != Y[X=0]&quot;</span>) </span>
-<span id="cb13-4"><a href="#cb13-4" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb13-5"><a href="#cb13-5" tabindex="-1"></a><span class="co">#&gt; Causal queries generated by query_model (all at population level)</span></span>
-<span id="cb13-6"><a href="#cb13-6" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb13-7"><a href="#cb13-7" tabindex="-1"></a><span class="co">#&gt; |query           |given            |using      |  mean|    sd| cred.low| cred.high|</span></span>
-<span id="cb13-8"><a href="#cb13-8" tabindex="-1"></a><span class="co">#&gt; |:---------------|:----------------|:----------|-----:|-----:|--------:|---------:|</span></span>
-<span id="cb13-9"><a href="#cb13-9" tabindex="-1"></a><span class="co">#&gt; |Y[X=1] &gt; Y[X=0] |Y[X=1] != Y[X=0] |priors     | 0.503| 0.289|    0.024|     0.976|</span></span>
-<span id="cb13-10"><a href="#cb13-10" tabindex="-1"></a><span class="co">#&gt; |Y[X=1] &gt; Y[X=0] |Y[X=1] != Y[X=0] |posteriors | 0.746| 0.105|    0.573|     0.970|</span></span></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a>xy_model <span class="sc">|&gt;</span></span>
+<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a>  <span class="fu">query_model</span>(<span class="st">&quot;Y[X=1] &gt; Y[X=0] :|: Y[X=1] != Y[X=0]&quot;</span>,</span>
+<span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a>              <span class="at">using =</span> <span class="fu">c</span>(<span class="st">&quot;priors&quot;</span>, <span class="st">&quot;posteriors&quot;</span>))</span>
+<span id="cb13-4"><a href="#cb13-4" tabindex="-1"></a><span class="co">#&gt; Error in parse(text = w_query): &lt;text&gt;:1:16: unexpected &#39;|&#39;</span></span>
+<span id="cb13-5"><a href="#cb13-5" tabindex="-1"></a><span class="co">#&gt; 1: q &lt;- var6&gt;var5:|</span></span>
+<span id="cb13-6"><a href="#cb13-6" tabindex="-1"></a><span class="co">#&gt;                    ^</span></span></code></pre></div>
+<p>Note that we use “:” to separate the base query from the condition
+rather than “|” to avoid confusion with logical operators.</p>
 </div>
 <div id="output" class="section level2">
 <h2>Output</h2>
 <p>Query output is ready for printing as tables, but can also be
 plotted, which is especially useful with batch requests:</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a>batch_queries <span class="ot">&lt;-</span> xy_model <span class="sc">|&gt;</span> </span>
-<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a>  <span class="fu">query_model</span>(<span class="at">queries =</span> <span class="fu">c</span>(<span class="st">&quot;Y[X=1] - Y[X=0]&quot;</span>, <span class="st">&quot;Y[X=1] &gt; Y[X=0]&quot;</span>), </span>
-<span id="cb14-3"><a href="#cb14-3" tabindex="-1"></a>              <span class="at">using =</span> <span class="fu">c</span>(<span class="st">&quot;priors&quot;</span>, <span class="st">&quot;posteriors&quot;</span>), </span>
-<span id="cb14-4"><a href="#cb14-4" tabindex="-1"></a>              <span class="at">given =</span> <span class="fu">c</span>(<span class="cn">TRUE</span>, <span class="st">&quot;Y[X=1] != Y[X=0]&quot;</span>),</span>
-<span id="cb14-5"><a href="#cb14-5" tabindex="-1"></a>              <span class="at">expand_grid =</span> <span class="cn">TRUE</span>) </span>
-<span id="cb14-6"><a href="#cb14-6" tabindex="-1"></a></span>
-<span id="cb14-7"><a href="#cb14-7" tabindex="-1"></a>batch_queries <span class="sc">|&gt;</span> <span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">2</span>, <span class="at">caption =</span> <span class="st">&quot;tabular output&quot;</span>)</span></code></pre></div>
-<table>
-<caption>tabular output</caption>
-<colgroup>
-<col width="19%" />
-<col width="20%" />
-<col width="13%" />
-<col width="13%" />
-<col width="5%" />
-<col width="5%" />
-<col width="10%" />
-<col width="11%" />
-</colgroup>
-<thead>
-<tr class="header">
-<th align="left">query</th>
-<th align="left">given</th>
-<th align="left">using</th>
-<th align="left">case_level</th>
-<th align="right">mean</th>
-<th align="right">sd</th>
-<th align="right">cred.low</th>
-<th align="right">cred.high</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="left">Y[X=1] - Y[X=0]</td>
-<td align="left">-</td>
-<td align="left">priors</td>
-<td align="left">FALSE</td>
-<td align="right">0.00</td>
-<td align="right">0.32</td>
-<td align="right">-0.63</td>
-<td align="right">0.63</td>
-</tr>
-<tr class="even">
-<td align="left">Y[X=1] - Y[X=0]</td>
-<td align="left">-</td>
-<td align="left">posteriors</td>
-<td align="left">FALSE</td>
-<td align="right">0.27</td>
-<td align="right">0.09</td>
-<td align="right">0.08</td>
-<td align="right">0.44</td>
-</tr>
-<tr class="odd">
-<td align="left">Y[X=1] - Y[X=0]</td>
-<td align="left">Y[X=1] != Y[X=0]</td>
-<td align="left">priors</td>
-<td align="left">FALSE</td>
-<td align="right">0.00</td>
-<td align="right">0.58</td>
-<td align="right">-0.95</td>
-<td align="right">0.95</td>
-</tr>
-<tr class="even">
-<td align="left">Y[X=1] - Y[X=0]</td>
-<td align="left">Y[X=1] != Y[X=0]</td>
-<td align="left">posteriors</td>
-<td align="left">FALSE</td>
-<td align="right">0.49</td>
-<td align="right">0.21</td>
-<td align="right">0.15</td>
-<td align="right">0.94</td>
-</tr>
-<tr class="odd">
-<td align="left">Y[X=1] &gt; Y[X=0]</td>
-<td align="left">-</td>
-<td align="left">priors</td>
-<td align="left">FALSE</td>
-<td align="right">0.25</td>
-<td align="right">0.19</td>
-<td align="right">0.01</td>
-<td align="right">0.71</td>
-</tr>
-<tr class="even">
-<td align="left">Y[X=1] &gt; Y[X=0]</td>
-<td align="left">-</td>
-<td align="left">posteriors</td>
-<td align="left">FALSE</td>
-<td align="right">0.43</td>
-<td align="right">0.12</td>
-<td align="right">0.19</td>
-<td align="right">0.63</td>
-</tr>
-<tr class="odd">
-<td align="left">Y[X=1] &gt; Y[X=0]</td>
-<td align="left">Y[X=1] != Y[X=0]</td>
-<td align="left">priors</td>
-<td align="left">FALSE</td>
-<td align="right">0.50</td>
-<td align="right">0.29</td>
-<td align="right">0.03</td>
-<td align="right">0.98</td>
-</tr>
-<tr class="even">
-<td align="left">Y[X=1] &gt; Y[X=0]</td>
-<td align="left">Y[X=1] != Y[X=0]</td>
-<td align="left">posteriors</td>
-<td align="left">FALSE</td>
-<td align="right">0.75</td>
-<td align="right">0.10</td>
-<td align="right">0.57</td>
-<td align="right">0.97</td>
-</tr>
-</tbody>
-</table>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a>batch_queries <span class="sc">|&gt;</span> <span class="fu">plot</span>() </span></code></pre></div>
-<p><img src="data:image/png;base64,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UbqKKpSUlFy/fl3pKqogSZLBYFC6iiqYzearV686bx3paYqKipQuoQo2m+3q1as2m602jRcvXpybm1vHPRYXFwshfvjhB+fqiRMnhBDOV4bt27d37drVz8+vRYsWf/vb32RZdt6d6+jRo7Is6/X6rVu3xsXF+fn5tW7d+qOPPnL2cPXq1VGjRoWFhd1zzz1btmwRQhQXF9exSE/ADBAAAA3f+fPnR48ePXTo0MzMzClTpjz77LNff/11hTbTpk2bP3/+f//73549ez7++OPOeJSUlFRaWvrpp5/Onj376aefVqJ2l+AkaAAAGr7Tp0/bbLYJEya0bt26R48enTp1qvzJ19SpU51frLRgwYJNmzbl5uZeunTp6NGjubm5ERERvXv3/uWXX5zfv9QAEIAAAGj47rvvvj59+sTFxT3wwAOJiYkPPvhgdHR0hS/Svueee5wLERERzoXjx4+3bt26bLV3797urNml+AgMAIAGy2azORf8/PwOHDiwZ8+eu++++913323Tps2///3vCo19fHwqP7z8LQ8a0r2qG84zAQAATmXfC3vs2DHnwt69excvXty3b9+FCxd+++23DzzwwPr162vsp1OnTj/99FNBQYFz9dChQy4q2P0IQAAANBwBAQGRkZF/+ctfsrOz9+3b99JLLzm3azSaefPmvfHGG9nZ2Zs3b87MzOzRo0eNvd1///2dO3d+8sknv/32248//njVqlXOrlz7HNyCAAQAQIOyYcOGM2fOxMfHDx48uCwADRw48K9//evf/va3e+65Z/bs2c8888wLL7xQY1cajeaTTz4RQiQmJq5cuXLRokVardav/r4MTkGcBA0AQIMyZMiQnJwci8VisViCg4MnTZrk3J6WlpaWlla+pV6vl2XZuVx2tpAQIiIiwrn92rVr27Zt27Rpk/NOtuvWrWvVqlXDmAEiAAEA0AD5+PhUPqn5VgUEBLz00kunT5+ePXt2fn7+kiVLUlNT66U8xfERGAAAqJqfn98nn3yyf//+Vq1aPfjggyNGjKiX70fyBDXMAMXFxT322GNjxoxp0aKFW+oBAAAe5L777vvmm2+UrqL+1TADNGbMmPfff79Vq1Z9+/ZdtWrV9evX3VMWAACA69QQgF5++eXvv//++++/d5493rRp0xEjRnzwwQelpaXuqQ8AAKDe1eocoLi4uIULFx45ciQt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" /><!-- --></p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a>batch_queries <span class="ot">&lt;-</span> xy_model <span class="sc">|&gt;</span></span>
+<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a>  <span class="fu">query_model</span>(<span class="at">queries =</span> <span class="fu">list</span>(<span class="at">ATE =</span> <span class="st">&quot;Y[X=1] - Y[X=0]&quot;</span>,</span>
+<span id="cb14-3"><a href="#cb14-3" tabindex="-1"></a>                             <span class="st">`</span><span class="at">Positive effect given any effect</span><span class="st">`</span> <span class="ot">=</span> <span class="st">&quot;Y[X=1] &gt; Y[X=0] :|: Y[X=1] != Y[X=0]&quot;</span>),</span>
+<span id="cb14-4"><a href="#cb14-4" tabindex="-1"></a>              <span class="at">using =</span> <span class="fu">c</span>(<span class="st">&quot;priors&quot;</span>, <span class="st">&quot;posteriors&quot;</span>),</span>
+<span id="cb14-5"><a href="#cb14-5" tabindex="-1"></a>              <span class="at">expand_grid =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb14-6"><a href="#cb14-6" tabindex="-1"></a><span class="co">#&gt; Error in parse(text = w_query): &lt;text&gt;:1:16: unexpected &#39;|&#39;</span></span>
+<span id="cb14-7"><a href="#cb14-7" tabindex="-1"></a><span class="co">#&gt; 1: q &lt;- var6&gt;var5:|</span></span>
+<span id="cb14-8"><a href="#cb14-8" tabindex="-1"></a><span class="co">#&gt;                    ^</span></span>
+<span id="cb14-9"><a href="#cb14-9" tabindex="-1"></a></span>
+<span id="cb14-10"><a href="#cb14-10" tabindex="-1"></a>batch_queries <span class="sc">|&gt;</span> <span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">2</span>, <span class="at">caption =</span> <span class="st">&quot;tabular output&quot;</span>)</span>
+<span id="cb14-11"><a href="#cb14-11" tabindex="-1"></a><span class="co">#&gt; Error in eval(expr, envir, enclos): object &#39;batch_queries&#39; not found</span></span>
+<span id="cb14-12"><a href="#cb14-12" tabindex="-1"></a>batch_queries <span class="sc">|&gt;</span> <span class="fu">plot</span>()</span>
+<span id="cb14-13"><a href="#cb14-13" tabindex="-1"></a><span class="co">#&gt; Error in eval(expr, envir, enclos): object &#39;batch_queries&#39; not found</span></span></code></pre></div>
 </div>
 </div>
 

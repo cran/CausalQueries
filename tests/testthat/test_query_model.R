@@ -69,7 +69,7 @@ testthat::test_that(
 	    using = c("priors", "parameters"),
 	    parameters = list(c(.5, .5, 0, 0, 1, 0))
 	  )
-	  expect_true(round(q[2, 5]) == 1)
+	  expect_true(round(q[2, 6]) == 1)
 
 	  q <- query_model(
 	    model,
@@ -126,7 +126,7 @@ testthat::test_that(
       using = "parameters",
       case_level = TRUE)
 
-    expect_true(all(colnames(q3) == c("Y[X=1] - Y[X=0]", "Y[X=1] - Y[X=0] | X==1")))
+    expect_true(all(colnames(q3) == c("Y[X=1] - Y[X=0]", "Y[X=1] - Y[X=0] :|: X==1")))
     expect_true(all(colnames(q4) == c("a", "b")))
 
     expect_true(is.data.frame(q))
@@ -135,4 +135,161 @@ testthat::test_that(
 
     expect_true(q$cred.low > q2$cred.low)
     expect_true(q$cred.high < q2$cred.high)
+
+    expect_message(
+      query_model(
+      model,
+      query = "Y[X=1] > Y[X=0]",
+      given = "X==1",
+      case_level = c(TRUE, FALSE),
+      labels = "A"), "labels have been provided but are of incorrect length: 2 labels required")
+
+    expect_message(
+      query_model(
+        model,
+        query = "Y[X=1] > Y[X=0]",
+        given = "X==1",
+        case_level = c(TRUE, FALSE),
+        labels = c("A", "A")))
+
+    expect_equivalent(
+      query_model(
+        model,
+        query = "Y[X=1] > Y[X=0]",
+        given = "X==1",
+        case_level = c(TRUE, FALSE),
+        labels = c("A", "B")) |> pull(label),
+      c("A", "B"))
+
   })
+
+
+
+
+
+testthat::test_that(
+
+  desc = "Expand grid behavior.",
+
+  code = {
+
+
+models <- list(
+ M1 = make_model("X -> Y"),
+ M2 = make_model("X -> Y") |>
+   set_restrictions("Y[X=1] < Y[X=0]")
+ )
+
+n1 <- query_model(
+  models,
+  query = list(ATE = "Y[X=1] - Y[X=0]",
+               Share_positive = "Y[X=1] > Y[X=0]"),
+  given = c(TRUE,  "Y==1 & X==1"),
+  using = c("parameters", "priors"),
+  expand_grid = FALSE) |> nrow()
+
+n1b <- query_model(
+  models,
+  query = list(ATE = "Y[X=1] - Y[X=0]", Share_positive = "Y[X=1] > Y[X=0]"),
+  given = c(TRUE,  "Y==1 & X==1"),
+  using = c("parameters", "priors")) |> nrow()
+
+# Expands over query and given argument
+n2 <- query_model(
+  models,
+  query = list(ATE = "Y[X=1] - Y[X=0]",
+               Share_positive = "Y[X=1] > Y[X=0]"),
+  given = c(TRUE,  "Y==1 & X==1"),
+  using = c("parameters", "priors"),
+  expand_grid = TRUE) |> nrow()
+
+
+
+# query and given arguments coupled
+n3 <- query_model(
+  models,
+  query = list(ATE = "Y[X=1] - Y[X=0]",
+               Share_positive = "Y[X=1] > Y[X=0] :|: Y==1 & X==1"),
+  using = c("parameters", "priors"),
+  expand_grid = TRUE
+) |> nrow()
+
+# query and given arguments coupled: figures out to expand grid
+n4 <- query_model(
+  models,
+  query = list(
+    ATE = "Y[X=1] - Y[X=0]",
+    Share_positive = "Y[X=1] > Y[X=0] :|: Y==1 & X==1",
+    P = "Y[X=1] ==1"
+  ),
+
+  using = c("parameters", "priors")
+) |> nrow()
+
+expect_true(n1 == 4)
+expect_true(n1b == 4)
+expect_true(n2 == 16)
+expect_true(n3 == 8)
+expect_true(n4 == 12)
+
+# expand_grid = FALSE but uneven lengths
+expect_error(query_model(
+  models,
+  query = list(
+    ATE = "Y[X=1] - Y[X=0]",
+    Share_positive = "Y[X=1] > Y[X=0] :|: Y==1 & X==1",
+    P = "Y[X=1] ==1"
+  ),
+  using = c("parameters", "priors"),
+  expand_grid = FALSE
+))
+
+
+
+  }
+)
+
+
+
+
+testthat::test_that(
+
+  desc = "No operator confusion.",
+
+  code = {
+
+    q1 <- query_model(
+      make_model("X -> Y"),
+      query = "Y[X=1] > Y[X=0] | Y[X=1] < Y[X=0] :|: Y[X=1] >= Y[X=0]",
+      )
+
+    expect_true(q1$mean == 1/3)
+
+    q2 <- query_model(
+      make_model("X -> Y"),
+      query = "(Y[X=1] > Y[X=0]) & (Y[X=1] < Y[X=0]) :|: Y[X=1] >= Y[X=0]",
+    )
+
+    expect_true(q2$mean == 0)
+
+
+    # Provide queries once
+    expect_error(
+      query_model(
+      make_model("X -> Y"),
+      query = "(Y[X=1] > Y[X=0]) & (Y[X=1] < Y[X=0]) :|: Y[X=1] >= Y[X=0]",
+      given = "Y==1"
+    )
+    )
+
+    # Provide queries once
+    expect_error(
+      query_distribution(
+        make_model("X -> Y"),
+        query = "(Y[X=1] > Y[X=0]) & (Y[X=1] < Y[X=0]) :|: Y[X=1] >= Y[X=0]",
+        given = "Y==1"
+      )
+      )
+
+  }
+)
