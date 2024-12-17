@@ -357,7 +357,7 @@ caused <code>Y</code> making use of the “front door criterion.”</p>
 <p>You can plot the dag like this:</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">plot</span>(model)</span></code></pre></div>
 <div class="float">
-<img src="data:image/png;base64,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" alt="plot of chunk unnamed-chunk-4" />
+<img src="data:image/png;base64,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" alt="plot of chunk unnamed-chunk-4" />
 <div class="figcaption">plot of chunk unnamed-chunk-4</div>
 </div>
 <p>Updating is done like this:</p>
@@ -378,17 +378,19 @@ caused <code>Y</code> making use of the “front door criterion.”</p>
 <span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a>  <span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">2</span>)</span></code></pre></div>
 <table>
 <colgroup>
-<col width="21%" />
-<col width="8%" />
-<col width="15%" />
-<col width="15%" />
-<col width="6%" />
+<col width="17%" />
+<col width="17%" />
 <col width="6%" />
 <col width="12%" />
-<col width="13%" />
+<col width="12%" />
+<col width="5%" />
+<col width="5%" />
+<col width="10%" />
+<col width="11%" />
 </colgroup>
 <thead>
 <tr class="header">
+<th align="left">label</th>
 <th align="left">query</th>
 <th align="left">given</th>
 <th align="left">using</th>
@@ -402,23 +404,25 @@ caused <code>Y</code> making use of the “front door criterion.”</p>
 <tbody>
 <tr class="odd">
 <td align="left">Y[X=1] - Y[X=0]</td>
+<td align="left">Y[X=1] - Y[X=0]</td>
 <td align="left">-</td>
 <td align="left">priors</td>
 <td align="left">FALSE</td>
 <td align="right">0.00</td>
-<td align="right">0.15</td>
-<td align="right">-0.33</td>
-<td align="right">0.35</td>
+<td align="right">0.14</td>
+<td align="right">-0.34</td>
+<td align="right">0.29</td>
 </tr>
 <tr class="even">
+<td align="left">Y[X=1] - Y[X=0]</td>
 <td align="left">Y[X=1] - Y[X=0]</td>
 <td align="left">-</td>
 <td align="left">posteriors</td>
 <td align="left">FALSE</td>
-<td align="right">0.78</td>
+<td align="right">0.79</td>
 <td align="right">0.02</td>
-<td align="right">0.74</td>
-<td align="right">0.81</td>
+<td align="right">0.76</td>
+<td align="right">0.82</td>
 </tr>
 </tbody>
 </table>
@@ -435,17 +439,19 @@ average treatment effect estimand.</p>
 <span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a>  <span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">2</span>)</span></code></pre></div>
 <table>
 <colgroup>
-<col width="21%" />
-<col width="8%" />
-<col width="15%" />
-<col width="15%" />
-<col width="6%" />
+<col width="17%" />
+<col width="17%" />
 <col width="6%" />
 <col width="12%" />
-<col width="13%" />
+<col width="12%" />
+<col width="5%" />
+<col width="5%" />
+<col width="10%" />
+<col width="11%" />
 </colgroup>
 <thead>
 <tr class="header">
+<th align="left">label</th>
 <th align="left">query</th>
 <th align="left">given</th>
 <th align="left">using</th>
@@ -459,23 +465,25 @@ average treatment effect estimand.</p>
 <tbody>
 <tr class="odd">
 <td align="left">Y[X=1] - Y[X=0]</td>
+<td align="left">Y[X=1] - Y[X=0]</td>
 <td align="left">-</td>
 <td align="left">priors</td>
 <td align="left">FALSE</td>
-<td align="right">0.01</td>
-<td align="right">0.15</td>
-<td align="right">-0.31</td>
-<td align="right">0.40</td>
+<td align="right">0.0</td>
+<td align="right">0.14</td>
+<td align="right">-0.34</td>
+<td align="right">0.34</td>
 </tr>
 <tr class="even">
+<td align="left">Y[X=1] - Y[X=0]</td>
 <td align="left">Y[X=1] - Y[X=0]</td>
 <td align="left">-</td>
 <td align="left">posteriors</td>
 <td align="left">FALSE</td>
-<td align="right">0.09</td>
-<td align="right">0.15</td>
+<td align="right">0.1</td>
+<td align="right">0.17</td>
 <td align="right">-0.03</td>
-<td align="right">0.55</td>
+<td align="right">0.60</td>
 </tr>
 </tbody>
 </table>
