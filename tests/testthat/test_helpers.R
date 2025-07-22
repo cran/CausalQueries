@@ -66,21 +66,22 @@ testthat::test_that(
 		a1 <- CausalQueries:::interpret_type(model,
 		                                     position = list(X = c(3,4), Y = 1))
 		a2 <- CausalQueries:::interpret_type(model,
-		                                     condition = c('X | Z=0 & R=1',
-		                                                   'X | Z=0 & R=0'))
-		expect_true(all(dim(a1[[2]]) == c(1,4)))
-		expect_true(all(dim(a2[[1]]) == c(2,4)))
+		                                     condition = c('X | R = 0 & Z = 0',
+		                                                   'X | R = 1 & Z = 0'))
+		expect_true(all(dim(a1$X == c(2,2))))
+		expect_true(all(dim(a2$X) == c(2,2)))
 		# both defined
 		expect_error(interpret_type(model,
 		                            condition = c('X | Z=0 & R=1',
 		                                          'X | Z=0 & R=0'),
 		                            position = list(X = c(3,4), Y = 1)))
 		# not in types
-		expect_error(CausalQueries:::interpret_type(model,
+		expect_message(CausalQueries:::interpret_type(model,
 		                                            position = list(Q = c(3,5),
 		                                                            Y = 1)))
 	}
 )
+
 
 testthat::test_that(
 
@@ -154,7 +155,10 @@ testthat::test_that(
     expect_no_error(CausalQueries:::check_query("D[C=B[A=1]] == 1"))
     expect_warning(CausalQueries:::check_query("D[C=B[A=1] == 1"))
     expect_warning(CausalQueries:::check_query("X=1"))
-
+    expect_warning(CausalQueries:::check_query("X^2"))
+    expect_warning(CausalQueries:::check_query("X/Y"))
+    expect_warning(CausalQueries:::check_query("log(X)"))
+    expect_warning(CausalQueries:::check_query("exp(X)"))
   }
 )
 

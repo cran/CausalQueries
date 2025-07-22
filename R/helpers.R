@@ -7,11 +7,6 @@
 #' @keywords internal
 #' @return A \code{matrix} of permutations
 #' @importFrom rlang exprs
-#' @examples
-#
-#' \donttest{
-#' CausalQueries:::perm(3)
-#' }
 
 perm <- function(max = rep(1, 2)) {
 
@@ -144,7 +139,8 @@ clean_condition <- function(condition) {
 #' @param position A named list of integers. The name is the name of the child
 #'   node in \code{model}, and its value a vector of digit positions in that
 #'   node's nodal type to be interpreted. See `Details`.
-#' @param nodes A vector of names of nodes. Can be used to limit interpretation to selected nodes.
+#' @param nodes A vector of names of nodes. Can be used to limit interpretation to
+#'   selected nodes. By default limited to non root nodes.
 #' @return A named \code{list} with interpretation of positions of
 #'   the digits in a nodal type
 #' @details A node for a child node X with \code{k} parents has a nodal type
@@ -158,12 +154,12 @@ clean_condition <- function(condition) {
 #'   position that corresponds to values X takes when Z = 0 and R = 1.
 #' @examples
 #' model <- make_model('R -> X; Z -> X; X -> Y')
-#' #Return interpretation of all digit positions of all nodes
+#' # Return interpretation of all digit positions of all nodes
 #' interpret_type(model)
-#' #Example using digit position
+#' # Example using digit position
 #' interpret_type(model, position = list(X = c(3,4), Y = 1))
 #' interpret_type(model, position = list(R = 1))
-#' #Example using condition
+#' # Example using condition
 #' interpret_type(model, condition = c('X | Z=0 & R=1', 'X | Z=0 & R=0'))
 #' # Example using node names
 #' interpret_type(model, nodes = c("Y", "R"))
@@ -173,9 +169,15 @@ clean_condition <- function(condition) {
 interpret_type <- function(model,
                            condition = NULL,
                            position = NULL,
-                           nodes = NULL) {
+                           nodes = model$parents_df[!model$parents_df$root, 1]) {
 
   # Checks
+
+   if(!is.null(position) && !all(names(position) %in% nodes )){
+     message("Specify position variables from among requested nodes only")
+     position <- NULL
+   }
+
     if (!is.null(condition) & !is.null(position)) {
       stop("Must specify either `condition` or `nodal_position`, but not both.")
     }
@@ -209,33 +211,33 @@ interpret_type <- function(model,
                    " = ", pos_elements[row,], collapse = " & "),
             character(1))
         interpret <-
-          paste0(paste0(c(names(position)[i], " | "), collapse = ""), interpret)
-        # Create 'Y*[*]**'-type representations
-        asterisks <- rep("*", nrow(type))
+          paste0(paste0(c(" ", names(position)[i], " = * if "), collapse = ""), interpret)
+
+        # Create '-*--'-type representations
+        asterisks <- rep("-", nrow(type))
         asterisks_ <- vapply(positions, function(s) {
           if (s < length(asterisks)) {
             if (s == 1) {
-              paste0(c("[*]", asterisks[(s + 1):length(asterisks)]),
+              paste0(c("*", asterisks[(s + 1):length(asterisks)]),
                      collapse = "")
             } else {
-              paste0(c(asterisks[1:(s - 1)], "[*]",
+              paste0(c(asterisks[1:(s - 1)], "*",
                        asterisks[(s + 1):length(asterisks)]),
                      collapse = "")
             }
           } else {
-            paste0(c(asterisks[1:(s - 1)], "[*]"), collapse = "")
+            paste0(c(asterisks[1:(s - 1)], "*"), collapse = "")
           }
         }, character(1))
-        display <- paste0(names(position)[i], asterisks_)
+        display <- paste0(asterisks_)
       } else {
-        interpret <-
-          paste0(paste0(c(names(position)[i], " = "), collapse = ""), c(0, 1))
-        display <- paste0(names(position)[i], c(0, 1))
+        # Root nodes
+        display <- "*"
+        interpret <- paste0(names(position)[i], " = *")
+
       }
       data.frame(
-        node = names(position)[i],
-        position = position[[i]],
-        display = display,
+        index = display,
         interpretation = interpret,
         stringsAsFactors = FALSE
       )
@@ -244,25 +246,65 @@ interpret_type <- function(model,
     names(interpret) <- names(position)
 
     if (!is.null(condition)) {
-        conditions <- vapply(condition, clean_condition, character(1))
-        interpret_ <- lapply(interpret, function(i) {
-            slct <- vapply(conditions, function(cond) {
-                a <- trimws(strsplit(cond, "&|\\|")[[1]])
-                vapply(i$interpretation, function(bi) {
-                  b <- trimws(strsplit(bi, "&|\\|")[[1]])
-                  all(a %in% b)
-                }, logical(1))
-            }, logical(length(i$interpretation)))
-            i <- i[rowSums(slct) > 0, ]
-            if (nrow(i) == 0) {
-              i <- NULL
-            }
-            i
-        })
-        interpret <- interpret_[!vapply(interpret_, is.null, logical(1))]
+      conditions <- parse_conditions(condition, nodes)
+
+      # Initialize a list to store filtered data frames
+      filtered_list <- list()
+
+      for (lhs in names(conditions)) {
+        rhs_patterns <- conditions[[lhs]]
+        pattern_1 <- paste(rhs_patterns, collapse = "|")
+        pattern_2 <- interpret[[lhs]][[2]]
+        # Filter rows where the column named lhs contains any RHS pattern
+        accept <- sapply(pattern_2, function(x) any(grepl(pattern_1, x)))
+        interpret[[lhs]] <- interpret[[lhs]][accept,]
+      }
+
+      # filtered_list now contains filtered data.frames by lhs key
     }
 
-    return(interpret[nodes])
+    return(interpret[nodes[nodes %in% names(position)]])
+}
+
+# converts "X | Z=0 & R=1" into $X [1] "R = 1 & Z = 0" (ordered and standard)
+# parse_conditions(condition = c('X | Z=0 & R=1', 'X | Z=0 & R=0', 'R | Z=1'))
+# CausalQueries:::parse_conditions(condition = c('X | Z=0 & R=1', 'X | Z=0 & R=0', 'R | Z=1'), nodes = c("X", "R", "Z"))
+
+parse_conditions <- function(condition, nodes) {
+  # Split each string at the first "|"
+  split_conditions <- strsplit(condition, "\\|")
+
+  # Trim whitespace
+  split_conditions <- lapply(split_conditions, function(x) trimws(x))
+
+  # Extract LHS and RHS
+  lhs <- sapply(split_conditions, function(x) x[1])
+  rhs <- sapply(split_conditions, function(x) x[2])
+
+  x <- lapply(rhs, function(x) {
+
+  parts <- strsplit(x, "&")[[1]]
+  parts <- trimws(parts)
+
+  # Extract variable, operator, and value
+  parsed <- lapply(parts, function(part) {
+    matches <- regmatches(part, regexec("^\\s*(\\w+)\\s*(=)\\s*(\\S+)\\s*$", part))[[1]]
+    if (length(matches) != 4) stop(paste("Cannot parse:", part))
+    list(var = matches[2], op = matches[3], val = matches[4])
+  })
+
+  # Reorder based on nodes
+  parsed <- parsed[order(match(sapply(parsed, `[[`, "var"), nodes))]
+
+  # Reformat with spacing
+  reformatted <- sapply(parsed, function(x) paste0(x$var, " ", x$op, " ", x$val))
+
+  # Join with properly spaced '&'
+  paste(reformatted, collapse = " & ")[[1]]
+  })
+
+  # Combine RHS values into a named list by LHS
+  split(x |> unlist(), lhs)
 }
 
 #' Expand wildcard
@@ -417,6 +459,12 @@ is_a_model <- function(model){
 #' @keywords internal
 
 check_query <- function(query) {
+  # nonlinear indicators  to exclude
+  non_linear_operators <- c("\\^", "/", "exp\\(", "log\\(")
+  non_linear_warn <- any(
+    vapply(non_linear_operators, function(operator) {grepl(operator, query)}, logical(1))
+  )
+
   query <- gsub(" ", "", query)
   query <- unlist(strsplit(query, ""))
 
@@ -481,6 +529,12 @@ check_query <- function(query) {
     )
   }
 
+  if (non_linear_warn) {
+    warning(
+        "Non-linear transformations (such as /, ^, exp() or log()) are not supported in querying."
+    )
+  }
+
   return(query)
 }
 
@@ -525,5 +579,7 @@ get_args_for <- function(fun, dots) {
 }
 
 
-has_posterior <- function(model)
+has_posterior <- function(model) {
   !is.null(model$posterior_distribution)
+}
+

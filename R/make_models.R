@@ -5,14 +5,14 @@
 #' and default priors are provided under the assumption of no confounding.
 #' Models can be updated with specification of a parameter matrix, \code{P}, by
 #' providing restrictions on causal types, and/or by providing informative
-#' priors on parameters. The default setting for a causal model have flat
-#' (uniform) priors and parameters putting equal weight on each parameter
-#' within each parameter set. These can be adjust with \code{set_priors}
-#' and \code{set_parameters}
+#' priors on parameters.
 #'
 #' @param statement character string. Statement describing causal
-#'   relations between nodes. Only directed relations are
-#'   permitted. For instance "X -> Y" or  "X1 -> Y <- X2; X1 -> X2".
+#'   relations between nodes. Directed relations can be specified
+#'   using '->' or '<-' and can be combined.
+#'   For instance "X -> Y", "Y <- X" or  "X1 -> Y <- X2; X1 -> X2".
+#'   Confounded relations can be specified using a double headed arrow,
+#'   "X <-> Y", to indicate unobserved confounding between X and Y.
 #' @param add_causal_types Logical. Whether to create and attach causal
 #'   types to \code{model}. Defaults to `TRUE`.
 #' @param nodal_types List of nodal types associated with model nodes
@@ -37,6 +37,11 @@
 #' \item{causal_types}{A \code{data.frame} listing causal types and the
 #'   nodal types that produce them}
 #'
+#' By default a causal model has flat (uniform) priors and parameters that
+#' put equal weight on each parameter within each parameter set. The parameter
+#' ranges (range of the nodal types) can be adjusted with \code{\link{set_restrictions}}.
+#' The priors can be adjusted with \code{\link{set_priors}}. Specific parameter
+#' values can be adjusted with \code{\link{set_parameters}}.
 #'
 #' @seealso \code{\link{summary.causal_model}} provides summary method for
 #'   output objects of class \code{causal_model}
@@ -46,7 +51,7 @@
 #' make_model(statement = "X -> Y")
 #' modelXKY <- make_model("X -> K -> Y; X -> Y")
 #'
-#' # Example where cyclicaly dag attempted
+#' # Example where a cyclical dag is attempted
 #' \dontrun{
 #'  modelXKX <- make_model("X -> K -> X")
 #' }
@@ -97,20 +102,13 @@
 make_model <- function(statement = "X -> Y",
                        add_causal_types = TRUE,
                        nodal_types = NULL) {
+
   parent <- NULL
 
-  if (length(statement) != 1) {
-    stop(
-      paste(
-        "The length of the character vector of the statement",
-        "is unequal to 1. Please provide only 1 causal model."
-      )
-    )
+  if (!is.character(statement) || length(statement) != 1) {
+    stop("The model statement should be a single character string.")
   }
 
-  if (!(is.character(statement))) {
-    stop("The model statement should be of type character.")
-  }
 
   # generate DAG
   .dag <- make_dag(statement)
@@ -164,19 +162,19 @@ make_model <- function(statement = "X -> Y",
   nodes <- c(exog_node, endog_node)
 
   # parent count df
-  parents_df <-
-    data.frame(node = nodes, root = nodes %in% exog_node) |>
-    dplyr::mutate(parents = vapply(node, function(n) {
-      dag |>
-        dplyr::filter(children == n) |>
-        nrow()
-    }, numeric(1))) |>
-    dplyr::mutate(parent_nodes = sapply(node, function(n) {
-      dag |>
-        dplyr::filter(children == n) |>
-        dplyr::pull(parent) |>
-        paste(collapse = ", ")
-    }))
+   parents_df <-
+     data.frame(node = nodes, root = nodes %in% exog_node) |>
+     dplyr::mutate(parents = vapply(node, function(n) {
+       dag |>
+         dplyr::filter(children == n) |>
+         nrow()
+     }, numeric(1))) |>
+     dplyr::mutate(parent_nodes = sapply(node, function(n) {
+       dag |>
+         dplyr::filter(children == n) |>
+         dplyr::pull(parent) |>
+         paste(collapse = ", ")
+     }))
 
   # Model is a list
   model <-
@@ -391,41 +389,34 @@ clean_statement <- function(statement) {
   # check for unsupported characters in varnames
   if (any(c("<", ">") %in% st_edge[!is_edge])) {
     stop(
-      paste0(
-        "Unsupported characters in variable names. No '<' or '>' in variable names please.",
-        "\n",
-        "\n You may have tried to define an edge but misspecified it.",
-        "\n Edges should be specified via ->, <-, <-> not >, <, <> or ->>, <<-, <<->> etc."
+      paste(
+        "Unsupported characters in variable names. No '<' or '>' in variable names please. \n",
+        "You may have tried to define an edge but misspecified it.",
+        "Edges should be specified via ->, <-, <-> not >, <, <> or ->>, <<-, <<->> etc.",
+        sep = " "
       )
     )
   }
 
   if ("-" %in% st_edge[!is_edge]) {
     stop(
-      paste0(
-        "Unsupported characters in variable names. No hyphens '-' in variable names please; try dots?",
-        "\n",
-        "\n You may have tried to define an edge but misspecified it.",
-        "\n Edges should be specified via ->, <-, <-> not -."
+      paste(
+        "Unsupported characters in variable names. No hyphens '-' in variable names please; try dots? \n",
+        "You may have tried to define an edge but misspecified it.",
+        "Edges should be specified via ->, <-, <-> not -.",
+        sep = " "
       )
     )
   }
 
   if ("_" %in% st_edge[!is_edge]) {
     stop(
-      paste0(
-        "Unsupported characters in variable names. No underscores '_' in variable names please; try dots?",
-        "\n",
-        "\n You may have tried to define an edge but misspecified it.",
-        "\n Edges should be specified via ->, <-, <-> not _>, <_, <_> etc."
+      paste(
+        "Unsupported characters in variable names. No underscores '_' in variable names please; try dots? \n",
+        "You may have tried to define an edge but misspecified it.",
+        "Edges should be specified via ->, <-, <-> not _>, <_, <_> etc.",
+        sep = " "
       )
-    )
-  }
-
-  if (("<->" %in% st_edge[is_edge]) &&
-      ("." %in% st_edge[!is_edge])) {
-    stop(
-      "Unsupported characters in variable names. No dots '.' in variable names for models with confounding."
     )
   }
 
@@ -436,6 +427,42 @@ clean_statement <- function(statement) {
   nodes <- split(st_edge[!is_edge], node_id[!is_edge]) |>
     vapply(paste, collapse = "", "") |>
     unname()
+
+  # ensure that no non-linear mathematical operators are embedded in variable names
+  # we have to check this to ensure correct query parsing
+  non_linear_operators <- c("\\^", "/", "exp\\(", "log\\(")
+  non_linear_warn <- any(
+    vapply(non_linear_operators, function(operator) {grepl(operator, nodes)}, logical(length(nodes)))
+  )
+
+  if(non_linear_warn) {
+    stop(
+      paste(
+        "Unsupported substrings in variable names. No non-linear mathematical operators like:",
+        "^, /, exp( or log( in variable names please. Adding such operator substrings to variable names",
+        "will cause downstream issues in query specification and parsing.",
+        sep = " "
+      )
+    )
+  }
+
+  # ensure that no query specific syntax is embedded in variable names
+  # we have to check this to ensure correct query parsing
+  query_operators <- c("\\[", "\\]", ":\\|:")
+  query_warn <- any(
+    vapply(query_operators, function(operator) {grepl(operator, nodes)}, logical(length(nodes)))
+  )
+
+  if(query_warn) {
+    stop(
+      paste(
+        "Unsupported substrings in variable names. No query operators like:",
+        "[, ] or :|: in variable names please. Adding such operator substrings to variable names",
+        "will cause downstream issues in query specification and parsing.",
+        sep = " "
+      )
+    )
+  }
 
   return(list(nodes = nodes, edges = st_edge[is_edge]))
 }
