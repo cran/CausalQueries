@@ -1,3 +1,25 @@
+# CausalQueries 1.4.4
+
+This patch release includes an improved Stan model that implements:
+
+* Memory Efficiency: Eliminated large intermediate matrices (parlam, parlam2)
+* Numerical Stability: Added safeguards against log(0) with + 1e-10
+* Better Documentation: Clear section headers and comprehensive comments
+* Error Handling: Validation checks for edge cases
+* Mathematical Equivalence: Verified to produce identical results 
+  (within floating-point precision)
+
+The core of these edits were suggested by cursor and verified by 
+the development team.
+
+In addition:
+
+* Startup advice on Automatic Parallel Computation
+* Better Error Messages: Added helpful warning messages for common query syntax mistakes (e.g., using & instead of , in conditions) with auto-correction
+* Removed dependency on latex2exp
+* Allow expressions for labels in plot_model. See examples.
+
+
 # CausalQueries 1.4.3
 
 This is a minor release implementing more intuitive nodal type interpretations 
@@ -5,15 +27,31 @@ as well as improved warnings around inadmissible model and query specifications
 to guard against silent undefined behavior when querying models. 
 
 ### Non Backwards Compatible Changes
-
 `make_model()` now throws an error if node names contain substrings matching
 non-linear mathematical transformations (`log(`, `exp(`, `^`, `\`) or `CausalQueries`
 query operators (`[`, `]`, `:|:`). This guards against silent undefined behavior 
 when parsing and evaluating queries. 
-Query related functions now also throw an error when non-linear transformations 
+
+### New Functionality
+
+#### 1. Warnings for unsupported queries
+Query related functions now throw a warning when non-linear transformations 
 (`log(`, `exp(`, `^`, `\`) are specified; as non-linear queries are not 
 currently supported by `CausalQueries`. Previously non-linear queries would 
 silently return `NaN` or `Inf`.  
+
+#### 2. More intuitive nodal type interpretations
+`summary.causal_model()` and `inspect(model, "nodal_types")` now print a more 
+intuitive nodal type interpretation guide. For a model `X -> Y <- Z` the updated
+interpretation guide looks as follows: 
+
+```
+  index          interpretation
+1  *---  Y = * if X = 0 & Z = 0
+2  -*--  Y = * if X = 1 & Z = 0
+3  --*-  Y = * if X = 0 & Z = 1
+4  ---*  Y = * if X = 1 & Z = 1
+```
 
 # CausalQueries 1.3.3
 
