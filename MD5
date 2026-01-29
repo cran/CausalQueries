@@ -1,7 +1,7 @@
-a1623668d7935a8fc8c9e6bf517e72d1 *DESCRIPTION
+61a6dfda42f9f12c2a6cfb73b858643c *DESCRIPTION
 b69febc4460cbebdb3dd852c99555001 *LICENSE
 1aee2fd427bd350e8a630416cd8cdb79 *NAMESPACE
-9b58461aa392789b98bc27c0f6fbb050 *NEWS.md
+213b6bd16595e9618bed1c527393dd0f *NEWS.md
 038fd0d6eb05b66e0786dc1806f7cf97 *R/CausalQueries-package.R
 9dbf1f8d5037e16ffe6654ce58d27db8 *R/RcppExports.R
 34a190698bd98773479dad67f4f41803 *R/build_vignettes.R
@@ -63,7 +63,7 @@ ea07cab1d7f5d547a4f10119a0e32c86 *inst/doc/e-posteriors.Rmd
 1ec5028e8bd72b572e81a24696f3112c *inst/doc/f-complier-profiling.html
 855c064dbf8deaff96c8dc8a87169109 *inst/include/stan_meta_header.hpp
 36d66df8ceb70e04f49f5c9a7ebe4b86 *inst/stan/include/license.stan
-2ae741bfbb7a438869224b97e2cdaa0e *inst/stan/simplexes.stan
+678f80a613d943deb4bcf2474813181c *inst/stan/simplexes.stan
 bd309f807cad35f13bbcbd0ee539bd0b *man/CausalQueries-package.Rd
 24782e553f940913206eb85b693301f0 *man/CausalQueries_internal_inherit_params.Rd
 dc140f40ac9e958c4a7f871545594aa1 *man/add_dots.Rd
@@ -120,8 +120,8 @@ caf4cfa219cdc678546e983f706908a4 *src/Makevars.win
 4d169e76dae4259d362efd6b242aaafc *src/RcppExports.cpp
 db9e526eef6295f48ec7fb8e56788e4d *src/get_type_prob_helpers_arma.cpp
 0a57c3eac00b9ef4927cd912e3fbbdaa *src/realise_outcome_c.cpp
-0af1fcf3d6cc217d613a302e02fc1af6 *src/stanExports_simplexes.cc
-8a1c5ae116454f6bd998cd1ebb80ec0f *src/stanExports_simplexes.h
+51a62dd7fa8d4380357ea7a9bc933d6a *src/stanExports_simplexes.cc
+16679ea2288f65600b88593c8007fa6d *src/stanExports_simplexes.h
 f5d8fba9602371f2aedf25679fa33a7b *tests/testthat.R
 023f5bb6b3c6bcc8174398aa946c5448 *tests/testthat/test_clean_params.R
 6bfad69beebf8d3c83c517299424387e *tests/testthat/test_data_helpers.R
@@ -166,7 +166,7 @@ d55a29dee706b0f3af73994505465cc3 *tests/testthat/test_restrictions.R
 a397556c448894ce3c0982398cdebb85 *tests/testthat/test_set_priors.R
 10ecd379914139e88072da442976cb59 *tests/testthat/test_set_restrictions.R
 0f6bedc4c1ed967b9d87f39130c5a3df *tests/testthat/test_type_helpers.R
-a625d197993742196d1a90294860eae8 *tests/testthat/test_update_model.R
+7c3f75c520f45ba53cc4db79c39eac31 *tests/testthat/test_update_model.R
 9cfaa0cf34d29fe9fa0a8a1fdad82cb7 *vignettes/a-getting-started.Rmd
 8ff192732083574c774636e18477a345 *vignettes/a-getting-started.Rmd.orig
 4062ebf93aa5b35612ca5f78052ce6c4 *vignettes/a1batchplot-1.png
