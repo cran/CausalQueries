@@ -32,6 +32,12 @@
 #'   \code{\link{summary.causal_model}} provides a summary method for
 #'   output objects of class \code{causal_model}
 #'
+#' @references
+#' Tietz T, Medina L, Syunyaev G, Humphreys M (2026).
+#' "Making, Updating, and Querying Causal Models with CausalQueries."
+#' \emph{Journal of Statistical Software}, \bold{117}(1), 1--40.
+#' \doi{10.18637/jss.v117.i01}.
+#'
 #' @examples
 #'  model <- make_model('X->Y')
 #'  data_long   <- make_data(model, n = 4)
@@ -140,7 +146,7 @@ update_model <- function(model,
   stanfit <- stanmodels$simplexes
 
   # parameters to drop (match Stan: we no longer materialize w_full or intermediate computation objects)
-  drop_pars <- c("gamma", "sum_gammas", "log_sum_gammas")
+  drop_pars <- c("gamma", "sum_gammas", "log_sum_gammas", "w_full", "w_0")
 
   if (!keep_event_probabilities) {
     drop_pars <- c(drop_pars, "w")
