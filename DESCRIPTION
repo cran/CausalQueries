@@ -1,7 +1,7 @@
 Package: CausalQueries
 Type: Package
 Title: Make, Update, and Query Binary Causal Models
-Version: 1.4.6
+Version: 1.4.7
 Authors@R: c(person("Clara", "Bicalho", email = "clarabmcorreia@gmail.com", role = c("ctb")),
              person("Jasper", "Cooper", email = "jjc2247@columbia.edu", role = c("ctb")),
              person("Macartan", "Humphreys", email = "macartan@gmail.com", role = c("aut"),
@@ -37,7 +37,7 @@ VignetteBuilder: knitr
 URL: https://integrated-inferences.github.io/CausalQueries/
 Config/roxygen2/version: 8.0.0
 NeedsCompilation: yes
-Packaged: 2026-09-01 04:04:55 UTC; ttietz
+Packaged: 2026-11-18 22:56:18 UTC; ttietz
 Author: Clara Bicalho [ctb],
   Jasper Cooper [ctb],
   Macartan Humphreys [aut] (ORCID:
@@ -51,4 +51,4 @@ Author: Clara Bicalho [ctb],
   Moritz Marbach [ctb] (ORCID: <https://orcid.org/0000-0002-7101-2821>)
 Maintainer: Till Tietz <ttietz2014@gmail.com>
 Repository: CRAN
-Date/Publication: 2026-09-01 07:50:09 UTC
+Date/Publication: 2026-11-19 02:20:02 UTC
